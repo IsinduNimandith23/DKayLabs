@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   DKAYLABS - base layer
+   ============================================================ */
+@layer base {
+  :root {
+    --nav-h: 4.5rem;
+  }
+
+  html {
+    /* Lenis drives scrolling; keep native smooth off to avoid double easing. */
+    scroll-behavior: auto;
+    /* Belt-and-braces with body: no horizontal overflow, ever. */
+    overflow-x: clip;
+  }
+
+  body {
+    @apply bg-obsidian text-snow font-body antialiased;
+    /* Decorative glow orbs bleed past the viewport edges by design -
+       clip them so they never cause a horizontal scrollbar. */
+    overflow-x: clip;
+    /* Faint red aura bleeding down from the top over the black base. */
+    background-image:
+      radial-gradient(70% 50% at 50% -10%, rgba(255, 46, 63, 0.10), transparent 70%),
+      linear-gradient(180deg, #0d090a 0%, #1b1416 60%, #080607 100%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    @apply bg-crimson/80 text-snow;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
+
+  /* Red-editorial scrollbar to match the brand. */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0d090a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(#8c0e14, #c1121f);
+    border-radius: 999px;
+  }
+}
+
+/* ============================================================
+   Lenis smooth-scroll wiring
+   ============================================================ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ============================================================
+   Reusable component utilities
+   ============================================================ */
+@layer components {
+  /* Frosted dark glass surface - used by navbar, cards, contact form. */
+  .glass {
+    @apply bg-charcoal/40 backdrop-blur-xl border border-snow/10 shadow-bevel;
+  }
+
+  .glass-strong {
+    @apply bg-charcoal/70 backdrop-blur-2xl border border-snow/10 shadow-bevel;
+  }
+
+  /* Animated warm-ivory gradient text (editorial sheen). */
+  .text-metal {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      100deg,
+      #f6efec 0%,
+      #e4b7b3 25%,
+      #ffffff 50%,
+      #e4b7b3 75%,
+      #f6efec 100%
+    );
+    background-size: 200% auto;
+    @apply animate-shimmer;
+  }
+
+  /* Diagonal light sweep across a button on hover. */
+  .btn-shine {
+    @apply relative overflow-hidden;
+  }
+  .btn-shine::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(246, 239, 236, 0.28) 50%,
+      transparent 80%
+    );
+    transform: translateX(-130%) skewX(-15deg);
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-shine:hover::after {
+    transform: translateX(130%) skewX(-15deg);
+  }
+
+  /* Crimson underline-glow link, used in the navbar. */
+  .nav-link {
+    @apply relative text-silver transition-colors duration-200 hover:text-snow;
+  }
+  .nav-link::after {
+    content: "";
+    @apply absolute -bottom-1 left-0 h-px w-0 bg-crimson transition-all duration-300;
+    box-shadow: 0 0 10px 1px rgba(255, 46, 63, 0.9);
+  }
+  .nav-link:hover::after,
+  .nav-link[data-active="true"]::after {
+    @apply w-full;
+  }
+}
+
+/* ============================================================
+   Accessibility - honor reduced motion globally
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
