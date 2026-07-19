@@ -1,0 +1,115 @@
+{
+  "_comment": "PLACEHOLDER PRICING - not yet confirmed. Edit the numbers here and re-run scripts/generate_pricing_docs.py to regenerate every document. Set draft:false once the figures are final; that removes the DRAFT banner from all output.",
+  "draft": true,
+  "currencies": {
+    "LKR": { "symbol": "LKR", "audience": "Sri Lanka" },
+    "USD": { "symbol": "USD", "audience": "International" }
+  },
+  "tiers": ["Essential", "Professional", "Enterprise"],
+  "services": [
+    {
+      "title": "Website Development",
+      "billing": "per project",
+      "summary": "Blazing-fast, conversion-focused sites built on modern stacks - pixel-perfect, animated, and engineered to rank.",
+      "timeline": "2 - 6 weeks, depending on scope",
+      "tierNotes": [
+        "Up to 5 pages, responsive build, basic SEO, contact form",
+        "Up to 12 pages, CMS, custom animations, full on-page SEO, analytics",
+        "Unlimited pages, multi-language, integrations, advanced performance work"
+      ],
+      "LKR": [150000, 350000, 750000],
+      "USD": [900, 2200, 4800]
+    },
+    {
+      "title": "Mobile App Development",
+      "billing": "per project",
+      "summary": "Sleek, native-feel iOS and Android apps built from a single codebase - fast, stable, and store-ready.",
+      "timeline": "6 - 14 weeks, depending on scope",
+      "tierNotes": [
+        "Single platform, up to 6 screens, basic auth",
+        "iOS + Android, up to 15 screens, push notifications, offline support",
+        "Full product build, custom backend, payments, third-party integrations"
+      ],
+      "LKR": [450000, 950000, 1800000],
+      "USD": [2800, 6000, 11500]
+    },
+    {
+      "title": "SaaS Development",
+      "billing": "per project",
+      "summary": "End-to-end product engineering: auth, billing, dashboards, and scalable cloud infrastructure that grows with you.",
+      "timeline": "8 - 20 weeks, depending on scope",
+      "tierNotes": [
+        "MVP: auth, core feature set, single-tenant, basic dashboard",
+        "Multi-tenant, subscription billing, admin panel, documented API",
+        "Full platform: roles and permissions, integrations, CI/CD, monitoring, SLA"
+      ],
+      "LKR": [800000, 1800000, 3500000],
+      "USD": [5000, 11000, 22000]
+    },
+    {
+      "title": "E-commerce Solutions",
+      "billing": "per project",
+      "summary": "High-converting online stores with seamless checkout, payments, and inventory - built to sell around the clock.",
+      "timeline": "4 - 12 weeks, depending on scope",
+      "tierNotes": [
+        "Up to 50 products, standard theme customisation, one payment gateway",
+        "Up to 500 products, custom storefront, multi-gateway, abandoned-cart flows",
+        "Unlimited catalogue, ERP/inventory integration, multi-currency, B2B pricing"
+      ],
+      "LKR": [250000, 550000, 1200000],
+      "USD": [1500, 3400, 7500]
+    },
+    {
+      "title": "UI/UX Design",
+      "billing": "per project",
+      "summary": "Interfaces that look sharp and convert harder - research-driven design systems, prototypes, and pixel-perfect handoff.",
+      "timeline": "2 - 8 weeks, depending on scope",
+      "tierNotes": [
+        "Up to 8 screens, wireframes plus high-fidelity UI",
+        "Up to 25 screens, clickable prototype, component library",
+        "Full design system, user research, usability testing, ongoing design support"
+      ],
+      "LKR": [120000, 280000, 600000],
+      "USD": [750, 1750, 3800]
+    },
+    {
+      "title": "SEO & Digital Marketing",
+      "billing": "per month",
+      "summary": "Rank higher and reach further - technical SEO, content strategy, and campaigns that turn traffic into revenue.",
+      "timeline": "Ongoing, with a 3-month minimum for results",
+      "tierNotes": [
+        "Technical audit, 10 keywords, monthly report",
+        "30 keywords, content strategy, link building, local SEO",
+        "Full-funnel: unlimited keywords, paid campaigns, CRO, dedicated strategist"
+      ],
+      "LKR": [45000, 85000, 160000],
+      "USD": [300, 550, 1000]
+    },
+    {
+      "title": "Website Maintenance",
+      "billing": "per month",
+      "summary": "Updates, monitoring, backups, and support - we keep your site fast, secure, and always online after launch.",
+      "timeline": "Monthly retainer, cancel anytime",
+      "tierNotes": [
+        "Security patches, weekly backups, uptime monitoring",
+        "Adds content updates, performance tuning, monthly health report",
+        "Priority SLA support, unlimited small changes, staging environment"
+      ],
+      "LKR": [15000, 35000, 70000],
+      "USD": [100, 220, 450]
+    },
+    {
+      "title": "AI Solutions",
+      "billing": "per project",
+      "summary": "Intelligent automation, custom models, and AI-native experiences that put your business a level above the rest.",
+      "timeline": "Launching soon - join the early-access list",
+      "tierNotes": [
+        "Single chatbot or automation workflow, standard model",
+        "Knowledge-base search (RAG), custom prompts, multi-channel deployment",
+        "Fine-tuned models, deep product integration, ongoing evaluation and tuning"
+      ],
+      "LKR": [350000, 800000, 1600000],
+      "USD": [2200, 5000, 10000]
+    }
+  ]
+}

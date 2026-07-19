@@ -1,8 +1,7 @@
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
-import ServiceCard from "@/components/ui/ServiceCard";
+import ServicesGrid from "@/components/ui/ServicesGrid";
 import GlowOrb from "@/components/ui/GlowOrb";
-import { SERVICES } from "@/lib/constants";
 
 export default function Services() {
   return (
@@ -28,11 +27,7 @@ export default function Services() {
           </Reveal>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map((service, i) => (
-            <ServiceCard key={service.title} service={service} index={i} />
-          ))}
-        </div>
+        <ServicesGrid />
       </div>
     </section>
   );

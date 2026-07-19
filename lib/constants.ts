@@ -36,7 +36,42 @@ export type Service = {
     | "wrench"
     | "spark";
   status: "available" | "coming-soon";
+  /** Long-form copy shown in the ServiceModal when the card is clicked. */
+  detail: {
+    /** One or two paragraphs expanding on `description`. */
+    overview: string;
+    /** Concrete things the client walks away with. */
+    deliverables: string[];
+    /** Rough delivery window - always framed as an estimate. */
+    timeline: string;
+  };
 };
+
+/**
+ * Shown in every ServiceModal. We quote per-project rather than list prices,
+ * so this is deliberately a single shared line - edit once, changes everywhere.
+ */
+export const PRICING_NOTE =
+  "Every project is scoped and priced around what you actually need - features, complexity, and timeline all move the number. Tell us what you're building and we'll send a tailored quote, no templates.";
+
+/**
+ * Starter text dropped into the contact form's message field when someone
+ * applies for a service. Name and email stay blank on purpose - those are the
+ * user's to fill in.
+ */
+export function buildInquiryMessage(serviceTitle: string) {
+  return `Hi DKayLabs,
+
+I'd like to apply for your ${serviceTitle} service.
+
+What I'm looking to build:
+-
+
+Budget range (if you have one in mind):
+-
+
+Please send over a tailored quote. Thanks!`;
+}
 
 export const SERVICES: Service[] = [
   {
@@ -45,6 +80,18 @@ export const SERVICES: Service[] = [
       "Blazing-fast, conversion-focused sites built on modern stacks - pixel-perfect, animated, and engineered to rank.",
     icon: "code",
     status: "available",
+    detail: {
+      overview:
+        "We build marketing sites, landing pages, and content-driven platforms that load instantly and turn visitors into customers. Every build starts from your goals - not a template - and ships with clean, maintainable code you actually own.",
+      deliverables: [
+        "Fully responsive, pixel-perfect build",
+        "Core Web Vitals tuned for speed",
+        "On-page SEO and structured data",
+        "CMS so you can edit content yourself",
+        "Analytics and conversion tracking wired up",
+      ],
+      timeline: "2 - 6 weeks, depending on scope",
+    },
   },
   {
     title: "Mobile App Development",
@@ -52,6 +99,18 @@ export const SERVICES: Service[] = [
       "Sleek, native-feel iOS and Android apps built from a single codebase - fast, stable, and store-ready.",
     icon: "mobile",
     status: "available",
+    detail: {
+      overview:
+        "One codebase, two platforms, no compromise on feel. We design and ship cross-platform apps with native gestures, offline support, and push notifications - then handle the App Store and Play Store submissions for you.",
+      deliverables: [
+        "iOS and Android apps from a single codebase",
+        "Native-feel navigation, gestures, and animations",
+        "Push notifications and deep linking",
+        "Offline-first data handling",
+        "Store listing, submission, and review support",
+      ],
+      timeline: "6 - 14 weeks, depending on scope",
+    },
   },
   {
     title: "SaaS Development",
@@ -59,6 +118,18 @@ export const SERVICES: Service[] = [
       "End-to-end product engineering: auth, billing, dashboards, and scalable cloud infrastructure that grows with you.",
     icon: "layers",
     status: "available",
+    detail: {
+      overview:
+        "From idea to paying users. We handle the unglamorous parts of a SaaS - auth, roles, subscriptions, webhooks, admin tooling - so you can focus on the product itself. Built multi-tenant from day one so scaling later isn't a rewrite.",
+      deliverables: [
+        "Multi-tenant architecture with role-based access",
+        "Subscription billing and invoicing",
+        "Customer-facing dashboard and admin panel",
+        "REST or GraphQL API with documentation",
+        "CI/CD, monitoring, and error tracking",
+      ],
+      timeline: "8 - 20 weeks, depending on scope",
+    },
   },
   {
     title: "E-commerce Solutions",
@@ -66,6 +137,18 @@ export const SERVICES: Service[] = [
       "High-converting online stores with seamless checkout, payments, and inventory - built to sell around the clock.",
     icon: "cart",
     status: "available",
+    detail: {
+      overview:
+        "Storefronts engineered around the checkout. We obsess over the path from product page to paid order - fewer steps, faster loads, fewer abandoned carts - and connect the back office so inventory, shipping, and orders stay in sync.",
+      deliverables: [
+        "Custom storefront and product experience",
+        "Optimised, low-friction checkout",
+        "Payment gateway and multi-currency setup",
+        "Inventory, orders, and shipping integrations",
+        "Abandoned-cart recovery and email flows",
+      ],
+      timeline: "4 - 12 weeks, depending on scope",
+    },
   },
   {
     title: "UI/UX Design",
@@ -73,6 +156,18 @@ export const SERVICES: Service[] = [
       "Interfaces that look sharp and convert harder - research-driven design systems, prototypes, and pixel-perfect handoff.",
     icon: "design",
     status: "available",
+    detail: {
+      overview:
+        "Design that earns its keep. We start with your users and your funnel, then build an interface and a design system around what moves the numbers - handed off in a state engineers can build from without guesswork.",
+      deliverables: [
+        "User research and competitor teardown",
+        "Wireframes and clickable prototypes",
+        "High-fidelity UI across all breakpoints",
+        "Reusable design system and components",
+        "Developer handoff with specs and assets",
+      ],
+      timeline: "2 - 8 weeks, depending on scope",
+    },
   },
   {
     title: "SEO & Digital Marketing",
@@ -80,6 +175,18 @@ export const SERVICES: Service[] = [
       "Rank higher and reach further - technical SEO, content strategy, and campaigns that turn traffic into revenue.",
     icon: "seo",
     status: "available",
+    detail: {
+      overview:
+        "Traffic is only useful if it converts. We fix the technical foundation first, then build content and campaigns around the keywords your buyers actually search - and report on revenue, not vanity metrics.",
+      deliverables: [
+        "Technical SEO audit and fixes",
+        "Keyword research and content strategy",
+        "On-page optimisation and internal linking",
+        "Link building and local SEO",
+        "Paid campaigns plus monthly reporting",
+      ],
+      timeline: "Ongoing, with a 3-month minimum for results",
+    },
   },
   {
     title: "Website Maintenance",
@@ -87,6 +194,18 @@ export const SERVICES: Service[] = [
       "Updates, monitoring, backups, and support - we keep your site fast, secure, and always online after launch.",
     icon: "wrench",
     status: "available",
+    detail: {
+      overview:
+        "Launch day is the start, not the finish. We keep your site patched, backed up, and monitored around the clock - and you get a real person to call when something breaks, not a ticket queue.",
+      deliverables: [
+        "Security patches and dependency updates",
+        "Automated backups with tested restores",
+        "24/7 uptime and performance monitoring",
+        "Content and small feature updates",
+        "Monthly health report with priority support",
+      ],
+      timeline: "Monthly retainer, cancel anytime",
+    },
   },
   {
     title: "AI Solutions",
@@ -94,6 +213,18 @@ export const SERVICES: Service[] = [
       "Intelligent automation, custom models, and AI-native experiences that put your business a level above the rest.",
     icon: "spark",
     status: "coming-soon",
+    detail: {
+      overview:
+        "We're putting the finishing touches on our AI practice: chatbots that actually understand your business, workflow automation that removes the busywork, and custom models trained on your own data. Early-access slots open soon.",
+      deliverables: [
+        "Custom chatbots and AI assistants",
+        "Document and knowledge-base search (RAG)",
+        "Workflow and process automation",
+        "Model fine-tuning on your own data",
+        "AI features embedded in your existing product",
+      ],
+      timeline: "Launching soon - join the early-access list",
+    },
   },
 ];
 

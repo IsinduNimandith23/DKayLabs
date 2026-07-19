@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
-import { SITE } from "@/lib/constants";
+import { SITE, SERVICES, buildInquiryMessage } from "@/lib/constants";
 
 type Status = "idle" | "submitting" | "success";
 
@@ -14,6 +14,19 @@ const fieldClass =
 
 export default function Contact() {
   const [status, setStatus] = useState<Status>("idle");
+  const [message, setMessage] = useState("");
+
+  // Prefill the message when arriving from a service modal's Apply button.
+  // Read from window rather than useSearchParams so this component doesn't
+  // force a Suspense boundary on the statically rendered contact route.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("service");
+    if (!requested) return;
+
+    // Only accept a title we actually offer - never render arbitrary URL text.
+    const match = SERVICES.find((s) => s.title === requested);
+    if (match) setMessage(buildInquiryMessage(match.title));
+  }, []);
 
   // Placeholder submit handler - wire this to your API / email service.
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -25,6 +38,7 @@ export default function Contact() {
 
     setStatus("success");
     (e.target as HTMLFormElement).reset();
+    setMessage(""); // reset() doesn't clear a controlled field.
     setTimeout(() => setStatus("idle"), 4000);
   }
 
@@ -97,7 +111,9 @@ export default function Contact() {
                 id="message"
                 name="message"
                 required
-                rows={5}
+                rows={message ? 11 : 5}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 placeholder="What are we building?"
                 className={`${fieldClass} resize-none`}
               />
