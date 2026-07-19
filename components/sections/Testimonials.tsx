@@ -105,7 +105,7 @@ export default function Testimonials() {
             fade-out mask on both sides. Pauses on hover, freezes under
             reduced motion. */}
         <Reveal delay={0.1}>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mx-auto max-w-[90rem] px-4 sm:px-6">
             <div className="relative overflow-hidden [-webkit-mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
               <div className="flex w-max animate-marquee-slow hover:[animation-play-state:paused]">
                 {half.map((t, i) => (

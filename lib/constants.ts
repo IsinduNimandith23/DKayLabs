@@ -8,7 +8,10 @@ export const SITE = {
   tagline: "Your tagline goes here.",
   description:
     "DKayLabs is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
-  email: "hello@dkaylabs.com",
+  email: "isindunimandith23@gmail.com",
+  phone: "+94 77 037 2960",
+  location: "Colombo, Sri Lanka",
+  hours: "Available 24/7",
 } as const;
 
 export const NAV_LINKS = [
@@ -225,8 +228,10 @@ export const TESTIMONIALS: Testimonial[] = [
 ];
 
 export const SOCIALS = [
-  { label: "X", href: "#", key: "x" },
-  { label: "GitHub", href: "#", key: "github" },
+  { label: "Facebook", href: "#", key: "facebook" },
+  { label: "Instagram", href: "#", key: "instagram" },
+  { label: "TikTok", href: "#", key: "tiktok" },
+  { label: "YouTube", href: "#", key: "youtube" },
   { label: "LinkedIn", href: "#", key: "linkedin" },
   { label: "Discord", href: "#", key: "discord" },
 ] as const;

@@ -41,7 +41,7 @@ export default function Logo({
       </span>
       {showWordmark && (
         <span className="font-display text-lg tracking-wider text-snow">
-          DKAY<span className="text-crimson">LABS</span>
+          DKay<span className="text-crimson">Labs</span>
         </span>
       )}
     </Link>

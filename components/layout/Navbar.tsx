@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Logo from "@/components/ui/Logo";
 import { NAV_LINKS } from "@/lib/constants";
@@ -17,6 +18,11 @@ import { NAV_LINKS } from "@/lib/constants";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Home matches only "/"; other links match their route and any sub-path.
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -56,7 +62,14 @@ export default function Navbar() {
           <ul className="flex items-center gap-7 lg:gap-9">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="nav-link text-sm font-medium uppercase tracking-wider">
+                <Link
+                  href={link.href}
+                  data-active={isActive(link.href)}
+                  aria-current={isActive(link.href) ? "page" : undefined}
+                  className={`nav-link text-sm font-medium uppercase tracking-wider ${
+                    isActive(link.href) ? "text-snow" : ""
+                  }`}
+                >
                   {link.label}
                 </Link>
               </li>
@@ -122,7 +135,12 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="block cursor-pointer rounded-lg px-4 py-3 text-sm font-medium uppercase tracking-wider text-silver transition-colors hover:bg-crimson/10 hover:text-snow"
+                  aria-current={isActive(link.href) ? "page" : undefined}
+                  className={`block cursor-pointer rounded-lg px-4 py-3 text-sm font-medium uppercase tracking-wider transition-colors hover:bg-crimson/10 hover:text-snow ${
+                    isActive(link.href)
+                      ? "bg-crimson/10 text-snow"
+                      : "text-silver"
+                  }`}
                 >
                   {link.label}
                 </Link>

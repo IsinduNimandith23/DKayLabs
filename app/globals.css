@@ -119,11 +119,11 @@ html.lenis body {
   .nav-link::after {
     content: "";
     @apply absolute -bottom-1 left-0 h-px w-0 bg-crimson transition-all duration-300;
-    box-shadow: 0 0 10px 1px rgba(255, 46, 63, 0.9);
   }
   .nav-link:hover::after,
   .nav-link[data-active="true"]::after {
     @apply w-full;
+    box-shadow: 0 0 10px 1px rgba(255, 46, 63, 0.9);
   }
 }
 
