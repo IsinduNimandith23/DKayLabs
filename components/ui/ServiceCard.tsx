@@ -131,7 +131,7 @@ export default function ServiceCard({
         </p>
 
         {/* Footer link */}
-        <div className="mt-6 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-crimson opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="mt-6 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-crimson opacity-100 transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100">
           {isComingSoon ? "Notify me" : "Learn more"}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" />

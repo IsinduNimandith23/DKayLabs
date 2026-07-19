@@ -39,7 +39,7 @@ export default function Navbar() {
       className="fixed inset-x-4 top-4 z-50 mx-auto max-w-6xl"
     >
       {/* ── Desktop: three pills ─────────────────────────────── */}
-      <div className="relative hidden items-center justify-between md:flex">
+      <div className="relative hidden items-center justify-between lg:flex">
         {/* Left pill - logo */}
         <div
           className={`rounded-full border px-5 py-2 transition-all duration-300 ${
@@ -86,22 +86,29 @@ export default function Navbar() {
         </Link>
       </div>
 
-      {/* ── Mobile: single pill ──────────────────────────────── */}
-      <nav
-        className={`flex items-center justify-between rounded-full border px-4 py-3 transition-all duration-300 md:hidden ${
-          scrolled
-            ? "glass-strong border-crimson/20 shadow-glow-soft"
-            : "glass border-snow/10"
-        }`}
-      >
-        <Logo size={38} />
+      {/* ── Mobile: two separate pills - logo + menu button ──── */}
+      <nav className="flex items-center justify-between lg:hidden">
+        {/* Logo pill - transparent at top, glass on scroll */}
+        <div
+          className={`rounded-full border transition-all duration-300 ${
+            scrolled
+              ? "glass-strong border-crimson/20 px-4 py-2 shadow-glow-soft"
+              : "border-transparent px-1 py-1"
+          }`}
+        >
+          <Logo size={38} />
+        </div>
 
         <button
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-snow/10 text-snow"
+          className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border text-snow transition-all duration-300 ${
+            scrolled
+              ? "glass-strong border-crimson/20 shadow-glow-soft"
+              : "border-snow/10"
+          }`}
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {open ? (
@@ -128,7 +135,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.25 }}
-            className="glass-strong mt-2 flex flex-col gap-1 rounded-2xl border border-crimson/20 p-3 md:hidden"
+            className="glass-strong mt-2 flex flex-col gap-1 rounded-2xl border border-crimson/20 p-3 lg:hidden"
           >
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
