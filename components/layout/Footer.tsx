@@ -60,8 +60,8 @@ export default function Footer() {
   const footerServices = SERVICES.slice(0, 4);
 
   return (
-    <footer className="relative overflow-hidden border-t border-snow/10 bg-obsidian/60 backdrop-blur">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-crimson/60 to-transparent" />
+    <footer className="relative overflow-hidden border-t border-ink/10 bg-base/60 backdrop-blur">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
 
       <div className="relative mx-auto w-full max-w-[1600px] px-8 lg:px-16">
         {/* ── Main columns ───────────────────────────────────────── */}
@@ -69,7 +69,7 @@ export default function Footer() {
           {/* Brand + socials */}
           <Reveal>
             <Logo />
-            <p className="mt-6 max-w-xs text-sm leading-relaxed text-silver">
+            <p className="mt-6 max-w-xs text-sm leading-relaxed text-muted">
               {SITE.description}
             </p>
 
@@ -81,7 +81,7 @@ export default function Footer() {
                   aria-label={s.label}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-snow/10 bg-charcoal/50 text-silver transition-all duration-200 hover:-translate-y-0.5 hover:border-crimson/40 hover:text-crimson hover:shadow-glow-soft"
+                  className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-ink/10 bg-surface/50 text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-glow-soft"
                 >
                   <SocialIcon name={s.key} />
                 </a>
@@ -91,7 +91,7 @@ export default function Footer() {
 
           {/* Explore */}
           <Reveal delay={0.1}>
-            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-silver-dim">
+            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-dim">
               Explore
             </h4>
             <ul className="space-y-4">
@@ -99,9 +99,9 @@ export default function Footer() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="group inline-flex cursor-pointer items-center gap-2 text-sm text-silver transition-colors hover:text-snow"
+                    className="group inline-flex cursor-pointer items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
                   >
-                    <span className="h-px w-0 bg-crimson transition-all duration-300 group-hover:w-4" />
+                    <span className="h-px w-0 bg-primary transition-all duration-300 group-hover:w-4" />
                     {l.label}
                   </Link>
                 </li>
@@ -111,7 +111,7 @@ export default function Footer() {
 
           {/* Services */}
           <Reveal delay={0.15}>
-            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-silver-dim">
+            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-dim">
               Services
             </h4>
             <ul className="space-y-4">
@@ -119,9 +119,9 @@ export default function Footer() {
                 <li key={s.title}>
                   <Link
                     href="/services"
-                    className="group inline-flex cursor-pointer items-center gap-2 text-sm text-silver transition-colors hover:text-snow"
+                    className="group inline-flex cursor-pointer items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
                   >
-                    <span className="h-px w-0 bg-crimson transition-all duration-300 group-hover:w-4" />
+                    <span className="h-px w-0 bg-primary transition-all duration-300 group-hover:w-4" />
                     {s.title}
                   </Link>
                 </li>
@@ -131,14 +131,14 @@ export default function Footer() {
 
           {/* Get in touch */}
           <Reveal delay={0.2}>
-            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-silver-dim">
+            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-dim">
               Get in touch
             </h4>
             <ul className="space-y-4 text-sm">
               <li>
                 <a
                   href={`mailto:${SITE.email}`}
-                  className="font-semibold text-snow transition-colors hover:text-crimson"
+                  className="font-semibold text-ink transition-colors hover:text-primary"
                 >
                   {SITE.email}
                 </a>
@@ -146,32 +146,32 @@ export default function Footer() {
               <li>
                 <a
                   href={`tel:${SITE.phone.replace(/\s+/g, "")}`}
-                  className="text-silver transition-colors hover:text-snow"
+                  className="text-muted transition-colors hover:text-ink"
                 >
                   {SITE.phone}
                 </a>
               </li>
-              <li className="text-silver">{SITE.location}</li>
-              <li className="text-silver">{SITE.hours}</li>
+              <li className="text-muted">{SITE.location}</li>
+              <li className="text-muted">{SITE.hours}</li>
             </ul>
           </Reveal>
         </div>
 
         {/* ── Bottom bar ─────────────────────────────────────────── */}
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-snow/10 py-7 text-xs text-silver-dim sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-ink/10 py-7 text-xs text-muted-dim sm:flex-row">
           <p>
             © {year} {SITE.name}. All rights reserved.
           </p>
           <div className="flex items-center gap-7">
             <Link
               href="/privacy"
-              className="cursor-pointer transition-colors hover:text-snow"
+              className="cursor-pointer transition-colors hover:text-ink"
             >
               Privacy
             </Link>
             <Link
               href="/terms"
-              className="cursor-pointer transition-colors hover:text-snow"
+              className="cursor-pointer transition-colors hover:text-ink"
             >
               Terms
             </Link>
@@ -182,7 +182,7 @@ export default function Footer() {
 
       {/* ── Oversized brand watermark ──────────────────────────── */}
       <div aria-hidden className="pointer-events-none select-none overflow-hidden">
-        <p className="w-full pb-[0.06em] text-center font-display font-bold leading-none tracking-tight text-snow/[0.04] [font-size:20vw]">
+        <p className="w-full pb-[0.06em] text-center font-display font-bold leading-none tracking-tight text-ink/[0.04] [font-size:20vw]">
           {SITE.name}
         </p>
       </div>

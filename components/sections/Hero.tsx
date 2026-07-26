@@ -1,18 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import GlowOrb from "@/components/ui/GlowOrb";
 import WordReveal from "@/components/ui/WordReveal";
-import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { SITE } from "@/lib/constants";
-
-// 3D is client-only & heavy - load it lazily so it never blocks first paint.
-const HeroScene = dynamic(() => import("@/components/three/HeroScene"), {
-  ssr: false,
-});
 
 // Staggered entrance for the hero copy.
 const container = {
@@ -25,107 +17,107 @@ const item = {
 };
 
 export default function Hero() {
-  const reduced = useReducedMotion();
-
   return (
     <section
       id="top"
       className="relative flex min-h-[100svh] items-center overflow-hidden"
     >
-      {/* Parallax glow accents */}
-      <GlowOrb className="-left-32 top-20" size={520} />
-      <GlowOrb className="-right-24 bottom-0 bg-crimson/20" size={420} />
-
-      {/* 3D layer (absolute, behind content). Static fallback if reduced motion. */}
+      {/*
+        Hero artwork - full-bleed, composed with open copy space on the left
+        and the subject on the right. See the note on the Image below for why
+        it switches between cover and contain by breakpoint.
+      */}
       <div className="absolute inset-0 z-0">
-        {reduced ? (
-          <div className="flex h-full items-center justify-center">
-            <Image
-              src="/logo.png"
-              alt=""
-              aria-hidden
-              width={340}
-              height={340}
-              className="object-contain opacity-30 blur-[1px] drop-shadow-[0_0_40px_rgba(255,46,63,0.5)]"
-            />
-          </div>
-        ) : (
-          <HeroScene />
-        )}
-        {/* Vignette so text stays legible over the 3D. */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-obsidian/40 via-transparent to-obsidian" />
+        <Image
+          src="/hero-poster.jpg"
+          alt=""
+          aria-hidden
+          fill
+          priority
+          quality={90}
+          sizes="100vw"
+          /*
+            lg+: `contain` so the artwork (1672x941, ~16:9) is never cropped.
+            `cover` on a full-bleed hero was cutting ~11% off the sides and
+            scaling it up. Anchored right so any slack falls on the left,
+            which is where the copy sits anyway.
+            Below lg: `cover` still, since `contain` would letterbox badly
+            on a portrait viewport.
+          */
+          className="object-cover object-[62%_center] lg:object-contain lg:object-right dark:opacity-[0.72]"
+        />
+
+        {/* Small screens only: the crop puts the subject behind the copy
+            there, so a top-down fade is needed for legibility.
+            From lg up the artwork is left completely un-washed in light mode.
+            Uses `base` rather than white so it inverts in dark mode. */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-base/90 via-base/65 to-transparent lg:hidden" />
+
+        {/*
+          Dark mode only.
+          The artwork is a LIGHT asset - white background - so on a black page
+          two things break: the copy (now near-white) lands on a white field
+          and disappears, and the page/image boundary shows as a hard vertical
+          seam. This scrim keeps the left ~40% solid `base`, so the copy always
+          sits on the page colour, then fades out before the subject so the
+          robot itself is never covered.
+          The proper fix is a dark-background export of the artwork; this makes
+          the light asset usable in the meantime.
+        */}
+        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-base from-40% to-transparent to-68% dark:lg:block" />
       </div>
 
-      {/* Foreground content */}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 mx-auto w-full max-w-6xl px-6 text-center"
-      >
-        <motion.p
-          variants={item}
-          className="mb-4 text-xs font-semibold uppercase tracking-[0.4em] text-crimson"
-        >
-          Digital Services · Engineered to Win
-        </motion.p>
-
-        <h1 className="mx-auto max-w-4xl text-4xl font-bold leading-[1.05] sm:text-6xl lg:text-7xl">
-          <WordReveal text="WE BUILD WHAT" className="text-metal" delay={0.3} />
-          <br />
-          <WordReveal text="PUTS YOU " className="text-snow" delay={0.6} />
-          <WordReveal
-            text="ABOVE"
-            className="text-crimson drop-shadow-[0_0_20px_rgba(255,46,63,0.6)]"
-            delay={0.8}
-          />
-        </h1>
-
-        <motion.p
-          variants={item}
-          className="mx-auto mt-6 max-w-xl text-base text-silver sm:text-lg"
-        >
-          {SITE.name} crafts cutting-edge websites, SaaS platforms, and AI-powered
-          products for brands that refuse to settle for ordinary.
-        </motion.p>
-
+      {/* Foreground content - left aligned into the artwork's copy space.
+          Near-full-width container so the copy sits close to the viewport
+          edge rather than floating in a narrow centred column. */}
+      <div className="relative z-10 mx-auto w-full max-w-[1920px] px-6 sm:px-10 lg:px-32 2xl:px-44">
         <motion.div
-          variants={item}
-          className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="max-w-xl text-left 2xl:max-w-3xl"
         >
-          <Link
-            href="/services"
-            className="btn-shine group w-full cursor-pointer rounded-full bg-crimson px-8 py-4 text-sm font-bold uppercase tracking-wider text-snow shadow-glow transition-all duration-200 hover:bg-crimson-dark hover:shadow-glow-lg sm:w-auto"
+          <motion.p
+            variants={item}
+            className="label-mono mb-4"
           >
-            Explore Services
-          </Link>
-          <Link
-            href="/contact"
-            className="w-full cursor-pointer rounded-full border border-silver/30 bg-charcoal/40 px-8 py-4 text-sm font-bold uppercase tracking-wider text-snow backdrop-blur transition-all duration-200 hover:border-silver/60 hover:bg-charcoal/70 sm:w-auto"
-          >
-            Start a Project
-          </Link>
-        </motion.div>
-      </motion.div>
+            Digital Services · Engineered to Win
+          </motion.p>
 
-      {/* Scroll cue */}
-      {!reduced && (
-        <motion.div
-          aria-hidden
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.4 }}
-          className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
-        >
-          <div className="flex h-10 w-6 items-start justify-center rounded-full border border-silver/40 p-1.5">
-            <motion.span
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity }}
-              className="h-2 w-1 rounded-full bg-crimson"
-            />
-          </div>
+          <h1 className="text-4xl font-bold leading-[1.05] sm:text-5xl lg:text-6xl 2xl:text-7xl">
+            <WordReveal text="WE BUILD WHAT" className="text-metal" delay={0.3} />
+            <br />
+            <WordReveal text="PUTS YOU " className="text-ink" delay={0.6} />
+            <WordReveal text="ABOVE" className="text-primary" delay={0.8} />
+          </h1>
+
+          <motion.p
+            variants={item}
+            className="mt-6 max-w-md text-base text-muted sm:text-lg 2xl:max-w-xl 2xl:text-xl"
+          >
+            {SITE.name} crafts cutting-edge websites, SaaS platforms, and AI-powered
+            products for brands that refuse to settle for ordinary.
+          </motion.p>
+
+          <motion.div
+            variants={item}
+            className="mt-10 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center"
+          >
+            <Link
+              href="/services"
+              className="btn-shine group cursor-pointer rounded-full bg-primary px-8 py-4 text-center text-sm font-bold uppercase tracking-wider text-on-primary shadow-glow transition-all duration-200 hover:bg-primary-dark hover:shadow-glow-lg"
+            >
+              Explore Services
+            </Link>
+            <Link
+              href="/contact"
+              className="cursor-pointer rounded-full border border-ink/15 bg-surface/80 px-8 py-4 text-center text-sm font-bold uppercase tracking-wider text-ink backdrop-blur transition-all duration-200 hover:border-primary/40 hover:bg-surface"
+            >
+              Start a Project
+            </Link>
+          </motion.div>
         </motion.div>
-      )}
+      </div>
     </section>
   );
 }

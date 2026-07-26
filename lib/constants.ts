@@ -249,8 +249,10 @@ export type Project = {
   tags: string[];
   /** Live site URL. */
   url: string;
-  /** Monogram shown in the stylized thumbnail. */
+  /** Monogram - fallback thumbnail when no screenshot exists. */
   monogram: string;
+  /** Screenshot in /public/portfolio. */
+  image?: string;
 };
 
 /** Real shipped work - first three are featured on the homepage. */
@@ -264,6 +266,7 @@ export const PROJECTS: Project[] = [
     tags: ["Agency", "Portfolio", "Marketing"],
     url: "https://www.cgshift.com/",
     monogram: "CG",
+    image: "/portfolio/CGShift.png",
   },
   {
     title: "Fallowkind",
@@ -274,6 +277,7 @@ export const PROJECTS: Project[] = [
     tags: ["E-Commerce", "Branding", "Fashion"],
     url: "https://www.fallowkind.com/",
     monogram: "FK",
+    image: "/portfolio/Fallowkind.png",
   },
   {
     title: "The Brush Master",
@@ -284,6 +288,7 @@ export const PROJECTS: Project[] = [
     tags: ["E-Commerce", "Digital Goods", "Creators"],
     url: "https://www.thebrushmaster.shop/",
     monogram: "BM",
+    image: "/portfolio/Brushmaster.png",
   },
   {
     title: "Serendib Prime",
@@ -294,6 +299,7 @@ export const PROJECTS: Project[] = [
     tags: ["E-Commerce", "FMCG", "Delivery"],
     url: "https://www.serendibprime.lk/",
     monogram: "SP",
+    image: "/portfolio/SerendibPrime.png",
   },
   {
     title: "New Sagarika Driving School",
@@ -304,6 +310,7 @@ export const PROJECTS: Project[] = [
     tags: ["Business Site", "Local SEO", "Lead Gen"],
     url: "https://www.newsagarikadrivingschool.lk/",
     monogram: "NS",
+    image: "/portfolio/NewSagarikaDrivingSchool.png",
   },
 ];
 

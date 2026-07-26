@@ -28,20 +28,20 @@ export default function Logo({
         className="relative inline-flex shrink-0 items-center justify-center transition-transform duration-300 group-hover:scale-105"
         style={{ width: size, height: size }}
       >
-        {/* Red glow halo behind the mark. */}
-        <span className="absolute inset-0 rounded-full bg-crimson/40 blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        {/* Violet glow halo behind the mark. */}
+        <span className="absolute inset-0 rounded-full bg-primary/40 blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <Image
           src="/logo.png"
           alt={`${SITE.name} logo`}
           width={size}
           height={size}
           priority
-          className="relative object-contain drop-shadow-[0_0_8px_rgba(255,46,63,0.5)]"
+          className="relative object-contain"
         />
       </span>
       {showWordmark && (
-        <span className="font-display text-lg tracking-wider text-snow">
-          DKay<span className="text-crimson">Labs</span>
+        <span className="font-display text-lg tracking-wider text-ink">
+          DKay<span className="text-primary">Labs</span>
         </span>
       )}
     </Link>

@@ -14,10 +14,10 @@ export default function BackToTop() {
             : "smooth",
         })
       }
-      className="group inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-silver transition-colors hover:text-snow"
+      className="group inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-muted transition-colors hover:text-ink"
     >
       Back to top
-      <span className="flex h-7 w-7 items-center justify-center rounded-full border border-snow/15 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-crimson/40 group-hover:text-crimson">
+      <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/15 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:text-primary">
         <svg
           width="14"
           height="14"

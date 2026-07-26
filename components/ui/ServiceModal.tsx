@@ -74,7 +74,7 @@ export default function ServiceModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-[100] grid place-items-center overflow-hidden bg-obsidian/80 p-4 backdrop-blur-sm sm:p-6"
+          className="fixed inset-0 z-[100] grid place-items-center overflow-hidden bg-ink/40 p-4 backdrop-blur-sm sm:p-6"
           onClick={onClose}
           role="dialog"
           aria-modal="true"
@@ -89,14 +89,14 @@ export default function ServiceModal({
             onClick={(e) => e.stopPropagation()}
             className="glass-strong relative flex max-h-[85dvh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl"
           >
-            {/* Crimson wash bleeding down from the top edge. */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-crimson/15 to-transparent" />
+            {/* Violet wash bleeding down from the top edge. */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary/15 to-transparent" />
 
             <button
               ref={closeRef}
               onClick={onClose}
               aria-label="Close"
-              className="absolute right-5 top-5 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-snow/10 bg-charcoal/80 text-silver transition-colors duration-200 hover:border-crimson/40 hover:text-snow focus:outline-none focus-visible:ring-2 focus-visible:ring-crimson"
+              className="absolute right-5 top-5 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-ink/10 bg-surface/80 text-muted transition-colors duration-200 hover:border-primary/40 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -107,23 +107,23 @@ export default function ServiceModal({
             {/* Fixed header */}
             <div className="relative shrink-0 px-7 pb-5 pt-7 sm:px-9 sm:pt-9">
               <div className="flex items-start gap-4 pr-12">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-crimson/30 bg-charcoal/60 text-crimson-glow">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-surface/60 text-primary-dark">
                   <ServiceIcon icon={service.icon} />
                 </div>
                 <div>
                   <h3
                     id="service-modal-title"
-                    className="text-2xl font-bold tracking-wide text-snow sm:text-3xl"
+                    className="text-2xl font-bold tracking-wide text-ink sm:text-3xl"
                   >
                     {service.title}
                   </h3>
                   {isComingSoon ? (
-                    <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-crimson/40 bg-crimson/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-crimson-glow">
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-crimson-glow" />
+                    <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary-dark">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-light" />
                       Coming Soon
                     </span>
                   ) : (
-                    <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-silver/20 bg-charcoal/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-silver">
+                    <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-muted/20 bg-surface/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                       Available
                     </span>
@@ -134,18 +134,18 @@ export default function ServiceModal({
 
             {/* Scrollable body - the only thing that scrolls. */}
             <div className="relative min-h-0 flex-1 overflow-y-auto px-7 sm:px-9">
-              <p className="mb-8 leading-relaxed text-silver">
+              <p className="mb-8 leading-relaxed text-muted">
                 {service.detail.overview}
               </p>
 
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-crimson">
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-muted">
                 What You Get
               </h4>
               <ul className="mb-8 grid gap-3 sm:grid-cols-2">
                 {service.detail.deliverables.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-silver">
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-muted">
                     <svg
-                      className="mt-0.5 shrink-0 text-crimson"
+                      className="mt-0.5 shrink-0 text-primary"
                       width="16"
                       height="16"
                       viewBox="0 0 24 24"
@@ -163,25 +163,25 @@ export default function ServiceModal({
               </ul>
 
               {/* Timeline + pricing. Pricing is quote-based by design. */}
-              <div className="mb-2 rounded-2xl border border-crimson/20 bg-crimson/5 p-5">
+              <div className="mb-2 rounded-2xl border border-primary/20 bg-primary/5 p-5">
                 <div className="mb-4 flex items-center gap-2.5">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-crimson">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-primary">
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
                   </svg>
-                  <span className="text-sm text-silver">
-                    <span className="font-semibold text-snow">Typical timeline: </span>
+                  <span className="text-sm text-muted">
+                    <span className="font-semibold text-ink">Typical timeline: </span>
                     {service.detail.timeline}
                   </span>
                 </div>
 
                 <div className="flex items-start gap-2.5">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-crimson">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-primary">
                     <line x1="12" y1="1" x2="12" y2="23" />
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                   </svg>
-                  <p className="text-sm leading-relaxed text-silver">
-                    <span className="font-semibold text-snow">Pricing is tailored. </span>
+                  <p className="text-sm leading-relaxed text-muted">
+                    <span className="font-semibold text-ink">Pricing is tailored. </span>
                     {PRICING_NOTE}
                   </p>
                 </div>
@@ -190,11 +190,11 @@ export default function ServiceModal({
 
             {/* Pinned footer CTA - carries the service through so the contact
                 form can prefill the message. */}
-            <div className="relative shrink-0 border-t border-snow/10 bg-charcoal/40 px-7 py-6 sm:px-9">
+            <div className="relative shrink-0 border-t border-ink/10 bg-surface/40 px-7 py-6 sm:px-9">
               <Link
                 href={`/contact?service=${encodeURIComponent(service.title)}`}
                 onClick={onClose}
-                className="btn-shine flex w-full items-center justify-center gap-2 rounded-xl bg-crimson px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-snow transition-all duration-200 hover:bg-crimson-dark hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-crimson"
+                className="btn-shine flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-on-primary transition-all duration-200 hover:bg-primary-dark hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 {isComingSoon ? "Apply for early access" : "Apply for this service"}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">

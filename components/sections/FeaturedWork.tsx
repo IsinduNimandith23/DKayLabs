@@ -18,19 +18,20 @@ function WorkCard({ project }: { project: Project }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${project.title} - visit live site`}
-      className="glass group flex w-[82vw] max-w-[540px] shrink-0 snap-center cursor-pointer flex-col overflow-hidden rounded-2xl transition-all duration-300 hover:border-crimson/40 hover:shadow-glow"
+      className="glass group flex w-[82vw] max-w-[680px] shrink-0 snap-center cursor-pointer flex-col overflow-hidden rounded-2xl transition-all duration-300 hover:border-primary/40 hover:shadow-glow"
     >
       <ProjectVisual
         project={project}
-        className="h-[40vh] max-h-[380px] min-h-[240px]"
+        className="aspect-[19/9]"
+        sizes="(max-width: 640px) 82vw, 680px"
       />
 
       <div className="flex items-center justify-between gap-4 p-6">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-crimson">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted">
             {project.category}
           </p>
-          <h3 className="mt-1.5 truncate text-xl text-snow sm:text-2xl">
+          <h3 className="mt-1.5 truncate text-xl text-ink sm:text-2xl">
             {project.title}
           </h3>
         </div>
@@ -44,7 +45,7 @@ function WorkCard({ project }: { project: Project }) {
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden
-          className="shrink-0 text-silver-dim transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-crimson"
+          className="shrink-0 text-muted-dim transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
         >
           <path d="M7 17L17 7" />
           <path d="M8 7h9v9" />
@@ -59,9 +60,9 @@ function ViewAllCard() {
   return (
     <Link
       href="/portfolio"
-      className="glass group flex w-[70vw] max-w-[380px] shrink-0 snap-center cursor-pointer flex-col items-center justify-center gap-5 rounded-2xl text-center transition-all duration-300 hover:border-crimson/40 hover:shadow-glow"
+      className="glass group flex w-[70vw] max-w-[380px] shrink-0 snap-center cursor-pointer flex-col items-center justify-center gap-5 rounded-2xl text-center transition-all duration-300 hover:border-primary/40 hover:shadow-glow"
     >
-      <span className="flex h-16 w-16 items-center justify-center rounded-full border border-crimson/40 bg-crimson/10 text-crimson transition-all duration-300 group-hover:bg-crimson group-hover:text-snow group-hover:shadow-glow">
+      <span className="flex h-16 w-16 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-glow">
         <svg
           width="22"
           height="22"
@@ -77,8 +78,8 @@ function ViewAllCard() {
           <polyline points="12 5 19 12 12 19" />
         </svg>
       </span>
-      <span className="font-display text-2xl text-snow">See all work</span>
-      <span className="text-xs uppercase tracking-widest text-silver-dim">
+      <span className="font-display text-2xl text-ink">See all work</span>
+      <span className="text-xs uppercase tracking-widest text-muted-dim">
         {PROJECTS.length} live projects
       </span>
     </Link>
@@ -89,16 +90,16 @@ function Header() {
   return (
     <div className="mx-auto w-full max-w-6xl px-6 text-center">
       <Reveal>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.4em] text-crimson">
+        <p className="label-mono mb-3">
           Selected Work
         </p>
       </Reveal>
       <h2 className="text-3xl font-bold sm:text-5xl">
-        <WordReveal text="Built to " className="text-snow" />
+        <WordReveal text="Built to " className="text-ink" />
         <WordReveal text="perform" className="text-metal" delay={0.15} />
       </h2>
       <Reveal delay={0.25}>
-        <p className="mx-auto mt-4 max-w-2xl text-silver">
+        <p className="mx-auto mt-4 max-w-2xl text-muted">
           Keep scrolling - every project below is live in the wild.
         </p>
       </Reveal>
@@ -139,7 +140,7 @@ export default function FeaturedWork() {
   if (reduced) {
     return (
       <section className="relative py-28 sm:py-36">
-        <GlowOrb className="right-0 top-16 bg-crimson/15" size={480} />
+        <GlowOrb className="right-0 top-16 bg-primary/15" size={480} />
         <div className="relative">
           <Header />
           <div className="mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4">
@@ -156,7 +157,7 @@ export default function FeaturedWork() {
   return (
     <section ref={sectionRef} className="relative h-[280vh]">
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
-        <GlowOrb className="right-0 top-16 bg-crimson/15" size={480} />
+        <GlowOrb className="right-0 top-16 bg-primary/15" size={480} />
 
         <div className="relative">
           <Header />

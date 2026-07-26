@@ -6,8 +6,68 @@
    DKAYLABS - base layer
    ============================================================ */
 @layer base {
+  /* ----------------------------------------------------------
+     THEME TOKENS
+     Bare "R G B" triplets so Tailwind's <alpha-value> slot works
+     (bg-primary/20, border-ink/10, ...). Consumed by the semantic
+     color names in tailwind.config.ts.
+
+     Contrast (measured, WCAG AA needs 4.5:1 for body text):
+       light  ink/base 19.8:1 · muted/base 7.4:1 · muted-dim/base 4.6:1
+              on-primary(white)/primary 5.2:1 · primary as text 5.0:1
+       dark   ink/base 19.3:1 · muted/base 7.7:1 · muted-dim/base 5.8:1
+              on-primary(black)/primary 6.4:1 · primary as text 6.4:1
+     ---------------------------------------------------------- */
   :root {
     --nav-h: 4.5rem;
+    color-scheme: light;
+
+    /* Surfaces */
+    --c-base: 250 250 250; /* #FAFAFA */
+    --c-surface: 255 255 255; /* #FFFFFF */
+    --c-sunken: 240 240 241; /* #F0F0F1 */
+
+    /* Brand orange - full vividness at rest, darkening to #CC4A00 on hover. */
+    --c-primary: 255 94 0; /* #FF5E00 */
+    --c-primary-dark: 204 74 0; /* #CC4A00 - hover/pressed */
+    --c-primary-light: 255 126 51; /* #FF7E33 */
+
+    --c-accent: 255 94 0; /* #FF5E00 */
+
+    /* White label on the orange fill (brand choice).
+       Note: 3.06:1 at rest, 4.62:1 on the hover shade. */
+    --c-on-primary: 255 255 255;
+
+    /* Text */
+    --c-ink: 10 10 10; /* #0A0A0A */
+    --c-muted: 82 82 91; /* #52525B */
+    --c-muted-dim: 113 113 122; /* #71717A */
+
+    /* Shadow tint */
+    --c-shadow: 10 10 10;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --c-base: 10 10 10; /* #0A0A0A - black page */
+    --c-surface: 23 23 23; /* #171717 - elevated card */
+    --c-sunken: 5 5 5; /* #050505 */
+
+    /* Same brand orange - on black it reads at 6.46:1, so it needs no shift */
+    --c-primary: 255 94 0; /* #FF5E00 */
+    --c-primary-dark: 204 74 0; /* #CC4A00 - hover/pressed */
+    --c-primary-light: 255 126 51; /* #FF7E33 */
+
+    --c-accent: 255 94 0; /* #FF5E00 */
+
+    --c-on-primary: 255 255 255; /* white label on orange fills */
+
+    --c-ink: 250 250 250; /* #FAFAFA */
+    --c-muted: 161 161 170; /* #A1A1AA */
+    --c-muted-dim: 138 138 147; /* #8A8A93 */
+
+    --c-shadow: 0 0 0;
   }
 
   html {
@@ -18,35 +78,57 @@
   }
 
   body {
-    @apply bg-obsidian text-snow font-body antialiased;
+    @apply bg-base text-ink font-body antialiased;
     /* Decorative glow orbs bleed past the viewport edges by design -
        clip them so they never cause a horizontal scrollbar. */
     overflow-x: clip;
-    /* Faint red aura bleeding down from the top over the black base. */
+    /* Neutral vertical wash + a faint orange bloom from the top.
+       Built from the theme variables, so it inverts with the theme. */
     background-image:
-      radial-gradient(70% 50% at 50% -10%, rgba(255, 46, 63, 0.10), transparent 70%),
-      linear-gradient(180deg, #0d090a 0%, #1b1416 60%, #080607 100%);
+      radial-gradient(70% 50% at 50% -10%, rgb(var(--c-accent) / 0.07), transparent 70%),
+      linear-gradient(
+        180deg,
+        rgb(var(--c-surface)) 0%,
+        rgb(var(--c-base)) 55%,
+        rgb(var(--c-sunken)) 100%
+      );
     background-attachment: fixed;
   }
 
   ::selection {
-    @apply bg-crimson/80 text-snow;
+    @apply bg-primary text-on-primary;
   }
 
   h1, h2, h3, h4 {
     @apply font-display tracking-tight;
   }
 
-  /* Red-editorial scrollbar to match the brand. */
+  /* Technical/monospace treatment for small uppercase labels and eyebrows -
+     the detail that carries the blueprint feel.
+     The text itself is grey (7.4:1 light / 7.7:1 dark) with a short orange
+     rule leading it, mirroring the reference. Vivid orange at this size
+     would only reach 2.9:1 on white, so the colour lives in the rule
+     instead of the glyphs. */
+  .label-mono {
+    @apply inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.28em] text-muted;
+  }
+  .label-mono::before {
+    content: "";
+    @apply h-px w-8 shrink-0 bg-primary;
+  }
+
   ::-webkit-scrollbar {
     width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #0d090a;
+    background: rgb(var(--c-sunken));
   }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(#8c0e14, #c1121f);
+    background: rgb(var(--c-primary));
     border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--c-primary-dark));
   }
 }
 
@@ -68,25 +150,26 @@ html.lenis body {
    Reusable component utilities
    ============================================================ */
 @layer components {
-  /* Frosted dark glass surface - used by navbar, cards, contact form. */
+  /* Frosted light glass surface - used by navbar, cards, contact form.
+     Opacity is kept high so the panel stays visible on a light background. */
   .glass {
-    @apply bg-charcoal/40 backdrop-blur-xl border border-snow/10 shadow-bevel;
+    @apply bg-surface/70 backdrop-blur-xl border border-ink/10 shadow-bevel;
   }
 
   .glass-strong {
-    @apply bg-charcoal/70 backdrop-blur-2xl border border-snow/10 shadow-bevel;
+    @apply bg-surface/85 backdrop-blur-2xl border border-ink/10 shadow-bevel;
   }
 
-  /* Animated warm-ivory gradient text (editorial sheen). */
+  /* Ink headline with a slow orange sweep travelling through it. */
   .text-metal {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(
       100deg,
-      #f6efec 0%,
-      #e4b7b3 25%,
-      #ffffff 50%,
-      #e4b7b3 75%,
-      #f6efec 100%
+      rgb(var(--c-ink)) 0%,
+      rgb(var(--c-ink)) 30%,
+      rgb(var(--c-accent)) 50%,
+      rgb(var(--c-ink)) 70%,
+      rgb(var(--c-ink)) 100%
     );
     background-size: 200% auto;
     @apply animate-shimmer;
@@ -102,7 +185,7 @@ html.lenis body {
     background: linear-gradient(
       100deg,
       transparent 20%,
-      rgba(246, 239, 236, 0.28) 50%,
+      rgb(var(--c-on-primary) / 0.3) 50%,
       transparent 80%
     );
     transform: translateX(-130%) skewX(-15deg);
@@ -112,18 +195,17 @@ html.lenis body {
     transform: translateX(130%) skewX(-15deg);
   }
 
-  /* Crimson underline-glow link, used in the navbar. */
+  /* Orange underline link, used in the navbar. */
   .nav-link {
-    @apply relative text-silver transition-colors duration-200 hover:text-snow;
+    @apply relative text-muted transition-colors duration-200 hover:text-ink;
   }
   .nav-link::after {
     content: "";
-    @apply absolute -bottom-1 left-0 h-px w-0 bg-crimson transition-all duration-300;
+    @apply absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all duration-300;
   }
   .nav-link:hover::after,
   .nav-link[data-active="true"]::after {
     @apply w-full;
-    box-shadow: 0 0 10px 1px rgba(255, 46, 63, 0.9);
   }
 }
 

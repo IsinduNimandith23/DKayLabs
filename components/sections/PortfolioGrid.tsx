@@ -35,8 +35,8 @@ export default function PortfolioGrid() {
               aria-pressed={isActive}
               className={`cursor-pointer rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 ${
                 isActive
-                  ? "border-crimson bg-crimson text-snow shadow-glow"
-                  : "border-snow/10 bg-charcoal/50 text-silver hover:border-crimson/40 hover:text-snow"
+                  ? "border-primary bg-primary text-on-primary shadow-glow"
+                  : "border-ink/10 bg-surface/50 text-muted hover:border-primary/40 hover:text-ink"
               }`}
             >
               {filter}
@@ -72,14 +72,14 @@ export default function PortfolioGrid() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="glass mx-auto max-w-xl rounded-2xl p-10 text-center"
         >
-          <p className="font-display text-xl text-snow">Nothing public here - yet</p>
-          <p className="mt-3 text-sm leading-relaxed text-silver">
+          <p className="font-display text-xl text-ink">Nothing public here - yet</p>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
             We haven&apos;t published {active} work yet. Your project could be
             the first one on this wall.
           </p>
           <Link
             href="/contact"
-            className="btn-shine mt-6 inline-block cursor-pointer rounded-full bg-crimson px-6 py-3 text-xs font-bold uppercase tracking-wider text-snow shadow-glow transition-all duration-200 hover:bg-crimson-dark hover:shadow-glow-lg"
+            className="btn-shine mt-6 inline-block cursor-pointer rounded-full bg-primary px-6 py-3 text-xs font-bold uppercase tracking-wider text-on-primary shadow-glow transition-all duration-200 hover:bg-primary-dark hover:shadow-glow-lg"
           >
             Start a Project
           </Link>
