@@ -56,17 +56,21 @@ export const viewport: Viewport = {
 };
 
 /**
- * Applies the saved theme BEFORE first paint.
- * Without this a visitor who chose dark gets a white flash while React
- * hydrates. Theme selection is manual-only, so the absence of a stored
- * value means light - we deliberately do not read the OS preference here.
+ * Resolves the theme BEFORE first paint - without this the page renders in
+ * the wrong theme for a moment while React hydrates.
+ *
+ * Precedence: an explicit choice from the toggle wins; otherwise follow the
+ * OS `prefers-color-scheme`. Clearing `localStorage.theme` hands control
+ * back to the OS.
  */
 const noFlashThemeScript = `
 (function(){
   try {
-    if (localStorage.getItem("theme") === "dark") {
-      document.documentElement.classList.add("dark");
-    }
+    var stored = localStorage.getItem("theme");
+    var isDark = stored
+      ? stored === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (isDark) document.documentElement.classList.add("dark");
   } catch (e) {}
 })();
 `;

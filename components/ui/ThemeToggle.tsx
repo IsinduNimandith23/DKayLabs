@@ -5,9 +5,13 @@ import { useEffect, useState } from "react";
 /**
  * Light/dark switch.
  *
- * Manual only by design: the site opens in light mode and only goes dark if
- * the visitor asks for it. The choice is stored in localStorage and re-applied
- * before paint by the inline script in app/layout.tsx.
+ * Follows the OS `prefers-color-scheme` by default, including live changes
+ * while the page is open. Clicking the toggle records an explicit choice in
+ * localStorage, which from then on overrides the OS for that visitor.
+ * (Clearing `localStorage.theme` hands control back to the OS.)
+ *
+ * The initial resolution happens before paint in the inline script in
+ * app/layout.tsx, so there's no flash of the wrong theme.
  *
  * The `dark` class lives on <html>; every color token in globals.css is a CSS
  * variable keyed off it, so flipping the class re-themes the whole page.
@@ -20,10 +24,28 @@ export default function ThemeToggle({
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Sync initial state from whatever the pre-paint script already applied.
   useEffect(() => {
+    // Sync initial state from whatever the pre-paint script already applied.
     setIsDark(document.documentElement.classList.contains("dark"));
     setMounted(true);
+
+    // Track the OS setting live, but only while the visitor hasn't made an
+    // explicit choice - otherwise their pick would be overwritten mid-session.
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onSystemChange = (e: MediaQueryListEvent) => {
+      let stored: string | null = null;
+      try {
+        stored = localStorage.getItem("theme");
+      } catch {
+        // Storage unavailable - treat as "no explicit choice" and follow the OS.
+      }
+      if (stored) return;
+      document.documentElement.classList.toggle("dark", e.matches);
+      setIsDark(e.matches);
+    };
+
+    mq.addEventListener("change", onSystemChange);
+    return () => mq.removeEventListener("change", onSystemChange);
   }, []);
 
   function toggle() {
