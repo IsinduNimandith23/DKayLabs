@@ -1,22 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { SITE } from "@/lib/constants";
 
-// Space Grotesk carries both display and body - its squarish, slightly
-// technical grotesque is the closest match to the reference's headline face,
-// and using one family throughout keeps the type feeling engineered.
-const grotesk = Space_Grotesk({
-  weight: ["400", "500", "600", "700"],
+// Plus Jakarta Sans carries both display and body - a geometric grotesque in
+// the Gilroy/Sofia Pro vein, which is the face the headline reference uses.
+// 800 is reserved for the big section headlines; keeping one family throughout
+// stops the type from feeling stitched together.
+const display = Plus_Jakarta_Sans({
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
 });
 
-const groteskBody = Space_Grotesk({
+const body = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-body",
@@ -83,7 +84,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${grotesk.variable} ${groteskBody.variable} ${mono.variable}`}
+      className={`${display.variable} ${body.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
       <head>

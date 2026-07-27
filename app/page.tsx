@@ -1,6 +1,7 @@
 import Hero from "@/components/sections/Hero";
 import Marquee from "@/components/sections/Marquee";
 import FeaturedWork from "@/components/sections/FeaturedWork";
+import ServicesPreview from "@/components/sections/ServicesPreview";
 import Drive from "@/components/sections/Drive";
 import Testimonials from "@/components/sections/Testimonials";
 import CtaBand from "@/components/sections/CtaBand";
@@ -11,6 +12,7 @@ export default function Home() {
       <Hero />
       <Marquee />
       <FeaturedWork />
+      <ServicesPreview />
       <Drive />
       <Testimonials />
       <CtaBand />

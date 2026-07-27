@@ -57,8 +57,8 @@ const config: Config = {
       },
       fontFamily: {
         // Wired up to next/font CSS variables in app/layout.tsx
-        display: ["var(--font-display)", "system-ui", "sans-serif"], // Space Grotesk
-        body: ["var(--font-body)", "system-ui", "sans-serif"], // Space Grotesk
+        display: ["var(--font-display)", "system-ui", "sans-serif"], // Plus Jakarta Sans
+        body: ["var(--font-body)", "system-ui", "sans-serif"], // Plus Jakarta Sans
         mono: ["var(--font-mono)", "ui-monospace", "monospace"], // JetBrains Mono
       },
       boxShadow: {
