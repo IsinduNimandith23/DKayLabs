@@ -53,7 +53,7 @@ export default function Contact() {
               Get In Touch
             </p>
           </Reveal>
-          <h2 className="text-3xl font-bold sm:text-5xl">
+          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Let's build something " className="text-ink" />
             <WordReveal text="legendary" className="text-metal" delay={0.25} />
           </h2>

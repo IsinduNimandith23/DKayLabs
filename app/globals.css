@@ -163,6 +163,11 @@ html.lenis body {
   /* Ink headline with a slow orange sweep travelling through it. */
   .text-metal {
     @apply bg-clip-text text-transparent;
+    /* bg-clip-text paints only inside the background box, which ends at the
+       line box - descenders (g/y/p) would fall outside it and vanish. Pad the
+       box down and pull the same amount back so layout is unchanged. */
+    padding-bottom: 0.2em;
+    margin-bottom: -0.2em;
     background-image: linear-gradient(
       100deg,
       rgb(var(--c-ink)) 0%,

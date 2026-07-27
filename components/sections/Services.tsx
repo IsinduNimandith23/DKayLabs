@@ -15,7 +15,7 @@ export default function Services() {
               What We Do
             </p>
           </Reveal>
-          <h2 className="text-3xl font-bold sm:text-5xl">
+          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Services that " className="text-ink" />
             <WordReveal text="scale" className="text-metal" delay={0.2} />
           </h2>

@@ -18,7 +18,7 @@ export default function CtaBand() {
               <p className="label-mono mb-3">
                 Ready When You Are
               </p>
-              <h2 className="mx-auto max-w-2xl text-3xl font-bold leading-tight sm:text-4xl">
+              <h2 className="mx-auto max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
                 <WordReveal text="Your next level is " className="text-ink" />
                 <WordReveal
                   text="one message away"

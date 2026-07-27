@@ -19,7 +19,7 @@ export default function ServicesPreview() {
           <Reveal>
             <p className="label-mono mb-3">What We Do</p>
           </Reveal>
-          <h2 className="text-3xl font-bold sm:text-5xl">
+          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Services We " className="text-ink" />
             <WordReveal text="Offer" className="text-metal" delay={0.15} />
           </h2>

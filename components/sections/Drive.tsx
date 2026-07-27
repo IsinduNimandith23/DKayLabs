@@ -19,7 +19,7 @@ export default function Drive() {
               Our Drive
             </p>
           </Reveal>
-          <h2 className="text-3xl font-bold sm:text-5xl">
+          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Why we " className="text-ink" />
             <WordReveal
               text="build"

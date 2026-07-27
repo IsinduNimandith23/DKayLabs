@@ -88,7 +88,7 @@ export default function Testimonials() {
               Client Love
             </p>
           </Reveal>
-          <h2 className="text-3xl font-bold sm:text-5xl">
+          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Rated by the " className="text-ink" />
             <WordReveal text="people we serve" className="text-metal" delay={0.2} />
           </h2>

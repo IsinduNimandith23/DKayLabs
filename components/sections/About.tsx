@@ -21,7 +21,7 @@ export default function About() {
               Our Mission
             </p>
           </Reveal>
-          <h2 className="text-3xl font-bold leading-tight sm:text-5xl">
+          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Built to help you " className="text-ink" />
             {/* TODO: replace the violet word below with your DKayLabs heading copy. */}
             <WordReveal
