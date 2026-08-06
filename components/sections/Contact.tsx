@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
-import { SITE, SERVICES, buildInquiryMessage } from "@/lib/constants";
+import { SERVICES, buildInquiryMessage } from "@/lib/constants";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -124,6 +124,23 @@ export default function Contact() {
             </div>
 
             <div className="mt-5 flex flex-col gap-2">
+              <label htmlFor="phone" className="text-xs font-semibold uppercase tracking-widest text-muted">
+                Phone{" "}
+                <span className="font-normal normal-case tracking-normal text-muted-dim">
+                  (optional)
+                </span>
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                placeholder="Include country code"
+                className={fieldClass}
+              />
+            </div>
+
+            <div className="mt-5 flex flex-col gap-2">
               <label htmlFor="message" className="text-xs font-semibold uppercase tracking-widest text-muted">
                 Message
               </label>
@@ -180,13 +197,6 @@ export default function Contact() {
                 {error}
               </p>
             )}
-
-            <p className="mt-6 text-center text-xs text-muted-dim">
-              Prefer email?{" "}
-              <a href={`mailto:${SITE.email}`} className="text-primary hover:text-primary-dark">
-                {SITE.email}
-              </a>
-            </p>
           </form>
         </Reveal>
       </div>
