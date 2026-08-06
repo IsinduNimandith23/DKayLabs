@@ -6,7 +6,7 @@ import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
 import { SITE, SERVICES, buildInquiryMessage } from "@/lib/constants";
 
-type Status = "idle" | "submitting" | "success";
+type Status = "idle" | "submitting" | "success" | "error";
 
 // Shared input styling - violet focus state.
 const fieldClass =
@@ -15,6 +15,7 @@ const fieldClass =
 export default function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   // Prefill the message when arriving from a service modal's Apply button.
   // Read from window rather than useSearchParams so this component doesn't
@@ -28,18 +29,37 @@ export default function Contact() {
     if (match) setMessage(buildInquiryMessage(match.title));
   }, []);
 
-  // Placeholder submit handler - wire this to your API / email service.
+  // Posts to /api/contact, which sends the email server-side via Resend.
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setStatus("submitting");
+    setError("");
 
-    // TODO: replace with real submission (e.g. /api/contact, Resend, Formspree).
-    await new Promise((r) => setTimeout(r, 1200));
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
 
-    setStatus("success");
-    (e.target as HTMLFormElement).reset();
-    setMessage(""); // reset() doesn't clear a controlled field.
-    setTimeout(() => setStatus("idle"), 4000);
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error ?? "Something went wrong.");
+      }
+
+      setStatus("success");
+      form.reset();
+      setMessage(""); // reset() doesn't clear a controlled field.
+      setTimeout(() => setStatus("idle"), 4000);
+    } catch (err) {
+      setError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Something went wrong.",
+      );
+      setStatus("error");
+    }
   }
 
   return (
@@ -119,6 +139,16 @@ export default function Contact() {
               />
             </div>
 
+            {/* Honeypot: hidden from people, irresistible to bots. */}
+            <input
+              type="text"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="absolute left-[-9999px] h-0 w-0 opacity-0"
+            />
+
             <button
               type="submit"
               disabled={status === "submitting"}
@@ -142,6 +172,12 @@ export default function Contact() {
                 className="mt-4 text-center text-sm text-emerald-400"
               >
                 Thanks - we&apos;ll be in touch shortly.
+              </p>
+            )}
+
+            {status === "error" && (
+              <p role="alert" className="mt-4 text-center text-sm text-red-400">
+                {error}
               </p>
             )}
 
