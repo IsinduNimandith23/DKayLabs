@@ -4,8 +4,8 @@
 
 export const SITE = {
   name: "DKayLabs",
-  // TODO: replace with your DKayLabs tagline (drives the browser <title> and footer).
-  tagline: "Your tagline goes here.",
+  // Drives the browser <title> and footer.
+  tagline: "Websites, SaaS & AI Products Built to Perform",
   description:
     "DKayLabs is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
   email: "isindunimandith23@gmail.com",
