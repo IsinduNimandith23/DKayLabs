@@ -10,6 +10,10 @@ export const SITE = {
     "DKayLabs is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
   email: "isindunimandith23@gmail.com",
   phone: "+94 77 037 2960",
+  /** Same number, digits only - the format wa.me links require. */
+  whatsapp: "94770372960",
+  /** Pre-typed into the chat when the floating WhatsApp button is tapped. */
+  whatsappMessage: "Hi DKayLabs, I'd like to talk about a project.",
   location: "Colombo, Sri Lanka",
   hours: "Available 24/7",
 } as const;

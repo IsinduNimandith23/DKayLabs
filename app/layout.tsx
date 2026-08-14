@@ -4,6 +4,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import { SITE } from "@/lib/constants";
 
 // Plus Jakarta Sans carries both display and body - a geometric grotesque in
@@ -95,6 +96,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <Footer />
+          <WhatsAppButton />
         </SmoothScroll>
       </body>
     </html>
