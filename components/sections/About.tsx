@@ -10,7 +10,7 @@ const STATS = [
 
 export default function About() {
   return (
-    <section id="about" className="relative scroll-mt-24 py-28 sm:py-36">
+    <section id="about" className="relative scroll-mt-24 pb-28 pt-16 sm:pb-36 sm:pt-20">
       <GlowOrb className="left-0 top-1/3 bg-primary/15" size={460} />
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-6 lg:grid-cols-2">

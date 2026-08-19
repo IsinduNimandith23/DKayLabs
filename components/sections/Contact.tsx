@@ -4,7 +4,12 @@ import { useEffect, useState, type FormEvent } from "react";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
-import { SERVICES, buildInquiryMessage } from "@/lib/constants";
+import {
+  SERVICES,
+  PRODUCTS,
+  buildInquiryMessage,
+  buildProductInquiryMessage,
+} from "@/lib/constants";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -17,16 +22,27 @@ export default function Contact() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // Prefill the message when arriving from a service modal's Apply button.
-  // Read from window rather than useSearchParams so this component doesn't
-  // force a Suspense boundary on the statically rendered contact route.
+  // Prefill the message when arriving from a service modal's Apply button or
+  // a product card's CTA. Read from window rather than useSearchParams so this
+  // component doesn't force a Suspense boundary on the static contact route.
   useEffect(() => {
-    const requested = new URLSearchParams(window.location.search).get("service");
-    if (!requested) return;
+    const params = new URLSearchParams(window.location.search);
 
-    // Only accept a title we actually offer - never render arbitrary URL text.
-    const match = SERVICES.find((s) => s.title === requested);
-    if (match) setMessage(buildInquiryMessage(match.title));
+    // Only accept names we actually offer - never render arbitrary URL text.
+    const requestedService = params.get("service");
+    if (requestedService) {
+      const match = SERVICES.find((s) => s.title === requestedService);
+      if (match) {
+        setMessage(buildInquiryMessage(match.title));
+        return;
+      }
+    }
+
+    const requestedProduct = params.get("product");
+    if (requestedProduct) {
+      const match = PRODUCTS.find((p) => p.name === requestedProduct);
+      if (match) setMessage(buildProductInquiryMessage(match.name));
+    }
   }, []);
 
   // Posts to /api/contact, which sends the email server-side via Resend.
@@ -63,7 +79,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="relative scroll-mt-24 py-28 sm:py-36">
+    <section id="contact" className="relative scroll-mt-24 pb-28 pt-16 sm:pb-36 sm:pt-20">
       <GlowOrb className="right-0 top-10 bg-primary/15" size={500} />
 
       <div className="relative mx-auto max-w-3xl px-6">

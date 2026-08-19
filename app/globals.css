@@ -212,6 +212,12 @@ html.lenis body {
   .nav-link[data-active="true"]::after {
     @apply w-full;
   }
+  /* Dropdown triggers wrap the label in .nav-link so the underline stops at
+     the text instead of running under the chevron - this keeps hovering
+     anywhere on the trigger (chevron included) still lighting it up. */
+  .group:hover > .nav-link::after {
+    @apply w-full;
+  }
 }
 
 /* ============================================================

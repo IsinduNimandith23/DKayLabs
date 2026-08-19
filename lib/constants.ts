@@ -18,27 +18,141 @@ export const SITE = {
   hours: "Available 24/7",
 } as const;
 
-export const NAV_LINKS = [
+/** Inline icon keys, all resolved in components/ui/ServiceIcon.tsx. */
+export type IconKey =
+  | "code"
+  | "mobile"
+  | "layers"
+  | "cart"
+  | "design"
+  | "seo"
+  | "wrench"
+  | "spark"
+  | "factory"
+  | "car";
+
+/* ============================================================
+   Products - what DKayLabs is building in-house.
+   Declared above NAV_LINKS because the navbar dropdown is
+   derived from this list, so there is one source of truth.
+   ============================================================ */
+
+export type Product = {
+  /** Anchor id on /products, also used in the navbar deep-link. */
+  slug: string;
+  name: string;
+  /** One-liner shown under the name in the navbar dropdown. */
+  tagline: string;
+  /** Card body copy on /products. */
+  description: string;
+  icon: IconKey;
+  status: "in-development" | "beta" | "live";
+  /** Short bullets listed under the description on the product card. */
+  highlights: string[];
+  /** Long-form copy for the product's own page at /products/<slug>. */
+  detail: {
+    /** A paragraph or two expanding on `description`. */
+    overview: string;
+    /** Where the build is up to - always framed as an estimate. */
+    timeline: string;
+  };
+};
+
+/** Badge copy per status - keeps the label out of the components. */
+export const PRODUCT_STATUS: Record<Product["status"], string> = {
+  "in-development": "In Development",
+  beta: "Private Beta",
+  live: "Live",
+};
+
+export const PRODUCTS: Product[] = [
+  {
+    slug: "mrp",
+    name: "MRP Platform",
+    tagline: "Material Resource Planning",
+    // TODO: replace with final product copy.
+    description:
+      "A material resource planning system that turns demand into a buying and production plan - bills of material, stock coverage, and purchase timing worked out for you, so nothing stalls a line and nothing sits idle in the store. Currently in active development.",
+    icon: "factory",
+    status: "in-development",
+    // TODO: replace with the final feature list.
+    highlights: [
+      "Multi-level bills of material and routings",
+      "Demand forecasting and net requirements planning",
+      "Automated purchase and work order suggestions",
+      "Live inventory, lead times, and stock coverage",
+    ],
+    // TODO: replace with final product copy.
+    detail: {
+      overview:
+        "Most small manufacturers plan materials in a spreadsheet that only one person really understands. The MRP Platform replaces it with a live model of your bills of material, stock on hand, and supplier lead times, then works backwards from demand to tell you what to buy and make, and when.\n\nIt is built for teams who need the answer without needing a full ERP rollout - start with your part list and a single production line, and grow from there.",
+      timeline:
+        "In active development. We're onboarding a small group of early users for feedback before general release.",
+    },
+  },
+  {
+    slug: "driving-school",
+    name: "Driving School Manager",
+    tagline: "Driving School Management System",
+    // TODO: replace with final product copy.
+    description:
+      "A management system for driving schools - student records, instructor and vehicle scheduling, lesson bookings, and payments in one place, so the office stops running on spreadsheets and phone calls. Currently in active development.",
+    icon: "car",
+    status: "in-development",
+    // TODO: replace with the final feature list.
+    highlights: [
+      "Student enrolment, documents, and licence progress",
+      "Instructor rosters and vehicle scheduling",
+      "Lesson booking with automated reminders",
+      "Payments, packages, and progress reports",
+    ],
+    // TODO: replace with final product copy.
+    detail: {
+      overview:
+        "Driving schools juggle students, instructors, vehicles, and a calendar that changes every day - usually across a paper diary, a phone, and someone's memory. This brings all of it into one system: enrol a student, track their documents and lesson history, and book them against an instructor and a car that are actually free.\n\nAutomated reminders cut no-shows, and payments and packages are tracked per student so the office always knows who owes what.",
+      timeline:
+        "In active development. We're working with driving schools now to shape the booking and scheduling flow.",
+    },
+  },
+];
+
+export type NavChild = {
+  label: string;
+  href: string;
+  description: string;
+  status: string;
+};
+
+export type NavLink = {
+  label: string;
+  href: string;
+  /** Present = renders a hover dropdown (desktop) / accordion (mobile). */
+  children?: NavChild[];
+};
+
+export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
+  {
+    label: "Products",
+    href: "/products",
+    children: PRODUCTS.map((p) => ({
+      label: p.name,
+      href: `/products/${p.slug}`,
+      description: p.tagline,
+      status: PRODUCT_STATUS[p.status],
+    })),
+  },
   { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
-] as const;
+];
 
 export type Service = {
   title: string;
   description: string;
-  /** Lucide-style inline icon key, resolved in ServiceCard. */
-  icon:
-    | "code"
-    | "mobile"
-    | "layers"
-    | "cart"
-    | "design"
-    | "seo"
-    | "wrench"
-    | "spark";
+  /** Inline icon key, resolved in ServiceCard. */
+  icon: IconKey;
   status: "available" | "coming-soon";
   /** Long-form copy shown in the ServiceModal when the card is clicked. */
   detail: {
@@ -75,6 +189,24 @@ Budget range (if you have one in mind):
 -
 
 Please send over a tailored quote. Thanks!`;
+}
+
+/**
+ * Same idea as buildInquiryMessage, but for an in-house product. Products
+ * aren't quoted per-project, so this asks for a demo / early access instead.
+ */
+export function buildProductInquiryMessage(productName: string) {
+  return `Hi DKayLabs,
+
+I'm interested in your ${productName} and would like to hear more.
+
+A bit about our operation:
+-
+
+What we're hoping it solves:
+-
+
+Happy to join an early access list or see a demo. Thanks!`;
 }
 
 export const SERVICES: Service[] = [

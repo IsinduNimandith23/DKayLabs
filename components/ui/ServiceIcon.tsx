@@ -1,11 +1,11 @@
-import type { Service } from "@/lib/constants";
+import type { IconKey } from "@/lib/constants";
 
 /** Inline SVG icon set (no emojis). 24x24 viewBox, stroke-based. */
 export default function ServiceIcon({
   icon,
   size = 28,
 }: {
-  icon: Service["icon"];
+  icon: IconKey;
   size?: number;
 }) {
   const common = {
@@ -76,6 +76,24 @@ export default function ServiceIcon({
         <svg {...common}>
           <path d="M12 3v4M12 17v4M5 12H1M23 12h-4" />
           <path d="M12 8l1.5 2.5L16 12l-2.5 1.5L12 16l-1.5-2.5L8 12l2.5-1.5z" />
+        </svg>
+      );
+    case "factory":
+      return (
+        <svg {...common}>
+          <path d="M2 21h20" />
+          <path d="M3 21V11l6 3.5V11l6 3.5V8l6 3.5V21" />
+          <path d="M6 3h3l.5 5h-4L6 3z" />
+          <path d="M9.5 18h1M15 18h1" />
+        </svg>
+      );
+    case "car":
+      return (
+        <svg {...common}>
+          <path d="M5 17H3.5a.5.5 0 0 1-.5-.5V12l2.2-5.1A2 2 0 0 1 7 5.7h10a2 2 0 0 1 1.8 1.2L21 12v4.5a.5.5 0 0 1-.5.5H19" />
+          <path d="M3 12h18" />
+          <circle cx="7.5" cy="17" r="2" />
+          <circle cx="16.5" cy="17" r="2" />
         </svg>
       );
   }
