@@ -64,18 +64,18 @@ export default function Navbar() {
       <div className="relative hidden items-center justify-between lg:flex">
         {/* Left pill - logo */}
         <div
-          className={`rounded-full border px-5 py-2 transition-all duration-300 ${
+          className={`flex h-12 items-center rounded-full border px-5 transition-all duration-300 ${
             scrolled
               ? "glass-strong border-primary/20 shadow-glow-soft"
               : "glass border-ink/10"
           }`}
         >
-          <Logo size={34} />
+          <Logo size={26} />
         </div>
 
         {/* Center pill - nav links, always visible */}
         <nav
-          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border px-9 py-3.5 transition-all duration-300 ${
+          className={`absolute left-1/2 top-1/2 flex h-12 -translate-x-1/2 -translate-y-1/2 items-center rounded-full border px-9 transition-all duration-300 ${
             scrolled
               ? "glass-strong border-primary/20 shadow-glow-soft"
               : "glass border-ink/10"
@@ -113,13 +113,15 @@ export default function Navbar() {
 
         {/* Right cluster - theme switch + CTA */}
         <div className="flex items-center gap-3">
-          <ThemeToggle />
+          {/* Every element in this row is h-12 so the three pills, the toggle
+              and the CTA read as one consistent capsule height. */}
+          <ThemeToggle size={48} />
           {/* Solid-ish surface behind the label, not a 10% tint: the hero
               artwork sits directly under this pill, so a near-transparent
               background left the text unreadable over the image in dark mode. */}
           <Link
             href="/contact"
-            className="btn-shine cursor-pointer rounded-full border border-primary/50 bg-surface/85 px-8 py-3.5 text-sm font-semibold uppercase tracking-wider text-ink backdrop-blur-xl transition-all duration-200 hover:bg-primary hover:text-on-primary hover:shadow-glow"
+            className="btn-shine inline-flex h-12 cursor-pointer items-center rounded-full border border-primary/50 bg-surface/85 px-8 text-sm font-semibold uppercase tracking-wider text-ink backdrop-blur-xl transition-all duration-200 hover:bg-primary hover:text-on-primary hover:shadow-glow"
           >
             Get Started
           </Link>
@@ -130,13 +132,13 @@ export default function Navbar() {
       <nav className="flex items-center justify-between lg:hidden">
         {/* Logo pill - transparent at top, glass on scroll */}
         <div
-          className={`rounded-full border transition-all duration-300 ${
+          className={`flex h-11 items-center rounded-full border transition-all duration-300 ${
             scrolled
-              ? "glass-strong border-primary/20 px-4 py-2 shadow-glow-soft"
-              : "border-transparent px-1 py-1"
+              ? "glass-strong border-primary/20 px-4 shadow-glow-soft"
+              : "border-transparent px-1"
           }`}
         >
-          <Logo size={38} />
+          <Logo size={26} />
         </div>
 
         <div className="flex items-center gap-2">

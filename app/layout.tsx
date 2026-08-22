@@ -37,9 +37,31 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: `${SITE.name} - ${SITE.tagline}`,
   description: SITE.description,
+  /*
+   * Tab icon: the monster mark, not the wordmark - a 4.7:1 lockup is an
+   * illegible sliver at 16px.
+   *
+   * The vector leads: every SVG-capable browser (Chrome/Edge 80+, Firefox
+   * 41+, Safari 16.4+) takes /favicon.svg and renders it crisp at whatever
+   * size the slot is, which is the whole point of shipping a vector.
+   *
+   * The PNGs stay as the fallback chain for Safari below 16.4 and anything
+   * else that ignores SVG icons. They are not redundant: 16 and 32 are a
+   * SOLID SILHOUETTE rather than the real drawing, because the mark is
+   * outline art whose strokes fall under a pixel wide at 16px and alias into
+   * noise. That is a limit of the artwork, not the format - the SVG hits the
+   * same wall at 16px, so on a 1x display the tab icon will read thinner
+   * than the silhouette did. On hidpi (32 device px and up) it is sharper
+   * than any PNG. See the README if that trade wants revisiting.
+   */
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-16.png", type: "image/png", sizes: "16x16" },
+      { url: "/favicon-96.png", type: "image/png", sizes: "96x96" },
+    ],
+    apple: { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
   },
   openGraph: {
     title: SITE.name,

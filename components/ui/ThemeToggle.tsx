@@ -17,8 +17,11 @@ import { useEffect, useState } from "react";
  * variable keyed off it, so flipping the class re-themes the whole page.
  */
 export default function ThemeToggle({
+  size = 44,
   className = "",
 }: {
+  /** Diameter in px - set to match the height of the row it sits in. */
+  size?: number;
   className?: string;
 }) {
   const [isDark, setIsDark] = useState(false);
@@ -73,7 +76,8 @@ export default function ThemeToggle({
           : "Toggle theme"
       }
       aria-pressed={mounted ? isDark : undefined}
-      className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-ink/10 bg-surface/70 text-ink backdrop-blur transition-colors duration-200 hover:border-primary/40 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className}`}
+      style={{ height: size, width: size }}
+      className={`flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-ink/10 bg-surface/70 text-ink backdrop-blur transition-colors duration-200 hover:border-primary/40 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className}`}
     >
       {/* Sun and moon are swapped by opacity/rotation so there's no layout shift. */}
       <span className="relative block h-5 w-5">

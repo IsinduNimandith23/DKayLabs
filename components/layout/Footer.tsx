@@ -68,7 +68,7 @@ export default function Footer() {
         <div className="grid gap-12 pb-16 pt-20 md:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1.2fr]">
           {/* Brand + socials */}
           <Reveal>
-            <Logo />
+            <Logo size={36} />
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-muted">
               {SITE.description}
             </p>
