@@ -6,7 +6,7 @@ import { SITE } from "@/lib/constants";
 export const metadata: Metadata = {
   title: `Products - ${SITE.name}`,
   description:
-    "In-house software from DKayLabs - a material resource planning platform for manufacturers and a management system for driving schools, both in active development.",
+    "In-house software from DKayLABS - a material requirements planning platform for manufacturers and a management system for driving schools, both in active development.",
 };
 
 export default function ProductsPage() {

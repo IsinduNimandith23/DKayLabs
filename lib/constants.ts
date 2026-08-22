@@ -3,17 +3,17 @@
  */
 
 export const SITE = {
-  name: "DKayLabs",
+  name: "DKayLABS",
   // Drives the browser <title> and footer.
   tagline: "Websites, SaaS & AI Products Built to Perform",
   description:
-    "DKayLabs is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
+    "DKayLABS is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
   email: "isindunimandith23@gmail.com",
   phone: "+94 77 037 2960",
   /** Same number, digits only - the format wa.me links require. */
   whatsapp: "94770372960",
   /** Pre-typed into the chat when the floating WhatsApp button is tapped. */
-  whatsappMessage: "Hi DKayLabs, I'd like to talk about a project.",
+  whatsappMessage: "Hi DKayLABS, I'd like to talk about a project.",
   location: "Colombo, Sri Lanka",
   hours: "Available 24/7",
 } as const;
@@ -32,7 +32,7 @@ export type IconKey =
   | "car";
 
 /* ============================================================
-   Products - what DKayLabs is building in-house.
+   Products - what DKayLABS is building in-house.
    Declared above NAV_LINKS because the navbar dropdown is
    derived from this list, so there is one source of truth.
    ============================================================ */
@@ -69,10 +69,10 @@ export const PRODUCTS: Product[] = [
   {
     slug: "mrp",
     name: "MRP Platform",
-    tagline: "Material Resource Planning",
+    tagline: "Material Requirements Planning",
     // TODO: replace with final product copy.
     description:
-      "A material resource planning system that turns demand into a buying and production plan - bills of material, stock coverage, and purchase timing worked out for you, so nothing stalls a line and nothing sits idle in the store. Currently in active development.",
+      "A material requirements planning system that turns demand into a buying and production plan - bills of material, stock coverage, and purchase timing worked out for you, so nothing stalls a line and nothing sits idle in the store. Currently in active development.",
     icon: "factory",
     status: "in-development",
     // TODO: replace with the final feature list.
@@ -178,7 +178,7 @@ export const PRICING_NOTE =
  * user's to fill in.
  */
 export function buildInquiryMessage(serviceTitle: string) {
-  return `Hi DKayLabs,
+  return `Hi DKayLABS,
 
 I'd like to apply for your ${serviceTitle} service.
 
@@ -196,7 +196,7 @@ Please send over a tailored quote. Thanks!`;
  * aren't quoted per-project, so this asks for a demo / early access instead.
  */
 export function buildProductInquiryMessage(productName: string) {
-  return `Hi DKayLabs,
+  return `Hi DKayLABS,
 
 I'm interested in your ${productName} and would like to hear more.
 
@@ -480,7 +480,7 @@ export type Testimonial = {
 export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      "DKayLabs rebuilt our site in three weeks and it instantly felt like a different company. Faster, sharper, and our leads doubled.",
+      "DKayLABS rebuilt our site in three weeks and it instantly felt like a different company. Faster, sharper, and our leads doubled.",
     name: "Maya Chen",
     role: "Founder, NovaCart",
     rating: 5,

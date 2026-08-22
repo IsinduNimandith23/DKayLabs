@@ -1,6 +1,6 @@
-# DKayLabs
+# DKayLABS
 
-Premium, dark esports/tech marketing site for **DKayLabs** - a digital services company.
+Premium, dark esports/tech marketing site for **DKayLABS** - a digital services company.
 
 Built with **Next.js (App Router) + TypeScript + Tailwind CSS**, an interactive **React Three Fiber** 3D hero, **Framer Motion** animation, and **Lenis** smooth scroll. Deployable on **Vercel**.
 

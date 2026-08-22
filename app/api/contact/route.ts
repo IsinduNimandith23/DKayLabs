@@ -9,9 +9,9 @@ import { SITE } from "@/lib/constants";
  * domain purchase - but it will ONLY deliver to the address that owns the
  * Resend account. That's fine here: the only recipient is us. Once a domain
  * is verified in the Resend dashboard, swap FROM for something like
- * "DKayLabs <hello@dkaylabs.com>" and delivery opens up to anyone.
+ * "DKayLABS <hello@dkaylabs.com>" and delivery opens up to anyone.
  */
-const FROM = "DKayLabs <onboarding@resend.dev>";
+const FROM = "DKayLABS <onboarding@resend.dev>";
 
 // Keep the request body small so a bot can't push megabytes through the form.
 const LIMITS = { name: 100, email: 200, phone: 40, message: 5000 };

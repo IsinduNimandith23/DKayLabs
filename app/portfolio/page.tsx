@@ -9,7 +9,7 @@ import { SITE } from "@/lib/constants";
 export const metadata: Metadata = {
   title: `Portfolio - ${SITE.name}`,
   description:
-    "Real projects shipped by DKayLabs - e-commerce stores, business websites, and digital product platforms, live in the wild.",
+    "Real projects shipped by DKayLABS - e-commerce stores, business websites, and digital product platforms, live in the wild.",
 };
 
 export default function PortfolioPage() {

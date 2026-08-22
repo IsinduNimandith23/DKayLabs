@@ -2,7 +2,7 @@
   "name": "dkaylabs",
   "version": "0.1.0",
   "private": true,
-  "description": "DKayLabs - digital services studio marketing site",
+  "description": "DKayLABS - digital services studio marketing site",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

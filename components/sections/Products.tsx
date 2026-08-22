@@ -5,7 +5,7 @@ import ProductCard from "@/components/ui/ProductCard";
 import { PRODUCTS } from "@/lib/constants";
 
 /**
- * In-house products - what DKayLabs is building for itself, as opposed to
+ * In-house products - what DKayLABS is building for itself, as opposed to
  * the client work on /services and /portfolio.
  */
 export default function Products() {

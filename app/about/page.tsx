@@ -5,7 +5,7 @@ import { SITE } from "@/lib/constants";
 export const metadata: Metadata = {
   title: `About - ${SITE.name}`,
   description:
-    "DKayLabs exists for the builders, the challengers, and the brands that play to win.",
+    "DKayLABS exists for the builders, the challengers, and the brands that play to win.",
 };
 
 export default function AboutPage() {

@@ -23,7 +23,7 @@ export default function About() {
           </Reveal>
           <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Built to help you " className="text-ink" />
-            {/* TODO: replace the violet word below with your DKayLabs heading copy. */}
+            {/* TODO: replace the violet word below with your DKayLABS heading copy. */}
             <WordReveal
               text="win"
               className="text-primary"
@@ -33,7 +33,7 @@ export default function About() {
 
           <Reveal direction="right" delay={0.15}>
             <p className="mt-6 text-base leading-relaxed text-muted">
-              DKayLabs exists for the builders, the challengers, and the brands
+              DKayLABS exists for the builders, the challengers, and the brands
               that play to win. We fuse sharp design, hardened engineering, and
               emerging AI into digital products that don&apos;t just keep up - they
               set the pace.
@@ -69,7 +69,7 @@ export default function About() {
                 &ldquo;We measure success by how far our partners climb.&rdquo;
               </p>
               <p className="mt-3 text-xs uppercase tracking-widest text-muted">
-                - The DKayLabs Team
+                - The DKayLABS Team
               </p>
             </div>
           </div>
