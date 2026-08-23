@@ -64,13 +64,15 @@ export default function Navbar() {
       <div className="relative hidden items-center justify-between lg:flex">
         {/* Left pill - logo */}
         <div
-          className={`flex h-12 items-center rounded-full border px-5 transition-all duration-300 ${
+          className={`flex h-12 items-center rounded-full border px-6 transition-all duration-300 ${
             scrolled
               ? "glass-strong border-primary/20 shadow-glow-soft"
               : "glass border-ink/10"
           }`}
         >
-          <Logo size={26} />
+          {/* 38px inside a 48px pill - 5px of glass above and below, which
+              matches the optical breathing room the nav pill's text gets. */}
+          <Logo size={38} />
         </div>
 
         {/* Center pill - nav links, always visible */}
@@ -138,7 +140,7 @@ export default function Navbar() {
               : "border-transparent px-1"
           }`}
         >
-          <Logo size={26} />
+          <Logo size={34} />
         </div>
 
         <div className="flex items-center gap-2">

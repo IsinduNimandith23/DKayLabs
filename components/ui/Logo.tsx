@@ -13,68 +13,57 @@ import { SITE } from "@/lib/constants";
  * no-flash script in app/layout.tsx), so a CSS swap has no hydration gap.
  */
 
-/** Intrinsic artwork ratio (8539 x 1829) - width follows the requested height. */
-const ASPECT = 8539 / 1829;
-
 /**
- * Where the baseline sits in the artwork: the canvas is cropped tight, so the
- * descender of the "y" owns the bottom 22% and no glyph balances it on top.
- * Centering the raw box therefore parks the visible text high and leaves a
- * gap under it. Nudging down by half the descender centers the letterforms
- * instead of the bounding box, which is what the eye actually measures.
+ * Both files are cropped to the same tight ink box (10560 x 2782), which is
+ * what keeps the lockup from jumping sideways on a theme switch - the earlier
+ * exports carried different transparent margins, so the light copy sat ~5px
+ * further right than the dark one. Re-exports must stay trimmed and identical
+ * in size, or that shift comes back.
+ *
+ * Tight-cropped also means `size` is the real ink height, so centering the box
+ * centers the letterforms - no optical baseline nudge belongs here.
  */
-const BASELINE = 1418 / 1829;
+const RATIO = 10560 / 2782;
+
+const ART = [
+  { src: "/Logo/BlackText.png", display: "block dark:hidden" },
+  { src: "/Logo/WhiteText.png", display: "hidden dark:block" },
+] as const;
 
 export default function Logo({
-  size = 30,
+  size = 38,
   className = "",
 }: {
   /** Rendered height of the wordmark, in px. Width scales with it. */
   size?: number;
   className?: string;
 }) {
-  const width = Math.round(size * ASPECT);
-  // The link's aria-label already names the brand, so the artwork itself is
-  // decorative - an alt on each copy would read the name out twice.
-  const shared = {
-    "aria-hidden": true,
-    width,
-    height: size,
-    priority: true,
-    sizes: `${width}px`,
-    style: { width: "auto", height: size },
-  };
-
   return (
     <Link
       href="/"
       aria-label={`${SITE.name} - home`}
       className={`group flex items-center ${className}`}
     >
-      {/* Two spans, not one: the optical offset has to be an inline transform,
-          and Tailwind's scale utilities compile to `transform` too - on one
-          element the inline style would win and kill the hover scale. */}
-      <span
-        className="flex shrink-0 items-center"
-        style={{
-          height: size,
-          transform: `translateY(${(size * (1 - BASELINE)) / 2}px)`,
-        }}
-      >
-        <span className="flex items-center transition-transform duration-300 group-hover:scale-105">
-          <Image
-            {...shared}
-            alt=""
-            src="/Logo/BlackText.png"
-            className="block object-contain dark:hidden"
-          />
-          <Image
-            {...shared}
-            alt=""
-            src="/Logo/WhiteText.png"
-            className="hidden object-contain dark:block"
-          />
-        </span>
+      <span className="flex shrink-0 items-center transition-transform duration-300 group-hover:scale-105">
+        {ART.map((art) => {
+          const width = Math.round(size * RATIO);
+          return (
+            <Image
+              key={art.src}
+              // The link's aria-label already names the brand, so the artwork
+              // itself is decorative - an alt here would read the name twice.
+              alt=""
+              aria-hidden
+              src={art.src}
+              width={width}
+              height={size}
+              priority
+              sizes={`${width}px`}
+              style={{ width: "auto", height: size }}
+              className={`object-contain ${art.display}`}
+            />
+          );
+        })}
       </span>
     </Link>
   );
