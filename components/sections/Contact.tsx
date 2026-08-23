@@ -89,10 +89,10 @@ export default function Contact() {
               Get In Touch
             </p>
           </Reveal>
-          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
+          <h1 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Let's build something " className="text-ink" />
             <WordReveal text="legendary" className="text-metal" delay={0.25} />
-          </h2>
+          </h1>
           <Reveal delay={0.3}>
             <p className="mx-auto mt-4 max-w-xl text-muted">
               Tell us about your project. We usually reply within one business day.

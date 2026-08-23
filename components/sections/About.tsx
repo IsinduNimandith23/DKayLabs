@@ -21,7 +21,7 @@ export default function About() {
               Our Mission
             </p>
           </Reveal>
-          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
+          <h1 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Built to help you " className="text-ink" />
             {/* TODO: replace the violet word below with your DKayLABS heading copy. */}
             <WordReveal
@@ -29,7 +29,7 @@ export default function About() {
               className="text-primary"
               delay={0.3}
             />
-          </h2>
+          </h1>
 
           <Reveal direction="right" delay={0.15}>
             <p className="mt-6 text-base leading-relaxed text-muted">

@@ -21,10 +21,10 @@ export default function Products() {
           <Reveal>
             <p className="label-mono mb-3">In The Lab</p>
           </Reveal>
-          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
+          <h1 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Products we're " className="text-ink" />
             <WordReveal text="building" className="text-metal" delay={0.2} />
-          </h2>
+          </h1>
           <Reveal delay={0.3}>
             <p className="mx-auto mt-4 max-w-2xl text-muted">
               Alongside client work we build our own software. These are in

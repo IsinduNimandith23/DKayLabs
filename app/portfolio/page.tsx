@@ -4,13 +4,14 @@ import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
 import PortfolioGrid from "@/components/sections/PortfolioGrid";
 import CtaBand from "@/components/sections/CtaBand";
-import { SITE } from "@/lib/constants";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: `Portfolio - ${SITE.name}`,
+export const metadata: Metadata = pageMetadata({
+  title: "Portfolio",
   description:
     "Real projects shipped by DKayLABS - e-commerce stores, business websites, and digital product platforms, live in the wild.",
-};
+  path: "/portfolio",
+});
 
 export default function PortfolioPage() {
   return (

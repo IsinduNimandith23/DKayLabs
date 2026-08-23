@@ -11,17 +11,16 @@ import { SITE } from "@/lib/constants";
 // the Gilroy/Sofia Pro vein, which is the face the headline reference uses.
 // 800 is reserved for the big section headlines; keeping one family throughout
 // stops the type from feeling stitched together.
+//
+// ONE loader for both roles. This used to be two next/font calls on the same
+// family with overlapping weights, which declares two font instances of an
+// identical face. Tailwind's `font-body` now points at --font-display too
+// (see tailwind.config.ts), so the two roles stay nameable in the markup
+// without paying for the face twice.
 const display = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
   variable: "--font-display",
-  display: "swap",
-});
-
-const body = Plus_Jakarta_Sans({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-body",
   display: "swap",
 });
 
@@ -35,8 +34,36 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  /*
+   * Every relative URL in metadata - canonicals, og:url, the generated OG
+   * image - is resolved against this. Without it Next warns at build time
+   * and emits relative og:url values that no crawler can follow.
+   */
+  metadataBase: new URL(SITE.url),
   title: `${SITE.name} - ${SITE.tagline}`,
   description: SITE.description,
+  authors: [{ name: SITE.name, url: SITE.url }],
+  creator: SITE.name,
+  publisher: SITE.name,
+  /*
+   * `max-image-preview: large` is what lets Google show a full-width
+   * thumbnail next to the result instead of a postage stamp.
+   *
+   * NOTE: no `alternates.canonical` here on purpose. Child segments inherit
+   * it, so a canonical set at the root would make all eight routes claim
+   * "/" as their canonical URL. Each page sets its own via pageMetadata().
+   */
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   /*
    * Tab icon: the monster mark, not the wordmark - a 4.7:1 lockup is an
    * illegible sliver at 16px.
@@ -63,10 +90,23 @@ export const metadata: Metadata = {
     ],
     apple: { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
   },
+  /*
+   * The fallback card for any route that doesn't build its own via
+   * pageMetadata() - currently only the 404, which cannot export metadata.
+   * The og:image comes from app/opengraph-image.tsx by file convention.
+   */
   openGraph: {
-    title: SITE.name,
+    title: `${SITE.name} - ${SITE.tagline}`,
     description: SITE.description,
+    url: SITE.url,
+    siteName: SITE.name,
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} - ${SITE.tagline}`,
+    description: SITE.description,
   },
 };
 
@@ -107,7 +147,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${display.variable} ${body.variable} ${mono.variable}`}
+      className={`${display.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
       <head>

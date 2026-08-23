@@ -6,6 +6,13 @@ export const SITE = {
   name: "DKayLABS",
   // Drives the browser <title> and footer.
   tagline: "Websites, SaaS & AI Products Built to Perform",
+  /**
+   * Canonical origin - NO trailing slash. `metadataBase`, every canonical
+   * URL, robots.txt and sitemap.xml all derive from this, so the domain is
+   * never written down twice. Override per-environment (preview deploys)
+   * with NEXT_PUBLIC_SITE_URL.
+   */
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dkaylabs.com",
   description:
     "DKayLABS is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
   email: "isindunimandith23@gmail.com",
@@ -476,34 +483,21 @@ export type Testimonial = {
   rating: number;
 };
 
-// TODO: replace the remaining placeholders with real client quotes as they come in.
+/*
+ * REAL CLIENT QUOTES ONLY. The placeholder entries that used to pad this list
+ * were removed - inventing reviews for a live business site is a lie to the
+ * visitor, and marking them up as schema.org AggregateRating (the obvious
+ * next SEO step) would be a structured-data policy violation on top of it.
+ *
+ * Add quotes here as they come in. Testimonials.tsx switches from a static
+ * row to the scrolling marquee once there are three.
+ */
 export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
       "Really happy with the work DKayLABS did for The Brush Master. They understood what we wanted, were easy to communicate with, and handled all our changes without any hassle. The website turned out clean, professional, and exactly how we wanted it. Definitely recommend them!",
     name: "Steve Akash",
     role: "Co-founder, The Brush Master",
-    rating: 5,
-  },
-  {
-    quote:
-      "DKayLABS rebuilt our site in three weeks and it instantly felt like a different company. Faster, sharper, and our leads doubled.",
-    name: "Maya Chen",
-    role: "Founder, NovaCart",
-    rating: 5,
-  },
-  {
-    quote:
-      "The team thinks like owners. They pushed back on our ideas when it mattered and the product is better for it.",
-    name: "Andre Silva",
-    role: "CTO, PulseBoard",
-    rating: 5,
-  },
-  {
-    quote:
-      "From first call to launch, everything was tight. Clear timelines, honest communication, and a finish that outclassed agencies twice the price.",
-    name: "Sasha Ivanov",
-    role: "Product Lead, ForgeAI",
     rating: 5,
   },
 ];

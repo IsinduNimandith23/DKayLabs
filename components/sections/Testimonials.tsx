@@ -43,9 +43,17 @@ function Avatar({ name }: { name: string }) {
   );
 }
 
-function TestimonialCard({ t }: { t: Testimonial }) {
+/**
+ * `wide` is the static-row variant: no marquee gutter, no fixed rail width,
+ * and room for a long quote to breathe instead of running to twelve lines.
+ */
+function TestimonialCard({ t, wide = false }: { t: Testimonial; wide?: boolean }) {
   return (
-    <figure className="glass mr-6 flex w-[300px] shrink-0 flex-col rounded-2xl p-7 transition-colors duration-300 hover:border-primary/40 sm:w-[380px]">
+    <figure
+      className={`glass flex flex-col rounded-2xl p-7 transition-colors duration-300 hover:border-primary/40 ${
+        wide ? "w-full max-w-xl" : "mr-6 w-[300px] shrink-0 sm:w-[380px]"
+      }`}
+    >
       <Stars rating={t.rating} label={`${t.rating} out of 5 stars`} />
 
       <blockquote className="mt-5 flex-1 text-sm italic leading-relaxed text-ink/90">
@@ -65,9 +73,14 @@ function TestimonialCard({ t }: { t: Testimonial }) {
   );
 }
 
+/**
+ * Below this many quotes the marquee is worse than no marquee: it tiles the
+ * same card six times and reads as padding rather than proof.
+ */
+const MARQUEE_MIN = 3;
+
 export default function Testimonials() {
-  const average =
-    TESTIMONIALS.reduce((sum, t) => sum + t.rating, 0) / TESTIMONIALS.length;
+  const marquee = TESTIMONIALS.length >= MARQUEE_MIN;
 
   // One "half" of the loop - repeated so it's wider than any viewport,
   // then rendered twice and translated -50% for a seamless infinite scroll.
@@ -89,42 +102,48 @@ export default function Testimonials() {
             </p>
           </Reveal>
           <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
-            <WordReveal text="Rated by the " className="text-ink" />
-            <WordReveal text="people we serve" className="text-metal" delay={0.2} />
+            <WordReveal text="What our " className="text-ink" />
+            <WordReveal text="clients say" className="text-metal" delay={0.2} />
           </h2>
 
-          {/* Aggregate rating strip. */}
-          <Reveal direction="scale" delay={0.35}>
-            <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-ink/10 bg-surface/50 px-5 py-2.5 backdrop-blur">
-              <Stars rating={Math.round(average)} label={`Average rating ${average.toFixed(1)} out of 5`} />
-              <span className="font-display text-sm text-ink">{average.toFixed(1)}</span>
-              <span className="text-xs uppercase tracking-wider text-muted-dim">
-                from our partners
-              </span>
-            </div>
-          </Reveal>
+          {/*
+            The aggregate rating strip that used to sit here is gone. An
+            average is a claim about a sample, and it isn't one worth making
+            over a handful of reviews - the quotes speak for themselves.
+          */}
         </div>
 
-        {/* Auto-scrolling strip - inset from the viewport edges, with a
-            fade-out mask on both sides. Pauses on hover, freezes under
-            reduced motion. */}
-        <Reveal delay={0.1}>
-          <div className="mx-auto max-w-[90rem] px-4 sm:px-6">
-            <div className="relative overflow-hidden [-webkit-mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
-              <div className="flex w-max animate-marquee-slow hover:[animation-play-state:paused]">
-                {half.map((t, i) => (
-                  <TestimonialCard key={`a-${i}`} t={t} />
-                ))}
-                {/* Duplicate half for the seamless loop - hidden from screen readers. */}
-                <div aria-hidden className="flex">
+        {marquee ? (
+          /* Auto-scrolling strip - inset from the viewport edges, with a
+             fade-out mask on both sides. Pauses on hover, freezes under
+             reduced motion. */
+          <Reveal delay={0.1}>
+            <div className="mx-auto max-w-[90rem] px-4 sm:px-6">
+              <div className="relative overflow-hidden [-webkit-mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
+                <div className="flex w-max animate-marquee-slow hover:[animation-play-state:paused]">
                   {half.map((t, i) => (
-                    <TestimonialCard key={`b-${i}`} t={t} />
+                    <TestimonialCard key={`a-${i}`} t={t} />
                   ))}
+                  {/* Duplicate half for the seamless loop - hidden from screen readers. */}
+                  <div aria-hidden className="flex">
+                    {half.map((t, i) => (
+                      <TestimonialCard key={`b-${i}`} t={t} />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
+        ) : (
+          /* One or two quotes: centre them and let them breathe. */
+          <Reveal delay={0.1}>
+            <div className="mx-auto flex max-w-6xl flex-wrap items-stretch justify-center gap-6 px-6">
+              {TESTIMONIALS.map((t) => (
+                <TestimonialCard key={t.name} t={t} wide />
+              ))}
+            </div>
+          </Reveal>
+        )}
       </div>
     </section>
   );

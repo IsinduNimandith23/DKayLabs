@@ -17,10 +17,10 @@ export default function Services() {
               What We Do
             </p>
           </Reveal>
-          <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
+          <h1 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
             <WordReveal text="Services that " className="text-ink" />
             <WordReveal text="scale" className="text-metal" delay={0.2} />
-          </h2>
+          </h1>
           <Reveal delay={0.3}>
             <p className="mx-auto mt-4 max-w-2xl text-muted">
               From first pixel to production AI - a full-stack arsenal to build,
