@@ -11,8 +11,13 @@ export const SITE = {
    * URL, robots.txt and sitemap.xml all derive from this, so the domain is
    * never written down twice. Override per-environment (preview deploys)
    * with NEXT_PUBLIC_SITE_URL.
+   *
+   * The `www` is load-bearing: Vercel serves this site from www and the bare
+   * apex 308s to it. Declaring the apex here pointed every canonical at a
+   * URL that redirects, so the host actually serving the page was disowning
+   * itself. If the primary domain is ever flipped, flip this with it.
    */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dkaylabs.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.dkaylabs.com",
   description:
     "DKayLABS is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
   email: "isindunimandith23@gmail.com",
