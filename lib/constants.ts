@@ -476,8 +476,15 @@ export type Testimonial = {
   rating: number;
 };
 
-// TODO: replace with real client quotes as they come in.
+// TODO: replace the remaining placeholders with real client quotes as they come in.
 export const TESTIMONIALS: Testimonial[] = [
+  {
+    quote:
+      "Really happy with the work DKayLABS did for The Brush Master. They understood what we wanted, were easy to communicate with, and handled all our changes without any hassle. The website turned out clean, professional, and exactly how we wanted it. Definitely recommend them!",
+    name: "Steve Akash",
+    role: "Co-founder, The Brush Master",
+    rating: 5,
+  },
   {
     quote:
       "DKayLABS rebuilt our site in three weeks and it instantly felt like a different company. Faster, sharper, and our leads doubled.",
