@@ -2,8 +2,19 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetail from "@/components/sections/ProductDetail";
 import CtaBand from "@/components/sections/CtaBand";
+import MrpPage from "@/components/sections/products/mrp";
 import { PRODUCTS, SITE } from "@/lib/constants";
 import { pageMetadata } from "@/lib/seo";
+
+/**
+ * Products that have outgrown the generic ProductDetail layout and get a page
+ * written for them instead. Anything not listed here falls through to the
+ * shared component, which stays the default - a bespoke page is earned, not
+ * the starting point.
+ */
+const RICH_PAGES: Record<string, () => JSX.Element> = {
+  mrp: MrpPage,
+};
 
 /** Every product is known at build time, so prerender all of them. */
 export function generateStaticParams() {
@@ -43,10 +54,15 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const product = PRODUCTS.find((p) => p.slug === params.slug);
   if (!product) notFound();
 
+  const RichPage = RICH_PAGES[product.slug];
+
   return (
     <main className="pt-16">
-      <ProductDetail product={product} />
-      <CtaBand />
+      {RichPage ? <RichPage /> : <ProductDetail product={product} />}
+      {/* A bespoke page closes with its own CTA, so the shared band would just
+          stack a second one under it. The generic layout has no closing CTA of
+          its own and still needs this. */}
+      {!RichPage && <CtaBand />}
     </main>
   );
 }

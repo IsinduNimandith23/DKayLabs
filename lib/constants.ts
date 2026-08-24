@@ -81,25 +81,22 @@ export const PRODUCTS: Product[] = [
   {
     slug: "mrp",
     name: "MRP Platform",
-    tagline: "Material Requirements Planning",
-    // TODO: replace with final product copy.
+    tagline: "Manufacturing & Inventory Platform",
     description:
-      "A material requirements planning system that turns demand into a buying and production plan - bills of material, stock coverage, and purchase timing worked out for you, so nothing stalls a line and nothing sits idle in the store. Currently in active development.",
+      "Software for small manufacturers who have outgrown the stock spreadsheet. The inventory module runs today - live stock by warehouse, shelf and batch, with a permanent record behind every number. Manufacturing, sales and accounting follow, one module at a time.",
     icon: "factory",
     status: "in-development",
-    // TODO: replace with the final feature list.
     highlights: [
-      "Multi-level bills of material and routings",
-      "Demand forecasting and net requirements planning",
-      "Automated purchase and work order suggestions",
-      "Live inventory, lead times, and stock coverage",
+      "Live stock by warehouse, shelf location and batch",
+      "Serial-number tracking on high-value items",
+      "A permanent record of every stock movement",
+      "Manufacturing, sales and accounting modules to follow",
     ],
-    // TODO: replace with final product copy.
     detail: {
       overview:
-        "Most small manufacturers plan materials in a spreadsheet that only one person really understands. The MRP Platform replaces it with a live model of your bills of material, stock on hand, and supplier lead times, then works backwards from demand to tell you what to buy and make, and when.\n\nIt is built for teams who need the answer without needing a full ERP rollout - start with your part list and a single production line, and grow from there.",
+        "Most small manufacturers run their stock in a spreadsheet that only one person really understands - and the number in it is whatever someone last typed. The MRP Platform replaces it with a system where every quantity on screen traces back to a movement somebody actually recorded.\n\nIt is built to be adopted a piece at a time rather than all at once. Inventory is live today; manufacturing, sales and purchasing, and accounting are designed and follow behind it.",
       timeline:
-        "In active development. We're onboarding a small group of early users for feedback before general release.",
+        "In active development. The inventory module is running today, and we're onboarding a small group of manufacturers for feedback before general release.",
     },
   },
   {
@@ -127,6 +124,391 @@ export const PRODUCTS: Product[] = [
     },
   },
 ];
+
+/* ============================================================
+   MRP Platform - long-form page content.
+
+   The MRP product gets a bespoke page at /products/mrp instead of the
+   generic ProductDetail layout (see app/products/[slug]/page.tsx). All of
+   its copy lives here, same as everything else on the site.
+
+   AUDIENCE NOTE: this page is read by factory owners and stock controllers,
+   not engineers. Nothing here names the stack, and the concepts are
+   described in plain language - "a permanent record", not "an immutable
+   append-only ledger". Keep it that way when editing.
+
+   TRUTHFULNESS NOTE: the feature copy describes the inventory module as it
+   actually exists. Manufacturing, sales and accounting are listed as
+   designed, because that is what they are. Don't promote a module here
+   before it ships.
+   ============================================================ */
+
+/** Enquiry link shared by every CTA on the MRP page. */
+export const MRP_ENQUIRY_HREF = `/contact?product=${encodeURIComponent("MRP Platform")}`;
+
+/** How a movement type is coloured wherever it appears in a mock table. */
+export type MrpTagTone = "receipt" | "issue" | "transfer" | "adjust" | "low";
+
+/**
+ * One cell in a mock table.
+ *   text - plain copy
+ *   code - part numbers and batch codes, set in mono
+ *   num  - quantities and prices, mono + tabular + right-aligned
+ *   tag  - a coloured pill, needs `tone`
+ */
+/*
+ * Readonly throughout: MRP_PAGE is declared `as const` like the other content
+ * exports in this file, so every array in it is a readonly tuple. A mutable
+ * signature here would reject the real data.
+ */
+export type MrpCell = {
+  readonly text: string;
+  readonly kind?: "text" | "code" | "num" | "tag";
+  readonly tone?: MrpTagTone;
+};
+
+export type MrpTable = {
+  /** Column headings. `num` cells right-align, so their heading does too. */
+  readonly columns: readonly {
+    readonly label: string;
+    readonly kind?: MrpCell["kind"];
+  }[];
+  readonly rows: readonly (readonly MrpCell[])[];
+};
+
+export const MRP_PAGE = {
+  hero: {
+    pill: "In active development - inventory live today",
+    /** Split so the second half can take the shimmer treatment. */
+    headingLead: "Know what's on the shelf. ",
+    headingAccent: "Not what someone typed last Tuesday.",
+    lede: "The MRP Platform is for small manufacturers who have outgrown the stock spreadsheet. Every quantity on screen traces back to a movement someone actually recorded - so the number you're looking at is the number in the building.",
+    primaryCta: "Request early access",
+    secondaryCta: "See what's running today",
+    note: "Inventory module live today - manufacturing next",
+  },
+
+  /* --- Section 2: a mock of the real inventory dashboard --------------- */
+  dashboard: {
+    /** Illustrative only - swap this block for a screenshot when there is one. */
+    caption:
+      "Illustration of the MRP Platform inventory dashboard, showing stock totals, recent movements and low-stock items.",
+    url: "app.mrp.dkaylabs.com/inventory/dashboard",
+    title: "Inventory",
+    subtitle: "Main Plant - Colombo, LK",
+    action: "New Movement",
+    /** `alert` tints the figure amber - the one number you'd want to act on. */
+    kpis: [
+      { label: "Total Products", value: "6", alert: false },
+      { label: "Low Stock Items", value: "3", alert: true },
+      { label: "Units On Hand", value: "1,284", alert: false },
+      { label: "Total Warehouses", value: "2", alert: false },
+    ],
+    movementsTitle: "Recent movements",
+    movementsMeta: "Last 24h",
+    movements: {
+      columns: [
+        { label: "Item" },
+        { label: "Type" },
+        { label: "Route" },
+        { label: "Qty", kind: "num" },
+      ],
+      rows: [
+        [
+          { text: "PRD-001-50", kind: "code" },
+          { text: "Receipt", kind: "tag", tone: "receipt" },
+          { text: "Supplier → Rack A" },
+          { text: "+120", kind: "num" },
+        ],
+        [
+          { text: "PRD-002-STD", kind: "code" },
+          { text: "Issue", kind: "tag", tone: "issue" },
+          { text: "Rack B → Production" },
+          { text: "-45", kind: "num" },
+        ],
+        [
+          { text: "PRD-005-A", kind: "code" },
+          { text: "Transfer", kind: "tag", tone: "transfer" },
+          { text: "Staging → Bay 1" },
+          { text: "18", kind: "num" },
+        ],
+        [
+          { text: "PRD-004-EPDM", kind: "code" },
+          { text: "Adjust", kind: "tag", tone: "adjust" },
+          { text: "Rack A - stock count" },
+          { text: "-2", kind: "num" },
+        ],
+        [
+          { text: "PRD-003-16B", kind: "code" },
+          { text: "Receipt", kind: "tag", tone: "receipt" },
+          { text: "Supplier → Bay 2" },
+          { text: "+60", kind: "num" },
+        ],
+      ],
+    },
+    attentionTitle: "Needs attention",
+    attentionMeta: "10 units or fewer",
+    attention: [
+      { name: "Hydraulic Pump C", meta: "PRD-005-A - Rack B", left: "4 left" },
+      { name: "Thread Sealant", meta: "PRD-006-250 - Staging", left: "7 left" },
+      { name: "Sealing Ring", meta: "PRD-004-EPDM - Quarantine", left: "9 left" },
+    ],
+  },
+
+  /* --- Section 3: the spreadsheet, and the alternative ----------------- */
+  problem: {
+    eyebrow: "The problem",
+    headingLead: "Your spreadsheet doesn't know ",
+    headingAccent: "what's on the shelf.",
+    lede: "It knows what somebody typed into it. Every manufacturer we spoke to had the same handful of problems, and none of them were fixed by a bigger spreadsheet.",
+    now: {
+      cap: "How it works now",
+      title: "A number nobody trusts",
+      points: [
+        "Three versions of the same stock sheet, and the newest one isn't necessarily the right one",
+        "Someone overwrites a quantity and the reason it changed is gone for good",
+        "An order placed against a figure that was already a week out of date",
+        "A customer asks which batch they were sent and the answer takes two days to find",
+      ],
+    },
+    platform: {
+      cap: "How the platform works",
+      title: "A record, not a cell",
+      points: [
+        "Nothing is overwritten - every delivery, issue, transfer and stock count is added to the history",
+        "Each one records who moved what, from where, to where, and when",
+        "The on-hand figure is worked out from that history, so it can't quietly drift away from reality",
+        "Batch and serial history is a search box, not an afternoon in the filing cabinet",
+      ],
+    },
+  },
+
+  /* --- Section 4: what actually ships today ---------------------------- */
+  features: {
+    eyebrow: "Inventory module",
+    headingLead: "What's ",
+    headingAccent: "running today.",
+    lede: "Everything below is built and usable right now - not a roadmap item.",
+    rows: [
+      {
+        eyebrow: "Catalogue",
+        title: "One product, every version it ships in",
+        body: "Set a product up once, then give it as many versions as reality demands - each with its own part number, barcode, price and unit. Size, material and colour describe the difference, so a 50mm cast iron valve and an 80mm one stay one product with two versions instead of two unrelated rows nobody can reconcile.",
+        chips: ["Part numbers", "Barcodes", "Sizes & materials", "Units of measure"],
+        tableTitle: "Industrial Valve A",
+        tableMeta: "Valves",
+        table: {
+          columns: [
+            { label: "Part no." },
+            { label: "Size" },
+            { label: "Material" },
+            { label: "Price", kind: "num" },
+          ],
+          rows: [
+            [
+              { text: "PRD-001-50", kind: "code" },
+              { text: "50mm" },
+              { text: "Cast Iron" },
+              { text: "120.50", kind: "num" },
+            ],
+            [
+              { text: "PRD-001-80", kind: "code" },
+              { text: "80mm" },
+              { text: "Cast Iron" },
+              { text: "168.00", kind: "num" },
+            ],
+            [
+              { text: "PRD-002-STD", kind: "code" },
+              { text: "20ft" },
+              { text: "Carbon Steel" },
+              { text: "85.00", kind: "num" },
+            ],
+            [
+              { text: "PRD-002-GAL", kind: "code" },
+              { text: "20ft" },
+              { text: "Galvanised" },
+              { text: "104.75", kind: "num" },
+            ],
+          ],
+        },
+      },
+      {
+        eyebrow: "Stock & traceability",
+        title: "Know the shelf, not just the total",
+        body: 'Stock is held per version, per warehouse, per shelf and per batch - so "we have 120" becomes "84 in Rack A on batch 123, 36 in Bay 2 on batch 130." High-value items get their own serial number, tracked through their whole life from delivered to installed to sold.',
+        chips: ["Warehouse & shelf", "Batch numbers", "Expiry dates", "Serial numbers"],
+        tableTitle: "Stock on hand",
+        tableMeta: "PRD-001-50",
+        table: {
+          columns: [
+            { label: "Warehouse" },
+            { label: "Shelf" },
+            { label: "Batch" },
+            { label: "Qty", kind: "num" },
+          ],
+          rows: [
+            [
+              { text: "Main Plant" },
+              { text: "Rack A" },
+              { text: "BATCH-123", kind: "code" },
+              { text: "84", kind: "num" },
+            ],
+            [
+              { text: "Main Plant" },
+              { text: "Staging" },
+              { text: "BATCH-127", kind: "code" },
+              { text: "12", kind: "num" },
+            ],
+            [
+              { text: "Overflow Depot" },
+              { text: "Bay 2" },
+              { text: "BATCH-130", kind: "code" },
+              { text: "36", kind: "num" },
+            ],
+            [
+              { text: "Overflow Depot" },
+              { text: "Quarantine" },
+              { text: "BATCH-118", kind: "code" },
+              { text: "6", kind: "num" },
+            ],
+          ],
+        },
+      },
+      {
+        eyebrow: "Stock movements",
+        title: "Four movements cover every physical event",
+        body: "Goods arriving, goods going out to a job or a customer, goods moving between shelves, and counts corrected after a stocktake. Each one is written down permanently and updates the balance in the same step, so two people can never sell the same last unit. That history is the audit trail your customers and inspectors ask for.",
+        chips: ["Receipt", "Issue", "Transfer", "Adjustment"],
+        tableTitle: "Movement history",
+        tableMeta: "PRD-005-A",
+        table: {
+          columns: [
+            { label: "When" },
+            { label: "Type" },
+            { label: "Route" },
+            { label: "Qty", kind: "num" },
+          ],
+          rows: [
+            [
+              { text: "14 Aug 09:12" },
+              { text: "Receipt", kind: "tag", tone: "receipt" },
+              { text: "Supplier → Rack B" },
+              { text: "+24", kind: "num" },
+            ],
+            [
+              { text: "15 Aug 11:40" },
+              { text: "Issue", kind: "tag", tone: "issue" },
+              { text: "Rack B → Job 4412" },
+              { text: "-6", kind: "num" },
+            ],
+            [
+              { text: "17 Aug 08:05" },
+              { text: "Transfer", kind: "tag", tone: "transfer" },
+              { text: "Rack B → Bay 1" },
+              { text: "10", kind: "num" },
+            ],
+            [
+              { text: "18 Aug 16:22" },
+              { text: "Adjust", kind: "tag", tone: "adjust" },
+              { text: "Rack B - stock count" },
+              { text: "-4", kind: "num" },
+            ],
+          ],
+        },
+      },
+    ],
+  },
+
+  /* --- Section 5: honest status per module ----------------------------- */
+  modules: {
+    eyebrow: "Built in the open",
+    headingLead: "Adopt ",
+    headingAccent: "one module at a time.",
+    lede: "Most manufacturing software fails because it arrives all at once and expects the whole business to change on a Monday. This is built to be taken on a piece at a time. Here is exactly where each one stands.",
+    items: [
+      {
+        name: "Inventory",
+        meta: "Running today",
+        body: "Your product list with all its versions, units of measure, warehouses and shelves, stock by batch, serial numbers on high-value items, and the full movement history behind every figure.",
+        status: "Live",
+        tone: "live",
+      },
+      {
+        name: "Manufacturing",
+        meta: "Designed - in build",
+        body: "Recipes and part lists for what you make, the steps and machines involved, job cards on the floor, time booked against each operation, materials consumed and quality checks recorded.",
+        status: "Next up",
+        tone: "next",
+      },
+      {
+        name: "Sales & purchasing",
+        meta: "Designed",
+        body: "Quotes, customer orders and purchase orders, your suppliers and customers, deliveries, invoices, price lists and tax - all reading from the same stock figures.",
+        status: "Designed",
+        tone: "planned",
+      },
+      {
+        name: "Accounting",
+        meta: "Designed",
+        body: "Your accounts, journals, payments and multiple currencies, posting automatically from what the other modules already recorded rather than being keyed in twice.",
+        status: "Designed",
+        tone: "planned",
+      },
+    ],
+  },
+
+  /* --- Section 6: research, NOT testimonials --------------------------- */
+  voices: {
+    eyebrow: "Why we built it",
+    headingLead: "We read what manufacturers say about the systems they're stuck with. ",
+    headingAccent: "Then we built the opposite.",
+    /*
+     * Deliberate framing: these are complaints manufacturers make about
+     * OTHER people's software, drawn from public industry discussion. They
+     * are not DKayLABS client quotes and must never be presented as such -
+     * see the note on TESTIMONIALS below.
+     */
+    lede: "Before writing any of it we went through the places manufacturers complain honestly about the software they already have. Every complaint that kept coming up became a rule for how this one works. These are their words about the systems they're living with - not reviews of ours.",
+    quoteCap: "What they say",
+    answerCap: "What we did about it",
+    pairs: [
+      {
+        quote:
+          "These systems are built for accountants, not for the people on the floor.",
+        answer:
+          "The screens the floor uses came first, and accounting comes last. Every task is designed around the person holding the scanner, not the person closing the books.",
+      },
+      {
+        quote:
+          "If logging a movement takes too many clicks, people will find a way around it.",
+        answer:
+          "Recording a movement is one short form with the obvious answers already filled in and fields a barcode scanner can drive. If it's slower than the paper it replaces, it has already failed.",
+      },
+      {
+        quote:
+          "They tried to roll out everything at once and we all went back to Excel.",
+        answer:
+          "The modules stand on their own. Start with inventory, run it for a season, and add manufacturing when you're ready - not because a contract says this is the month.",
+      },
+      {
+        quote:
+          "Software won't fix a process that's already broken on paper.",
+        answer:
+          "Completely agree, so we don't pretend otherwise. We start by walking how stock actually moves through your building, then fit the software to that - not the other way round.",
+      },
+    ],
+  },
+
+  /* --- Section 7: conversion ------------------------------------------- */
+  earlyAccess: {
+    eyebrow: "Early access",
+    headingLead: "Help shape it ",
+    headingAccent: "before v1",
+    body: "We're onboarding a small number of manufacturers while the platform is still being built. Free for the whole development period, a direct line to the people building it, and a real say in which module lands next.",
+    cta: "Request early access",
+    fine: "No card. No sales call. Expect rough edges - that's the deal.",
+  },
+} as const;
 
 export type NavChild = {
   label: string;
