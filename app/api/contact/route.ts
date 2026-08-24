@@ -1,17 +1,25 @@
 import { NextResponse } from "next/server";
-import { SITE } from "@/lib/constants";
 
 /**
- * Contact form handler. Posts the submission to Resend, which emails it to
- * SITE.email.
+ * Contact form handler. Posts the submission to Resend, which emails it to TO.
  *
  * The `from` address is Resend's shared onboarding sender, which needs no
  * domain purchase - but it will ONLY deliver to the address that owns the
- * Resend account. That's fine here: the only recipient is us. Once a domain
- * is verified in the Resend dashboard, swap FROM for something like
- * "DKayLABS <hello@dkaylabs.com>" and delivery opens up to anyone.
+ * Resend account.
+ *
+ * TO is the Zoho group, so a submission reaches both partners at once. It is
+ * deliberately the same address SITE.email publishes to visitors - one address
+ * for the whole company, nothing personal baked into the repo.
+ *
+ * CONTACT_INBOX exists only as a temporary override. Until send.dkaylabs.com
+ * is verified in Resend, the shared onboarding sender above refuses to deliver
+ * anywhere except the Resend account owner's address, so the live form has to
+ * be pointed at that address via the env var. Once the domain is verified,
+ * swap FROM to noreply@send.dkaylabs.com, delete CONTACT_INBOX everywhere, and
+ * this falls through to the Zoho group on its own.
  */
 const FROM = "DKayLABS <onboarding@resend.dev>";
+const TO = process.env.CONTACT_INBOX ?? "contact@dkaylabs.com";
 
 // Keep the request body small so a bot can't push megabytes through the form.
 const LIMITS = { name: 100, email: 200, phone: 40, message: 5000 };
@@ -84,7 +92,7 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       from: FROM,
-      to: [SITE.email],
+      to: [TO],
       // Hitting Reply in the inbox goes straight back to the sender.
       reply_to: email,
       subject: `New enquiry from ${name}`,
