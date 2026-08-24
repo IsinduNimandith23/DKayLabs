@@ -20,7 +20,7 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.dkaylabs.com",
   description:
     "DKayLABS is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
-  email: "isindunimandith23@gmail.com",
+  email: "contact@dkaylabs.com",
   phone: "+94 77 037 2960",
   /** Same number, digits only - the format wa.me links require. */
   whatsapp: "94770372960",

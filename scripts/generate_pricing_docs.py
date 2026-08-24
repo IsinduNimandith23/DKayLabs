@@ -46,7 +46,7 @@ HAIRLINE = colors.HexColor("#E0E0E0")
 WASH = colors.HexColor("#FDF3F3")
 
 COMPANY = "DKayLABS"
-EMAIL = "isindunimandith23@gmail.com"
+EMAIL = "contact@dkaylabs.com"
 PHONE = "+94 77 037 2960"
 LOCATION = "Colombo, Sri Lanka"
 
