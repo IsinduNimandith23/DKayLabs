@@ -11,14 +11,17 @@ import { NextResponse } from "next/server";
  * deliberately the same address SITE.email publishes to visitors - one address
  * for the whole company, nothing personal baked into the repo.
  *
- * CONTACT_INBOX exists only as a temporary override. Until send.dkaylabs.com
- * is verified in Resend, the shared onboarding sender above refuses to deliver
- * anywhere except the Resend account owner's address, so the live form has to
- * be pointed at that address via the env var. Once the domain is verified,
- * swap FROM to noreply@send.dkaylabs.com, delete CONTACT_INBOX everywhere, and
- * this falls through to the Zoho group on its own.
+ * FROM sits on send.dkaylabs.com, a subdomain verified in Resend purely for
+ * sending. Keeping it off the apex is deliberate: dkaylabs.com's SPF and MX
+ * belong to Zoho, and a second SPF record there would invalidate both and take
+ * real mail down with it. Nobody outside the company ever sees this address -
+ * the notification goes to our own inbox, and the address clients see is
+ * SITE.email.
+ *
+ * CONTACT_INBOX remains as an escape hatch for pointing submissions somewhere
+ * else (a staging inbox, a temporary forward) without a code change.
  */
-const FROM = "DKayLABS <onboarding@resend.dev>";
+const FROM = "DKayLABS <noreply@send.dkaylabs.com>";
 const TO = process.env.CONTACT_INBOX ?? "contact@dkaylabs.com";
 
 // Keep the request body small so a bot can't push megabytes through the form.
