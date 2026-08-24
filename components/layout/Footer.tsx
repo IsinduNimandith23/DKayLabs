@@ -74,7 +74,7 @@ export default function Footer() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              {SOCIALS.map((s) => (
+              {SOCIALS.filter((s) => s.href !== "#").map((s) => (
                 <a
                   key={s.key}
                   href={s.href}

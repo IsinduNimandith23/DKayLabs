@@ -889,10 +889,15 @@ export const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
+/**
+ * Footer social links. Entries whose href is still "#" have no live profile
+ * yet - the Footer skips them rather than rendering a link that opens a blank
+ * tab going nowhere. Fill in the URL and the icon appears automatically.
+ */
 export const SOCIALS = [
-  { label: "Facebook", href: "#", key: "facebook" },
-  { label: "Instagram", href: "#", key: "instagram" },
-  { label: "TikTok", href: "#", key: "tiktok" },
+  { label: "Facebook", href: "https://www.facebook.com/dkaylabs", key: "facebook" },
+  { label: "Instagram", href: "https://www.instagram.com/dkaylabs_/", key: "instagram" },
+  { label: "TikTok", href: "https://www.tiktok.com/@dkaylabs", key: "tiktok" },
   { label: "YouTube", href: "#", key: "youtube" },
   { label: "LinkedIn", href: "#", key: "linkedin" },
   { label: "Discord", href: "#", key: "discord" },
