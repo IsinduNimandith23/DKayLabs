@@ -13,7 +13,7 @@ const { features } = MRP_PAGE;
  */
 export default function MrpFeatures() {
   return (
-    <section id="whats-live" className="relative scroll-mt-24 py-20 sm:py-28">
+    <section id="whats-live" className="relative scroll-mt-24 py-16 sm:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-16 max-w-2xl">
           <Reveal>
@@ -32,7 +32,7 @@ export default function MrpFeatures() {
           </Reveal>
         </div>
 
-        <div className="flex flex-col gap-20 sm:gap-28">
+        <div className="flex flex-col gap-14 sm:gap-28">
           {features.rows.map((row, index) => {
             // Odd rows put the visual first on desktop only - the copy has to
             // stay above its own illustration once the grid collapses.
@@ -43,7 +43,13 @@ export default function MrpFeatures() {
                 key={row.title}
                 className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16"
               >
-                <Reveal className={flipped ? "lg:order-2" : undefined}>
+                {/* min-w-0 on both columns is load-bearing on mobile: these
+                    Reveal wrappers are the grid items, and without it the
+                    single implicit track is sized to the mock table's ~450px
+                    of nowrap content instead of collapsing - which pushes the
+                    whole row past the container, where body's overflow-x:clip
+                    silently crops it. */}
+                <Reveal className={`min-w-0 ${flipped ? "lg:order-2" : ""}`}>
                   <div>
                     <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-primary">
                       {row.eyebrow}
@@ -67,7 +73,7 @@ export default function MrpFeatures() {
 
                 <Reveal
                   delay={0.12}
-                  className={flipped ? "lg:order-1" : undefined}
+                  className={`min-w-0 ${flipped ? "lg:order-1" : ""}`}
                 >
                   <MockPanel title={row.tableTitle} meta={row.tableMeta}>
                     <MockTable table={row.table} />

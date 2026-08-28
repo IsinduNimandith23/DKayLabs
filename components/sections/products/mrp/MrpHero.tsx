@@ -10,15 +10,17 @@ const { hero } = MRP_PAGE;
 /** Opening section of /products/mrp - claim, proof, and the two ways out. */
 export default function MrpHero() {
   return (
-    <section className="relative pb-20 pt-16 sm:pt-20">
+    <section className="relative pb-20 pt-10 sm:pt-20">
       <GlowOrb className="left-1/2 top-0 -translate-x-1/2 bg-primary/15" size={600} />
 
       <div className="relative mx-auto max-w-6xl px-6">
-        {/* Products are a set, not one-offs - always offer the way back. */}
+        {/* Products are a set, not one-offs - always offer the way back.
+            py-3 with -mt-3 and a trimmed mb gives the link a ~42px tap target
+            on touch while leaving the spacing around it exactly as it was. */}
         <Reveal>
           <Link
             href="/products"
-            className="mb-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted transition-colors duration-200 hover:text-primary"
+            className="-mt-3 mb-7 inline-flex items-center gap-2 py-3 text-xs font-semibold uppercase tracking-wider text-muted transition-colors duration-200 hover:text-primary"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <line x1="19" y1="12" x2="5" y2="12" />

@@ -21,7 +21,7 @@ export default function MrpEarlyAccess() {
     <section className="relative pb-28 pt-20 sm:pb-36 sm:pt-24">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal direction="scale">
-          <div className="glass relative overflow-hidden rounded-3xl px-8 py-14 text-center shadow-glow-soft sm:py-16">
+          <div className="glass relative overflow-hidden rounded-3xl px-6 py-12 text-center shadow-glow-soft sm:px-8 sm:py-16">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
             <div className="pointer-events-none absolute -top-24 left-1/2 h-56 w-[36rem] -translate-x-1/2 rounded-full bg-primary/15 blur-[100px]" />
             <div className="absolute inset-0 bg-metal-sheen opacity-40" />

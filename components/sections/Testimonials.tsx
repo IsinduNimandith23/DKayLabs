@@ -46,12 +46,19 @@ function Avatar({ name }: { name: string }) {
 /**
  * `wide` is the static-row variant: no marquee gutter, no fixed rail width,
  * and room for a long quote to breathe instead of running to twelve lines.
+ *
+ * The lg cap is half the row minus the gap, so two quotes sit side by side
+ * from lg up instead of wrapping onto separate lines - a flat max-w-xl is
+ * 576px, and two of those plus the gap overshoot the 1104px row by 72px.
+ * Below lg they stack full-width, and a lone quote just centres at that cap.
  */
 function TestimonialCard({ t, wide = false }: { t: Testimonial; wide?: boolean }) {
   return (
     <figure
       className={`glass flex flex-col rounded-2xl p-7 transition-colors duration-300 hover:border-primary/40 ${
-        wide ? "w-full max-w-xl" : "mr-6 w-[300px] shrink-0 sm:w-[380px]"
+        wide
+          ? "w-full max-w-xl lg:max-w-[calc(50%-0.75rem)]"
+          : "mr-6 w-[300px] shrink-0 sm:w-[380px]"
       }`}
     >
       <Stars rating={t.rating} label={`${t.rating} out of 5 stars`} />

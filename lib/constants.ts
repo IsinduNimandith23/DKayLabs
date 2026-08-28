@@ -887,6 +887,13 @@ export const TESTIMONIALS: Testimonial[] = [
     role: "Co-founder, The Brush Master",
     rating: 5,
   },
+  {
+    quote:
+      "DKayLABS did an incredible job building the website for FALLOWKIND. The design is clean, fast, and captures our brand aesthetic perfectly. Communication was smooth from start to finish, and he was super accommodating with unlimited revisions until everything was just right - definitely worth every penny if you need a standout site!",
+    name: "Saniru Senanayake",
+    role: "Co-founder, FALLOWKIND",
+    rating: 5,
+  },
 ];
 
 /**

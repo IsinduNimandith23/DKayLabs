@@ -25,7 +25,7 @@ const ROW_TINT: Record<(typeof modules.items)[number]["tone"], string> = {
 /** Honest per-module status: what runs, what's next, what's still on paper. */
 export default function MrpModules() {
   return (
-    <section className="relative py-20 sm:py-28">
+    <section className="relative py-16 sm:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-14 max-w-2xl">
           <Reveal>
@@ -49,22 +49,33 @@ export default function MrpModules() {
             {modules.items.map((item) => (
               <div
                 key={item.name}
-                className={`grid items-start gap-4 border-b border-ink/10 bg-surface/50 p-6 last:border-b-0 md:grid-cols-[200px_1fr_130px] md:gap-8 md:p-7 ${ROW_TINT[item.tone]}`}
+                className={`grid items-start gap-4 border-b border-ink/10 bg-surface/50 p-5 last:border-b-0 sm:p-6 md:grid-cols-[200px_1fr_130px] md:gap-8 md:p-7 ${ROW_TINT[item.tone]}`}
               >
-                <div>
-                  <h3 className="text-lg font-bold text-ink">{item.name}</h3>
-                  <p className="mt-1.5 font-mono text-[10.5px] uppercase tracking-[0.1em] text-muted-dim">
-                    {item.meta}
-                  </p>
+                {/* On a phone the status belongs on the same line as the module
+                    name - it's the whole point of the section, and stacked it
+                    ends up below the body copy. md:contents dissolves this
+                    wrapper so the three-column desktop grid is unchanged; the
+                    explicit col-start/row-start below are what keep the body in
+                    the middle column, since the DOM order is now name, status,
+                    body. */}
+                <div className="flex items-start justify-between gap-4 md:contents">
+                  <div className="md:col-start-1">
+                    <h3 className="text-lg font-bold text-ink">{item.name}</h3>
+                    <p className="mt-1.5 font-mono text-[10.5px] uppercase tracking-[0.1em] text-muted-dim">
+                      {item.meta}
+                    </p>
+                  </div>
+
+                  <span
+                    className={`mt-1 inline-flex shrink-0 items-center whitespace-nowrap rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.11em] md:col-start-3 md:mt-0 md:justify-self-end ${TONE[item.tone]}`}
+                  >
+                    {item.status}
+                  </span>
                 </div>
 
-                <p className="leading-relaxed text-muted">{item.body}</p>
-
-                <span
-                  className={`inline-flex shrink-0 items-center justify-self-start whitespace-nowrap rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.11em] md:justify-self-end ${TONE[item.tone]}`}
-                >
-                  {item.status}
-                </span>
+                <p className="leading-relaxed text-muted md:col-start-2 md:row-start-1">
+                  {item.body}
+                </p>
               </div>
             ))}
           </div>

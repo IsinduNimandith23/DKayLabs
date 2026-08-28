@@ -17,7 +17,7 @@ const { dashboard } = MRP_PAGE;
 export default function MrpDashboardMock() {
   return (
     <Reveal delay={0.15}>
-      <figure className="mt-16 overflow-hidden rounded-2xl border border-ink/10 bg-base/80 shadow-bevel backdrop-blur sm:mt-20">
+      <figure className="mt-12 overflow-hidden rounded-2xl border border-ink/10 bg-base/80 shadow-bevel backdrop-blur sm:mt-20">
         {/* Browser chrome, so it reads as software rather than a table. */}
         <div className="flex items-center gap-2 border-b border-ink/10 bg-surface/70 px-4 py-3">
           <span className="h-2.5 w-2.5 rounded-full bg-ink/15" />
@@ -28,32 +28,38 @@ export default function MrpDashboardMock() {
           </span>
         </div>
 
-        <div className="p-5 sm:p-7">
+        <div className="p-4 sm:p-7">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-ink">{dashboard.title}</h2>
+              <h2 className="text-lg font-bold text-ink sm:text-xl">
+                {dashboard.title}
+              </h2>
               <p className="mt-1 text-[13px] text-muted-dim">
                 {dashboard.subtitle}
               </p>
             </div>
             {/* Looks like the primary action on the real screen. Not a link -
-                there is nothing behind it. */}
-            <span className="rounded-md bg-primary px-4 py-2 text-xs font-bold text-on-primary">
+                there is nothing behind it. ml-auto keeps it pinned right once
+                it wraps onto its own line on a phone, so it still reads as
+                toolbar chrome rather than a stray call to action. */}
+            <span className="ml-auto rounded-md bg-primary px-4 py-2 text-xs font-bold text-on-primary">
               {dashboard.action}
             </span>
           </div>
 
-          <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Two-up on a phone rather than a four-card stack - these are four
+              short figures, and stacking them buries the panels below. */}
+          <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
             {dashboard.kpis.map((kpi) => (
               <div
                 key={kpi.label}
-                className="rounded-xl border border-ink/10 bg-surface/60 p-4"
+                className="rounded-xl border border-ink/10 bg-surface/60 p-3 sm:p-4"
               >
                 <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted-dim">
                   {kpi.label}
                 </p>
                 <p
-                  className={`mt-2 text-3xl font-extrabold tabular-nums tracking-[-0.03em] ${
+                  className={`mt-2 text-2xl font-extrabold tabular-nums tracking-[-0.03em] sm:text-3xl ${
                     kpi.alert ? "text-amber-600 dark:text-amber-400" : "text-ink"
                   }`}
                 >

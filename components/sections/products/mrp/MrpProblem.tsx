@@ -46,7 +46,7 @@ function CheckIcon() {
 /** The spreadsheet, and what replaces it. Two cards, side by side. */
 export default function MrpProblem() {
   return (
-    <section className="relative py-20 sm:py-28">
+    <section className="relative py-16 sm:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-14 max-w-2xl">
           <Reveal>
@@ -67,7 +67,7 @@ export default function MrpProblem() {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Reveal>
-            <div className="glass h-full rounded-2xl p-8">
+            <div className="glass h-full rounded-2xl p-6 sm:p-8">
               <p className="font-mono text-[10.5px] uppercase tracking-[0.13em] text-muted-dim">
                 {problem.now.cap}
               </p>
@@ -91,7 +91,7 @@ export default function MrpProblem() {
           <Reveal delay={0.12}>
             {/* The answer card - orange edge and a top wash so the eye lands
                 here second. */}
-            <div className="glass relative h-full overflow-hidden rounded-2xl border-primary/30 p-8 shadow-glow-soft">
+            <div className="glass relative h-full overflow-hidden rounded-2xl border-primary/30 p-6 shadow-glow-soft sm:p-8">
               <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary/[0.08] to-transparent" />
               <div className="relative">
                 <p className="font-mono text-[10.5px] uppercase tracking-[0.13em] text-primary">

@@ -17,7 +17,7 @@ const { voices } = MRP_PAGE;
  */
 export default function MrpVoices() {
   return (
-    <section className="relative py-20 sm:py-28">
+    <section className="relative py-16 sm:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-14 max-w-3xl">
           <Reveal>
@@ -45,7 +45,7 @@ export default function MrpVoices() {
                 key={pair.quote}
                 className="grid border-b border-ink/10 last:border-b-0 md:grid-cols-2"
               >
-                <blockquote className="border-b border-ink/10 bg-sunken/60 p-6 md:border-b-0 md:border-r md:p-8">
+                <blockquote className="border-b border-ink/10 bg-sunken/60 p-5 sm:p-6 md:border-b-0 md:border-r md:p-8">
                   <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-muted-dim">
                     {voices.quoteCap}
                   </p>
@@ -54,7 +54,7 @@ export default function MrpVoices() {
                   </p>
                 </blockquote>
 
-                <div className="bg-surface/50 p-6 md:p-8">
+                <div className="bg-surface/50 p-5 sm:p-6 md:p-8">
                   <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-primary">
                     {voices.answerCap}
                   </p>
