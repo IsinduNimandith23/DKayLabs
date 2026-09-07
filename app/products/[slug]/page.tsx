@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import ProductDetail from "@/components/sections/ProductDetail";
 import CtaBand from "@/components/sections/CtaBand";
 import MrpPage from "@/components/sections/products/mrp";
+import JsonLd from "@/components/seo/JsonLd";
+import { productBreadcrumbSchema, productSchema } from "@/lib/schema";
 import { PRODUCTS, SITE } from "@/lib/constants";
 import { pageMetadata } from "@/lib/seo";
 
@@ -58,6 +60,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   return (
     <main className="pt-16">
+      {/* Both layouts get the same markup - the entity is the product, not the
+          template that happens to render it. */}
+      <JsonLd data={productSchema(product)} />
+      <JsonLd data={productBreadcrumbSchema(product)} />
       {RichPage ? <RichPage /> : <ProductDetail product={product} />}
       {/* A bespoke page closes with its own CTA, so the shared band would just
           stack a second one under it. The generic layout has no closing CTA of

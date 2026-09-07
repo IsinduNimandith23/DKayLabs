@@ -5,6 +5,8 @@ import SmoothScroll from "@/components/providers/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import JsonLd from "@/components/seo/JsonLd";
+import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { SITE } from "@/lib/constants";
 
 // Plus Jakarta Sans carries both display and body - a geometric grotesque in
@@ -46,24 +48,16 @@ export const metadata: Metadata = {
   creator: SITE.name,
   publisher: SITE.name,
   /*
-   * `max-image-preview: large` is what lets Google show a full-width
-   * thumbnail next to the result instead of a postage stamp.
-   *
    * NOTE: no `alternates.canonical` here on purpose. Child segments inherit
    * it, so a canonical set at the root would make all eight routes claim
    * "/" as their canonical URL. Each page sets its own via pageMetadata().
+   *
+   * NOTE: no `robots` block here either, for the same inheritance reason but
+   * with the opposite failure. app/not-found.tsx cannot export metadata, so a
+   * sitewide `index, follow` landed on the 404 alongside Next's automatic
+   * `noindex` - one response, two contradictory robots tags. The directives
+   * now live in pageMetadata() (lib/seo.ts), which every real route calls.
    */
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
   /*
    * Tab icon: the monster mark, not the wordmark - a 4.7:1 lockup is an
    * illegible sliver at 16px.
@@ -152,6 +146,11 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: noFlashThemeScript }} />
+        {/* Company + site identity, declared once for every route. Page-level
+            schema (services, products) references these nodes by @id rather
+            than redeclaring the organisation. */}
+        <JsonLd data={organizationSchema()} />
+        <JsonLd data={websiteSchema()} />
       </head>
       <body>
         <SmoothScroll>
