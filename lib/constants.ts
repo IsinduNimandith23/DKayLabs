@@ -21,9 +21,9 @@ export const SITE = {
   description:
     "DKayLABS is a digital services company building high-performance websites, SaaS platforms, and AI-powered products.",
   email: "contact@dkaylabs.com",
-  phone: "+94 77 037 2960",
+  phone: "+94 74 292 8989",
   /** Same number, digits only - the format wa.me links require. */
-  whatsapp: "94770372960",
+  whatsapp: "94742928989",
   /** Pre-typed into the chat when the floating WhatsApp button is tapped. */
   whatsappMessage: "Hi DKayLABS, I'd like to talk about a project.",
   location: "Colombo, Sri Lanka",

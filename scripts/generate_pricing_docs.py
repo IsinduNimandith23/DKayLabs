@@ -47,7 +47,7 @@ WASH = colors.HexColor("#FDF3F3")
 
 COMPANY = "DKayLABS"
 EMAIL = "contact@dkaylabs.com"
-PHONE = "+94 77 037 2960"
+PHONE = "+94 74 292 8989"
 LOCATION = "Colombo, Sri Lanka"
 
 DRAFT_NOTE = (
