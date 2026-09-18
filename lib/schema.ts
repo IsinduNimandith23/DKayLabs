@@ -33,12 +33,45 @@ const liveProfiles = SOCIALS.filter((s) => s.href !== "#").map((s) => s.href);
 export function organizationSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    /*
+     * Two types on one node. ProfessionalService is a LocalBusiness subtype,
+     * which is the vocabulary Google maps onto a Google Business Profile - the
+     * strongest brand-entity signal available to an agency with a real city.
+     * Organization leads because everything referencing ORG_ID (services,
+     * products, breadcrumbs) is describing the company, not a storefront.
+     *
+     * The address below carries locality + country but no street, so the
+     * Rich Results Test will flag `address` as incomplete for the
+     * LocalBusiness half. That is a warning, not an error, and inventing a
+     * street we don't publish would be worse than wearing the warning.
+     */
+    "@type": ["Organization", "ProfessionalService"],
     "@id": ORG_ID,
     name: SITE.name,
+    /*
+     * Google tokenises "dkaylabs" as d-kay-labs and hands the query to older
+     * entities that already own those tokens - dkaylaw.com, dkayofficials.com,
+     * D.Kay. Search Console showed the brand query averaging position 12.9,
+     * which is what losing that fight looks like. These are the spellings a
+     * person actually types; declaring them maps every variant onto THIS
+     * entity instead of leaving a young domain to win on inference alone.
+     */
+    alternateName: ["DKay LABS", "DKay Labs", "D Kay Labs", "DKayLabs"],
     url: SITE.url,
     description: SITE.description,
     slogan: SITE.tagline,
+    /*
+     * Year only - ISO 8601 permits the reduced form, and it is the honest
+     * precision. Its job is to separate this DKay from the ones that have been
+     * trading since the 2010s, not to claim a specific launch day.
+     */
+    foundingDate: "2026",
+    /*
+     * Derived from the same SERVICES array /services renders, so the topics we
+     * claim expertise in cannot drift from the ones we actually publish.
+     */
+    knowsAbout: SERVICES.map((service) => service.title),
+    areaServed: "Worldwide",
     logo: {
       "@type": "ImageObject",
       url: absoluteUrl("/Logo/monsterOrange.png"),

@@ -906,6 +906,6 @@ export const SOCIALS = [
   { label: "Instagram", href: "https://www.instagram.com/dkaylabs_/", key: "instagram" },
   { label: "TikTok", href: "https://www.tiktok.com/@dkaylabs", key: "tiktok" },
   { label: "YouTube", href: "#", key: "youtube" },
-  { label: "LinkedIn", href: "#", key: "linkedin" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/dkaylabs", key: "linkedin" },
   { label: "Discord", href: "#", key: "discord" },
 ] as const;
