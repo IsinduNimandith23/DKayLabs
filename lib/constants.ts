@@ -894,6 +894,20 @@ export const TESTIMONIALS: Testimonial[] = [
     role: "Co-founder, FALLOWKIND",
     rating: 5,
   },
+  {
+    quote:
+      "Since DKayLABS launched our new site, we've had a noticeable jump in enquiries coming straight from the website. He handled the design, the content, and the online payment setup end to end, so we didn't have to chase anyone. Professional work and a very easy process from start to finish.",
+    name: "Nimal Rathne",
+    role: "Co-founder, New Sagarika Driving School",
+    rating: 5,
+  },
+  {
+    quote:
+      "Isindu and the DKayLABS team are great to work with, and they did a really good job with our company website for CG Shift. We went through several iterations of the design and UX, and we received prompt responses and a very satisfying output. I already have recommended them and will continue to recommend them to anyone looking to get any web dev work done.",
+    name: "Chathura Goonatillake",
+    role: "Co-founder, CG Shift",
+    rating: 5,
+  },
 ];
 
 /**
