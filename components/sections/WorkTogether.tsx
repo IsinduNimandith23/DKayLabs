@@ -8,8 +8,9 @@ import RollText from "@/components/ui/RollText";
 type Status = "idle" | "submitting" | "success" | "error";
 
 // Underline-only fields: no box, just a hairline that brightens on focus.
-const labelClass = "font-machina text-sm text-ink/80";
-const fieldClass =
+// Shared with the /contact form.
+export const labelClass = "font-machina text-sm text-ink/80";
+export const fieldClass =
   "w-full border-0 border-b border-ink/40 bg-transparent px-0 pb-3 pt-2 font-machina text-[0.95rem] text-ink placeholder:text-ink/70 transition-colors duration-200 focus:border-primary focus:outline-none focus:ring-0";
 
 // The headline's three lines. `indent` pushes WORK across so it sits under
