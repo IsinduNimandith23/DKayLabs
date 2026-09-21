@@ -545,13 +545,13 @@ export const NAV_LINKS: NavLink[] = [
 export type Service = {
   title: string;
   description: string;
-  /** Inline icon key, resolved in ServiceCard. */
+  /** Inline icon key, resolved in components/ui/ServiceIcon.tsx. */
   icon: IconKey;
   status: "available" | "coming-soon";
   /** Slideshow shown beside the homepage services list on hover. Paths in
    *  /public. Falls back to portfolio screenshots when unset. */
   images?: string[];
-  /** Long-form copy shown in the ServiceModal when the card is clicked. */
+  /** Long-form copy shown when the service's row is opened on /services. */
   detail: {
     /** One or two paragraphs expanding on `description`. */
     overview: string;
@@ -563,7 +563,7 @@ export type Service = {
 };
 
 /**
- * Shown in every ServiceModal. We quote per-project rather than list prices,
+ * Shown in the How We Work panel on /services. We quote per-project rather than list prices,
  * so this is deliberately a single shared line - edit once, changes everywhere.
  */
 export const PRICING_NOTE =

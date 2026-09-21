@@ -11,7 +11,7 @@ import { useLenis } from "lenis/react";
  * `.lenis-stopped`, styled in globals.css), and the body overflow covers
  * the reduced-motion path where Lenis isn't mounted at all.
  *
- * The padding compensation mirrors ServiceModal. With `scrollbar-gutter:
+ * The padding compensation mirrors the old ServiceModal. With `scrollbar-gutter:
  * stable` on <html> the gap is already 0, so it only does work on browsers
  * without that support.
  */

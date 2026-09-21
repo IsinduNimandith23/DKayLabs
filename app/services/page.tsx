@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Services from "@/components/sections/Services";
+import HowWeWork from "@/components/sections/HowWeWork";
+import Testimonials from "@/components/sections/Testimonials";
+import WorkTogether from "@/components/sections/WorkTogether";
 import JsonLd from "@/components/seo/JsonLd";
 import { servicesSchema } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
@@ -16,6 +19,9 @@ export default function ServicesPage() {
     <main className="pt-nav">
       <JsonLd data={servicesSchema()} />
       <Services />
+      <HowWeWork />
+      <Testimonials />
+      <WorkTogether />
     </main>
   );
 }

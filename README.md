@@ -86,7 +86,7 @@ components/
   sections/           Hero, Services, About, Contact
   three/              HeroScene (R3F canvas), AngularCrystal (3D object)
   providers/          SmoothScroll (Lenis)
-  ui/                 Logo, ServiceCard, Reveal, GlowOrb
+  ui/                 Logo, ServicesIndex, Reveal, GlowOrb
 lib/
   constants.ts        Site copy, nav, services, socials
   hooks/              useReducedMotion, useIsMobile

@@ -8,6 +8,7 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 export type ServiceRow = {
   title: string;
   description: string;
+  href: string;
   comingSoon: boolean;
   images: string[];
 };
@@ -46,7 +47,7 @@ export default function ServicesList({ services }: { services: ServiceRow[] }) {
             return (
               <li key={service.title} className="border-t border-ink/20">
                 <Link
-                  href="/services"
+                  href={service.href}
                   onMouseEnter={() => canHover && setActive(i)}
                   // Hover devices only - on touch, focus lands before the
                   // click and would skip the "first tap unfolds" step.

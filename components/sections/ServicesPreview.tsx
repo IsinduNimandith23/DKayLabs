@@ -1,31 +1,23 @@
 import WordReveal from "@/components/ui/WordReveal";
 import ServicesList, { type ServiceRow } from "@/components/ui/ServicesList";
-import { PROJECTS, SERVICES } from "@/lib/constants";
+import { SERVICES } from "@/lib/constants";
+import { serviceImages, serviceSlug } from "@/lib/services";
 
 /**
  * Homepage services glance - an interactive list. The full write-ups,
- * pricing, and enquiry flow live on /services.
+ * pricing, and enquiry flow live on /services; each row deep-links to its
+ * own entry there.
  *
  * Note: never size text here with `text-base` - the theme defines a colour
  * token named `base`, so that class resolves to the page background colour.
  */
 
-const ALL_SHOTS = PROJECTS.flatMap((p) => (p.image ? [p.image] : []));
-
-/** A service's own images, else screenshots of work under it, else all work. */
-function imagesFor(title: string, own?: string[]) {
-  if (own?.length) return own;
-  const matching = PROJECTS.filter((p) => p.service === title).flatMap((p) =>
-    p.image ? [p.image] : [],
-  );
-  return matching.length ? matching : ALL_SHOTS;
-}
-
 const ROWS: ServiceRow[] = SERVICES.map((s) => ({
   title: s.title,
   description: s.description,
+  href: `/services#${serviceSlug(s.title)}`,
   comingSoon: s.status === "coming-soon",
-  images: imagesFor(s.title, s.images),
+  images: serviceImages(s),
 }));
 
 export default function ServicesPreview() {

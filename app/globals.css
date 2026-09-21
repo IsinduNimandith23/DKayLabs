@@ -225,7 +225,7 @@
     /* Belt-and-braces with body: no horizontal overflow, ever. */
     overflow-x: clip;
     /* Reserve the scrollbar track always. Without this, locking scroll for
-       the nav overlay (or ServiceModal) widens the viewport by the 10px
+       the nav overlay widens the viewport by the 10px
        custom scrollbar below, which shifts the centred nav capsule -
        body { padding-right } can't compensate a position:fixed element. */
     scrollbar-gutter: stable;
