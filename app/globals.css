@@ -125,6 +125,7 @@
     --nav-w: calc(100% - 2rem); /* collapsed width = viewport - 2 gutters */
     --nav-btn-h: 2.25rem;
     --nav-drop: 0.75rem; /* downward nudge once collapsed */
+    --nav-top: 0.75rem; /* resting gap above the bar, before any scroll */
 
     /* Surfaces - brand white as the page, with the card/well shades
        derived from it so light mode stays in the same warm family. */
@@ -423,7 +424,7 @@ html.lenis body {
        than margin alone (variance 52.6 vs 9.6), which is why the bar read
        as flat tint you could still see sharp text through. The capsule
        already relayouts every frame for max-width, so margin is free. */
-    margin-top: calc(var(--nav-drop) * var(--nav-p, 0));
+    margin-top: calc(var(--nav-top) + var(--nav-drop) * var(--nav-p, 0));
     /* `layout style` only - `paint` would make this a containing block for
        position: fixed descendants. Measured to not affect the blur. */
     contain: layout style;
@@ -548,7 +549,7 @@ html.lenis body {
   /* Top padding that clears the fixed navbar. Used by every <main> except
      the homepage, where the bar floats over the full-bleed hero by design. */
   .pt-nav {
-    padding-top: calc(var(--nav-h) + 1.75rem);
+    padding-top: calc(var(--nav-top) + var(--nav-h) + 1.75rem);
   }
 }
 

@@ -16,7 +16,7 @@ import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
  *            that word sliding up inside it
  *
  * The dot is a solid colour picked from the surface under the pointer
- * (see isDarkUnder) - white on dark sections, brand black on light ones.
+ * (see isDarkUnder) - white on dark sections, brand orange on light ones.
  * Not `mix-blend-mode: difference`: that inverts hue too, so the dot turned
  * blue over the orange headline.
  *
@@ -153,12 +153,12 @@ export default function Cursor() {
         transform: "translate3d(-200px, -200px, 0)",
       }}
     >
-      {/* Dot - solid, white on dark surfaces and brand black on light. */}
+      {/* Dot - solid, white on dark surfaces and brand orange on light. */}
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
         <motion.circle
           cx={50}
           cy={50}
-          fill={onDark ? "#FFFFFF" : "#131313"}
+          fill={onDark ? "#FFFFFF" : "rgb(var(--c-primary))"}
           style={{ transition: "fill 0.2s" }}
           initial={false}
           animate={{ r: dotR }}
