@@ -13,7 +13,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function ServicesPage() {
   return (
-    <main className="pt-16">
+    <main className="pt-nav">
       <JsonLd data={servicesSchema()} />
       <Services />
     </main>

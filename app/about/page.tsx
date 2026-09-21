@@ -11,7 +11,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function AboutPage() {
   return (
-    <main className="pt-16">
+    <main className="pt-nav">
       <About />
     </main>
   );

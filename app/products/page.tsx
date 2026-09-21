@@ -12,7 +12,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function ProductsPage() {
   return (
-    <main className="pt-16">
+    <main className="pt-nav">
       <Products />
       <CtaBand />
     </main>

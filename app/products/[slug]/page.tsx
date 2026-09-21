@@ -59,7 +59,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const RichPage = RICH_PAGES[product.slug];
 
   return (
-    <main className="pt-16">
+    <main className="pt-nav">
       {/* Both layouts get the same markup - the entity is the product, not the
           template that happens to render it. */}
       <JsonLd data={productSchema(product)} />

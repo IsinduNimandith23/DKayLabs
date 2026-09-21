@@ -1,119 +1,162 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import WordReveal from "@/components/ui/WordReveal";
-import { SITE } from "@/lib/constants";
+import { motion, useReducedMotion } from "framer-motion";
 
-// Staggered entrance for the hero copy.
+import DotField from "@/components/ui/DotField";
+
+/**
+ * Homepage hero - type only, no artwork.
+ *
+ * Every number below is measured off the Figma export (7681x4321 = a
+ * 1920x1080 frame at 4.0005x) by reading the PNG's pixels and solving against
+ * Neue Machina's own metrics (upem 1000, cap 0.705, asc 0.735, desc -0.23,
+ * lineGap 0, x-height 0.495). Nothing here is eyeballed.
+ *
+ * Headline: font-size 214px at a 1920 frame = 11.144vw. Cap height measures
+ * 603.5px in the export against a predicted 603.6 - the size is exact.
+ *
+ * LEADING IS NOT UNIFORM. The three baseline advances in the Figma are
+ * 0.6343em, 0.4252em and 0.6005em - the lines were placed by hand, almost
+ * certainly so the gaps read evenly to the eye despite "meets" being all
+ * x-height where the others are caps. A single `line-height` cannot
+ * reproduce that, so each line carries its own offset.
+ *
+ * The mechanism: line-height is 1, which is the one value where the glyphs
+ * sit entirely INSIDE the line box (asc 0.735 + desc 0.23 = 0.965 < 1), so
+ * `overflow-hidden` masks the reveal without shaving a cap or a descender
+ * and needs no padding/negative-margin compensation at all. Each line then
+ * pulls itself up by (advance - 1) to land on its measured baseline.
+ * `flex flex-col` is required: as plain blocks these margins would collapse.
+ */
+const LINES: { text: string; bold?: boolean; mt?: string }[] = [
+  { text: "Where" },
+  { text: "CODE", bold: true, mt: "-0.3657em" }, // advance 0.6343em
+  { text: "meets", mt: "-0.5748em" }, //             advance 0.4252em
+  { text: "CRAFT.", bold: true, mt: "-0.3995em" }, // advance 0.6005em
+];
+
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.18, delayChildren: 0.3 } },
+  show: { transition: { staggerChildren: 0.11, delayChildren: 0.15 } },
 };
-const item = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] } },
+
+// 102% clears the line box (the glyphs occupy 0.965 of it), so each line is
+// fully hidden behind its mask before it rises.
+const line = {
+  hidden: { y: "102%" },
+  show: { y: "0%", transition: { duration: 1.05, ease: [0.16, 1, 0.3, 1] } },
+};
+
+const cta = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export default function Hero() {
+  const reduced = useReducedMotion();
+
   return (
     <section
       id="top"
       className="relative flex min-h-[100svh] items-center overflow-hidden"
     >
       {/*
-        Hero artwork - full-bleed, composed with open copy space on the left
-        and the subject on the right. See the note on the Image below for why
-        it switches between cover and contain by breakpoint.
+        Oversized on purpose: the field lags the page by PARALLAX of the
+        scroll, so a flush inset-0 canvas would open a gap along the top edge
+        as the hero leaves. 15% of headroom covers the whole travel, and the
+        section already clips.
       */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/hero-poster.jpg"
-          alt=""
-          aria-hidden
-          fill
-          priority
-          quality={90}
-          sizes="100vw"
-          /*
-            lg+: `contain` so the artwork (1672x941, ~16:9) is never cropped.
-            `cover` on a full-bleed hero was cutting ~11% off the sides and
-            scaling it up. Anchored right so any slack falls on the left,
-            which is where the copy sits anyway.
-            Below lg: `cover` still, since `contain` would letterbox badly
-            on a portrait viewport.
-          */
-          className="object-cover object-[62%_center] lg:object-contain lg:object-right dark:opacity-[0.72]"
-        />
+      <DotField className="absolute inset-x-0 -top-[15%] z-0 h-[130%] w-full" />
 
-        {/* Small screens only: the crop puts the subject behind the copy
-            there, so a top-down fade is needed for legibility.
-            From lg up the artwork is left completely un-washed in light mode.
-            Uses `base` rather than white so it inverts in dark mode. */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-base/90 via-base/65 to-transparent lg:hidden" />
-
-        {/*
-          Dark mode only.
-          The artwork is a LIGHT asset - white background - so on a black page
-          two things break: the copy (now near-white) lands on a white field
-          and disappears, and the page/image boundary shows as a hard vertical
-          seam. This scrim keeps the left ~40% solid `base`, so the copy always
-          sits on the page colour, then fades out before the subject so the
-          robot itself is never covered.
-          The proper fix is a dark-background export of the artwork; this makes
-          the light asset usable in the meantime.
-        */}
-        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-base from-40% to-transparent to-68% dark:lg:block" />
-      </div>
-
-      {/* Foreground content - left aligned into the artwork's copy space.
-          Near-full-width container so the copy sits close to the viewport
-          edge rather than floating in a narrow centred column. */}
-      <div className="relative z-10 mx-auto w-full max-w-[1920px] px-6 sm:px-10 lg:px-32 2xl:px-44">
+      {/*
+        The frame insets the copy 227 of 1920px on BOTH sides = 11.82%, and
+        "Together?" sits flush to the right one. min() holds that ratio up to
+        1920 and then freezes it, matching the max on the font sizes so the
+        whole composition stops scaling at the frame width.
+      */}
+      <div className="relative z-10 mx-auto w-full max-w-[1920px] px-6 sm:px-10 lg:px-[min(11.82vw,227px)]">
         <motion.div
           variants={container}
-          initial="hidden"
-          animate="show"
-          className="max-w-xl text-left 2xl:max-w-3xl"
+          initial={reduced ? undefined : "hidden"}
+          animate={reduced ? undefined : "show"}
+          className="flex flex-col gap-12 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
         >
-          <motion.p
-            variants={item}
-            className="label-mono mb-4"
-          >
-            Digital Services · Engineered to Win
-          </motion.p>
-
-          <h1 className="text-4xl font-bold leading-[1.05] sm:text-5xl lg:text-6xl 2xl:text-7xl">
-            <WordReveal text="WE BUILD WHAT" className="text-metal" delay={0.3} />
-            <br />
-            <WordReveal text="PUTS YOU " className="text-ink" delay={0.6} />
-            <WordReveal text="ABOVE" className="text-primary" delay={0.8} />
+          <h1 className="flex flex-col font-machina text-[clamp(3rem,11.144vw,13.375rem)] leading-none">
+            {LINES.map(({ text, bold, mt }) => (
+              <span
+                key={text}
+                style={{ marginTop: mt }}
+                className="block overflow-hidden"
+              >
+                <motion.span
+                  variants={reduced ? undefined : line}
+                  className={`block ${
+                    bold ? "font-extrabold text-primary" : "font-light text-ink"
+                  }`}
+                >
+                  {text}
+                </motion.span>
+              </span>
+            ))}
           </h1>
 
-          <motion.p
-            variants={item}
-            className="mt-6 max-w-md text-base text-muted sm:text-lg 2xl:max-w-xl 2xl:text-xl"
-          >
-            {SITE.name} crafts cutting-edge websites, SaaS platforms, and AI-powered
-            products for brands that refuse to settle for ordinary.
-          </motion.p>
+          {/*
+            CTA. font-size 74.8px at a 1920 frame = 3.898vw; baseline advance
+            0.7849em.
 
+            lg:mb lifts it onto the Figma's vertical: bottom-aligning the two
+            boxes would drop "Together?"'s baseline 34.5px BELOW "CRAFT."'s,
+            where the frame puts it 12.6px above - 47.1px of correction, which
+            is 0.63 of the CTA's own em.
+
+            lg:-mr makes the INK flush to the right inset rather than the
+            advance box; '?' carries a 0.374em right side bearing that would
+            otherwise hold the block 28px short of where the frame has it.
+          */}
           <motion.div
-            variants={item}
-            className="mt-10 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center"
+            variants={reduced ? undefined : cta}
+            className="shrink-0 lg:mb-[0.63em] lg:-mr-[0.374em]"
           >
-            <Link
-              href="/services"
-              className="btn-shine group cursor-pointer rounded-full bg-primary px-8 py-4 text-center text-sm font-bold uppercase tracking-wider text-on-primary shadow-glow transition-all duration-200 hover:bg-primary-dark hover:shadow-glow-lg"
-            >
-              Explore Services
-            </Link>
             <Link
               href="/contact"
-              className="cursor-pointer rounded-full border border-ink/15 bg-surface/80 px-8 py-4 text-center text-sm font-bold uppercase tracking-wider text-ink backdrop-blur transition-all duration-200 hover:border-primary/40 hover:bg-surface"
+              className="group inline-flex flex-col items-center font-machina text-[clamp(1.5rem,3.898vw,4.675rem)] leading-none text-ink"
             >
-              Start a Project
+              {/* Centred over "Together?", as the frame has it: the two ink
+                  spans' centres sit 11.5px apart out of 1528, and "Build" is
+                  indented 0.779em - far past any side bearing.
+
+                  The nudge is the difference between how CSS centres and how
+                  the frame does. `items-center` centres ADVANCE boxes, and
+                  '?' carries a 0.374em right side bearing, so centring the
+                  boxes lands "Build" 0.176em right of where centring the ink
+                  puts it. Translate, so it stays out of layout. */}
+              <span className="inline-flex -translate-x-[0.176em] items-start gap-[0.0907em]">
+                <span className="font-normal">Build</span>
+                {/* 0.735em across - exactly the ascender height - and offset
+                    so its top lands on the ascender and its bottom on the
+                    baseline, which is how the frame places it. */}
+                <span
+                  aria-hidden
+                  className="mt-[0.0175em] grid h-[0.735em] w-[0.735em] shrink-0 place-items-center rounded-full bg-primary text-on-primary transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[0.12em] group-hover:translate-x-[0.12em] group-hover:bg-primary-dark"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.75}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-[0.411em] w-[0.411em]"
+                  >
+                    <path d="M7 17 17 7" />
+                    <path d="M8 7h9v9" />
+                  </svg>
+                </span>
+              </span>
+              <span className="font-extrabold" style={{ marginTop: "-0.2151em" }}>
+                Together?
+              </span>
             </Link>
           </motion.div>
         </motion.div>

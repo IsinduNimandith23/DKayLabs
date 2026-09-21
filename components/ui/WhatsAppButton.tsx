@@ -11,8 +11,9 @@ import { SITE } from "@/lib/constants";
  * become the containing block for `position: fixed`. Rendering from a page
  * would break the pinning; rendering from the layout does not.
  *
- * Sits at z-40: under the navbar, and well under the z-[100] ServiceModal so
- * it never floats over an open dialog.
+ * Lowest rung of the overlay ladder at z-40:
+ *   40 WhatsApp · 109 nav overlay · 110 navbar · 200 ServiceModal
+ * so it never floats over the menu or an open dialog.
  */
 export default function WhatsAppButton() {
   const reduced = useReducedMotion();

@@ -3,6 +3,98 @@
 @tailwind utilities;
 
 /* ============================================================
+   NEUE MACHINA - display face for the hero
+   ============================================================
+   Drop the font files into public/fonts/ using the names below.
+   The release ships a mix of .otf and .ttf, so each weight lists both
+   and the browser takes whichever one is actually present - no build
+   step cares, and a missing file just falls back to the stack rather
+   than failing (which is why this is plain @font-face and not
+   next/font/local: the latter throws at build time on a missing file).
+
+   Weights map to the brand spec:
+     300 Light     -> white headline words
+     400 Regular   -> "Build"
+     800 Ultrabold -> orange headline words + "Together?"
+   The rest are declared so the family is complete if it spreads
+   beyond the hero later.
+   ============================================================ */
+@font-face {
+  font-family: "Neue Machina";
+  src:
+    url("/fonts/NeueMachina-Ultralight.otf") format("opentype"),
+    url("/fonts/NeueMachina-Ultralight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Machina";
+  src:
+    url("/fonts/NeueMachina-Light.otf") format("opentype"),
+    url("/fonts/NeueMachina-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Machina";
+  src:
+    url("/fonts/NeueMachina-Regular.otf") format("opentype"),
+    url("/fonts/NeueMachina-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Machina";
+  src:
+    url("/fonts/NeueMachina-Medium.otf") format("opentype"),
+    url("/fonts/NeueMachina-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Machina";
+  src:
+    url("/fonts/NeueMachina-Bold.otf") format("opentype"),
+    url("/fonts/NeueMachina-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Machina";
+  src:
+    url("/fonts/NeueMachina-Ultrabold.otf") format("opentype"),
+    url("/fonts/NeueMachina-Ultrabold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Machina";
+  src:
+    url("/fonts/NeueMachina-Black.otf") format("opentype"),
+    url("/fonts/NeueMachina-Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* The navbar scrub position, 0 (full-bleed) to 1 (collapsed capsule).
+   Registering it makes it interpolable and gives it a typed initial value.
+   Support is progressive enhancement only - every var(--nav-p) below keeps
+   its `, 0` fallback so browsers without @property don't hit
+   "invalid at computed-value time" and drop the whole declaration. */
+@property --nav-p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* ============================================================
    DKAYLABS - base layer
    ============================================================ */
 @layer base {
@@ -19,55 +111,111 @@
               on-primary(black)/primary 6.4:1 · primary as text 6.4:1
      ---------------------------------------------------------- */
   :root {
-    --nav-h: 4.5rem;
     color-scheme: light;
 
-    /* Surfaces */
-    --c-base: 250 250 250; /* #FAFAFA */
-    --c-surface: 255 255 255; /* #FFFFFF */
-    --c-sunken: 240 240 241; /* #F0F0F1 */
+    /* ----------------------------------------------------------
+       NAVBAR GEOMETRY
+       The bar collapses from full-bleed to a centred capsule as you
+       scroll. --nav-p (0..1) is the scrub position, written to the
+       <header> from JS; everything below is derived from it in CSS so
+       the geometry survives resize with no listener. See .nav-capsule.
+       ---------------------------------------------------------- */
+    --nav-h: 3rem; /* 48px bar */
+    --nav-gutter: 1rem;
+    --nav-w: calc(100% - 2rem); /* collapsed width = viewport - 2 gutters */
+    --nav-btn-h: 2.25rem;
+    --nav-drop: 0.75rem; /* downward nudge once collapsed */
 
-    /* Brand orange - full vividness at rest, darkening to #CC4A00 on hover. */
-    --c-primary: 255 94 0; /* #FF5E00 */
-    --c-primary-dark: 204 74 0; /* #CC4A00 - hover/pressed */
-    --c-primary-light: 255 126 51; /* #FF7E33 */
+    /* Surfaces - brand white as the page, with the card/well shades
+       derived from it so light mode stays in the same warm family. */
+    --c-base: 242 240 239; /* #F2F0EF - brand white */
+    --c-surface: 251 250 249; /* #FBFAF9 */
+    --c-sunken: 231 228 226; /* #E7E4E2 */
 
-    --c-accent: 255 94 0; /* #FF5E00 */
+    /* Brand orange - full vividness at rest, darkening on hover. */
+    --c-primary: 232 79 3; /* #E84F03 - brand orange */
+    --c-primary-dark: 197 67 3; /* #C54303 - hover/pressed */
+    --c-primary-light: 244 117 58; /* #F4753A */
 
-    /* White label on the orange fill (brand choice).
-       Note: 3.06:1 at rest, 4.62:1 on the hover shade. */
+    --c-accent: 232 79 3; /* #E84F03 */
+
+    /* White label on the orange fill (brand choice). 3.78:1 at rest,
+       5.0:1 on the hover shade - fine for the bold uppercase labels it
+       is used on, which count as large text. */
     --c-on-primary: 255 255 255;
 
     /* Text */
-    --c-ink: 10 10 10; /* #0A0A0A */
-    --c-muted: 82 82 91; /* #52525B */
-    --c-muted-dim: 113 113 122; /* #71717A */
+    --c-ink: 19 19 19; /* #131313 - brand black */
+    --c-muted: 90 87 84; /* #5A5754 */
+    --c-muted-dim: 122 118 114; /* #7A7672 */
 
     /* Shadow tint */
-    --c-shadow: 10 10 10;
+    --c-shadow: 19 19 19;
+
+    /* Navbar glass - matched to the reference, measured rather than guessed.
+       The tint is one fixed neutral grey in BOTH themes, exactly as the
+       reference does it: 186 darkens a white page and lifts a black one, so
+       the bar always reads as a solid frosted object rather than page
+       colour. (Tinting with --c-surface made it white-on-white and the
+       capsule vanished; tinting with --c-ink separated but stayed far too
+       sheer, especially on dark.)
+
+       Alphas are the reference's own 0.4 / 0.6, used as-is. It stacks tint
+       and blur as two layers so the tint lands twice (see .nav-glass), but
+       measuring the live site showed that doubling is far weaker in
+       practice than the arithmetic suggests - one layer at these raw values
+       renders within a few levels of theirs (~227 vs ~219 over white,
+       ~121 vs ~118-143 over black). Compensating for it pushed the bar too
+       opaque and killed the see-through-the-artwork quality that makes it
+       read as glass. */
+    --nav-scrim: rgb(186 186 186 / 0.4);
+    --nav-ring: rgb(var(--c-ink) / 0.12);
+    --nav-shadow: 0 10px 30px -14px rgb(var(--c-shadow) / 0.35);
+    --c-nav-btn: var(--c-ink);
+    --nav-btn-a: 0.055;
+    --nav-btn-edge-a: 0.1;
   }
 
   .dark {
     color-scheme: dark;
 
-    --c-base: 10 10 10; /* #0A0A0A - black page */
-    --c-surface: 23 23 23; /* #171717 - elevated card */
-    --c-sunken: 5 5 5; /* #050505 */
+    --c-base: 19 19 19; /* #131313 - brand black page */
+    --c-surface: 28 28 28; /* #1C1C1C - elevated card */
+    --c-sunken: 13 13 13; /* #0D0D0D */
 
-    /* Same brand orange - on black it reads at 6.46:1, so it needs no shift */
-    --c-primary: 255 94 0; /* #FF5E00 */
-    --c-primary-dark: 204 74 0; /* #CC4A00 - hover/pressed */
-    --c-primary-light: 255 126 51; /* #FF7E33 */
+    /* Same brand orange - on #131313 it reads at 4.8:1, so it needs no shift */
+    --c-primary: 232 79 3; /* #E84F03 */
+    --c-primary-dark: 197 67 3; /* #C54303 - hover/pressed */
+    --c-primary-light: 244 117 58; /* #F4753A */
 
-    --c-accent: 255 94 0; /* #FF5E00 */
+    --c-accent: 232 79 3; /* #E84F03 */
 
     --c-on-primary: 255 255 255; /* white label on orange fills */
 
-    --c-ink: 250 250 250; /* #FAFAFA */
-    --c-muted: 161 161 170; /* #A1A1AA */
-    --c-muted-dim: 138 138 147; /* #8A8A93 */
+    --c-ink: 242 240 239; /* #F2F0EF - brand white */
+    --c-muted: 168 165 162; /* #A8A5A2 */
+    --c-muted-dim: 139 136 133; /* #8B8885 */
 
     --c-shadow: 0 0 0;
+
+    /* Same grey, heavier alpha - lifting off near-black takes far more than
+       shading off near-white. The reference's own 0.4 -> 0.6 step. */
+    --nav-scrim: rgb(186 186 186 / 0.6);
+    --nav-ring: rgb(255 255 255 / 0.14);
+    --nav-shadow: 0 10px 30px -14px rgb(0 0 0 / 0.6);
+    --nav-btn-a: 0.085;
+    --nav-btn-edge-a: 0.14;
+  }
+
+  /* Desktop nav geometry. Matches Tailwind's `lg` so the component classes
+     and the utility classes break at the same width. */
+  @media (min-width: 1024px) {
+    :root {
+      --nav-h: 3.5rem; /* 56px */
+      --nav-gutter: 1.5rem;
+      --nav-w: 40.5rem; /* 648px collapsed capsule */
+      --nav-btn-h: 2.5rem;
+    }
   }
 
   html {
@@ -75,6 +223,11 @@
     scroll-behavior: auto;
     /* Belt-and-braces with body: no horizontal overflow, ever. */
     overflow-x: clip;
+    /* Reserve the scrollbar track always. Without this, locking scroll for
+       the nav overlay (or ServiceModal) widens the viewport by the 10px
+       custom scrollbar below, which shifts the centred nav capsule -
+       body { padding-right } can't compensate a position:fixed element. */
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -82,17 +235,13 @@
     /* Decorative glow orbs bleed past the viewport edges by design -
        clip them so they never cause a horizontal scrollbar. */
     overflow-x: clip;
-    /* Neutral vertical wash + a faint orange bloom from the top.
-       Built from the theme variables, so it inverts with the theme. */
-    background-image:
-      radial-gradient(70% 50% at 50% -10%, rgb(var(--c-accent) / 0.07), transparent 70%),
-      linear-gradient(
-        180deg,
-        rgb(var(--c-surface)) 0%,
-        rgb(var(--c-base)) 55%,
-        rgb(var(--c-sunken)) 100%
-      );
-    background-attachment: fixed;
+    /* Flat page colour, deliberately. This used to be a vertical wash from
+       --c-surface through --c-base to --c-sunken plus an orange bloom, which
+       meant no two sections sat on the same value. The brand palette is a
+       single page colour (#131313 dark / #F2F0EF light) running edge to edge,
+       so the hero's ground continues uninterrupted down the whole document -
+       `bg-base` on body is the entire background now. */
+    background-image: none;
   }
 
   ::selection {
@@ -200,23 +349,158 @@ html.lenis body {
     transform: translateX(130%) skewX(-15deg);
   }
 
-  /* Orange underline link, used in the navbar. */
-  .nav-link {
-    @apply relative text-muted transition-colors duration-200 hover:text-ink;
+  /* ----------------------------------------------------------
+     NAVBAR
+     The bar starts full-bleed with no background and contracts into a
+     centred glass capsule as --nav-p goes 0 -> 1.
+
+     The width is pure CSS on purpose. Inside calc(), `100%` already IS
+     the viewport width, so the browser recomputes the capsule on resize
+     for free - no innerWidth read, no resize listener, and the
+     server-rendered --nav-p: 0 is already correct, so there's no flash
+     and no hydration mismatch. JS only ever writes the one number.
+     ---------------------------------------------------------- */
+  .nav-capsule {
+    position: relative;
+    width: 100%;
+    max-width: calc(100% - (100% - var(--nav-w)) * var(--nav-p, 0));
+    margin-inline: auto;
+    height: var(--nav-h);
+    padding-inline: var(--nav-gutter);
+    /* The downward nudge is margin, NOT transform - and there is no
+       will-change here either. A transform, or a will-change for one, on any
+       ancestor of a backdrop-filter element turns that ancestor into the
+       blur's backdrop root, so it samples almost nothing. Measured against
+       a striped backdrop, translate3d + will-change left the blur 5x weaker
+       than margin alone (variance 52.6 vs 9.6), which is why the bar read
+       as flat tint you could still see sharp text through. The capsule
+       already relayouts every frame for max-width, so margin is free. */
+    margin-top: calc(var(--nav-drop) * var(--nav-p, 0));
+    /* `layout style` only - `paint` would make this a containing block for
+       position: fixed descendants. Measured to not affect the blur. */
+    contain: layout style;
   }
-  .nav-link::after {
+
+  /* Entrance. Deliberately CSS rather than framer: framer leaves
+     `will-change: opacity, transform` on its wrapper after the animation
+     ends, which permanently degrades the blur for the same reason as above.
+     animation-fill-mode is `backwards`, not `both` - `both` would hold the
+     final `translate: 0 0`, and a zero translate is still a transform, so
+     the backdrop root would never go away. */
+  .nav-enter {
+    animation: nav-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  @keyframes nav-enter {
+    from {
+      opacity: 0;
+      translate: 0 -16px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* Tint and blur live on ONE element, deliberately.
+     The reference stacks them as two layers, blur above tint - but a
+     backdrop-filter samples everything painted behind it, which includes
+     the tint layer, so the tint lands twice and the bar comes out much
+     darker than its alpha says (measured 206 where 230 was intended).
+     On a single element the backdrop is the raw page, blurred once, with
+     the tint composited on top: exactly one application, and one backdrop
+     root instead of two. Tint and blur are still separate properties, so
+     nothing is lost by merging them.
+
+     The radius lives here rather than on a clipping parent: Safari leaks
+     square corners when a backdrop-filter is clipped by an ancestor's
+     overflow. The inset ring sharpens the edge and the drop shadow keeps
+     the capsule separated when it sits over busy artwork. */
+  .nav-glass {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    pointer-events: none;
+    /* Never a true 0. Keeping the layer composited at rest means the first
+       visible frame of the backdrop-filter doesn't hitch. */
+    opacity: max(0.001, var(--nav-p, 0));
+    background: var(--nav-scrim);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow:
+      inset 0 0 0 1px var(--nav-ring),
+      var(--nav-shadow);
+  }
+
+  /* Buttons carry their own glass while the bar has none, then shed it as
+     the bar gains its own - the frost hands off from buttons to container. */
+  .nav-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--nav-btn-h);
+    border-radius: 9999px;
+    color: rgb(var(--c-ink));
+    background-color: rgb(
+      var(--c-nav-btn) / calc(var(--nav-btn-a) * (1 - var(--nav-p, 0)))
+    );
+    box-shadow: inset 0 0 0 1px
+      rgb(var(--c-nav-btn) / calc(var(--nav-btn-edge-a) * (1 - var(--nav-p, 0))));
+    /* Deliberately not background-color: transitioning a property that is
+       also scrubbed gives every scroll frame a 200ms tail. */
+    transition: color 0.2s;
+  }
+  /* No backdrop-filter here, deliberately. A button sits above .nav-glass,
+     so it samples the bar's tint as its own backdrop and applies it a
+     second time - which left every button showing as a distinct pill at
+     full collapse, when they are supposed to have faded out entirely.
+     Scaling the radius to blur(0px) does NOT fix it: a zero-radius
+     backdrop-filter still allocates a backdrop root and still
+     re-composites. The tint fade alone carries the hand-off, and dropping
+     the property also removes three backdrop roots from every frame. */
+
+  /* Hover lives on a pseudo-element for the same reason - its opacity is
+     never a scrubbed property, so it can transition freely. */
+  .nav-btn::before {
     content: "";
-    @apply absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all duration-300;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgb(var(--c-primary) / 0.14);
+    box-shadow: inset 0 0 0 1px rgb(var(--c-primary) / 0.45);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
   }
-  .nav-link:hover::after,
-  .nav-link[data-active="true"]::after {
-    @apply w-full;
+  .nav-btn:hover::before,
+  .nav-btn:focus-visible::before {
+    opacity: 1;
   }
-  /* Dropdown triggers wrap the label in .nav-link so the underline stops at
-     the text instead of running under the chevron - this keeps hovering
-     anywhere on the trigger (chevron included) still lighting it up. */
-  .group:hover > .nav-link::after {
-    @apply w-full;
+  .nav-btn:hover {
+    color: rgb(var(--c-primary));
+  }
+  .nav-btn > * {
+    position: relative;
+  }
+
+  /* The CTA's text label, which tucks itself away as the bar collapses.
+     At full width there's room to spell it out; by the time the capsule is
+     648px wide the centred wordmark needs that space, so it shrinks to the
+     bare envelope - which is what the reference does at every width. Driven
+     off --nav-p so it costs no React state and no extra scroll listener.
+     Opacity runs at double rate so it has faded before the box closes. */
+  .nav-cta-label {
+    max-width: calc(6rem * (1 - var(--nav-p, 0)));
+    opacity: calc(1 - var(--nav-p, 0) * 2);
+    padding-left: calc(0.5rem * (1 - var(--nav-p, 0)));
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* Top padding that clears the fixed navbar. Used by every <main> except
+     the homepage, where the bar floats over the full-bleed hero by design. */
+  .pt-nav {
+    padding-top: calc(var(--nav-h) + 1.75rem);
   }
 }
 

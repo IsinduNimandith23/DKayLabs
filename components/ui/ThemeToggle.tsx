@@ -19,10 +19,23 @@ import { useEffect, useState } from "react";
 export default function ThemeToggle({
   size = 44,
   className = "",
+  variant = "default",
 }: {
   /** Diameter in px - set to match the height of the row it sits in. */
   size?: number;
   className?: string;
+  /**
+   * "bare" drops the built-in border/background/blur *and* the inline
+   * sizing, so a caller can supply its own surface and dimensions (the
+   * navbar's .nav-btn, whose height is a responsive variable).
+   *
+   * This has to be a prop rather than overrides passed through `className`:
+   * Tailwind resolves classes of equal specificity by stylesheet order, not
+   * by their order in the string, so a passed-in `bg-transparent` would win
+   * or lose arbitrarily - and beating the inline `style` would need
+   * `!important` on top of that.
+   */
+  variant?: "default" | "bare";
 }) {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -76,8 +89,12 @@ export default function ThemeToggle({
           : "Toggle theme"
       }
       aria-pressed={mounted ? isDark : undefined}
-      style={{ height: size, width: size }}
-      className={`flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-ink/10 bg-surface/70 text-ink backdrop-blur transition-colors duration-200 hover:border-primary/40 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className}`}
+      style={variant === "bare" ? undefined : { height: size, width: size }}
+      className={`flex shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+        variant === "bare"
+          ? ""
+          : "border border-ink/10 bg-surface/70 text-ink backdrop-blur transition-colors duration-200 hover:border-primary/40 hover:text-primary"
+      } ${className}`}
     >
       {/* Sun and moon are swapped by opacity/rotation so there's no layout shift. */}
       <span className="relative block h-5 w-5">

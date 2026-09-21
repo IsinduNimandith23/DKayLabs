@@ -14,30 +14,53 @@ import { SITE } from "@/lib/constants";
  */
 
 /**
- * Both files are cropped to the same tight ink box (10560 x 2782), which is
- * what keeps the lockup from jumping sideways on a theme switch - the earlier
- * exports carried different transparent margins, so the light copy sat ~5px
- * further right than the dark one. Re-exports must stay trimmed and identical
- * in size, or that shift comes back.
+ * Within a variant, both files are cropped identically, which is what keeps
+ * the lockup from jumping sideways on a theme switch - the earlier exports
+ * carried different transparent margins, so the light copy sat ~5px further
+ * right than the dark one. Re-exports must stay identical in size *and* in
+ * their transparent padding, or that shift comes back.
  *
- * Tight-cropped also means `size` is the real ink height, so centering the box
+ * `size` is the rendered height of the artwork box, so centering the box
  * centers the letterforms - no optical baseline nudge belongs here.
  */
-const RATIO = 10560 / 2782;
-
-const ART = [
-  { src: "/Logo/BlackText.png", display: "block dark:hidden" },
-  { src: "/Logo/WhiteText.png", display: "hidden dark:block" },
-] as const;
+const VARIANTS = {
+  /** Full lockup: mascot glyph + wordmark. Tight-cropped to the ink box. */
+  lockup: {
+    ratio: 10560 / 2782,
+    art: [
+      { src: "/Logo/BlackText.png", display: "block dark:hidden" },
+      { src: "/Logo/WhiteText.png", display: "hidden dark:block" },
+    ],
+  },
+  /**
+   * Wordmark only, no mascot - reads better at the small size the navbar
+   * capsule allows. Both files are 8382x1829 with the ink ending at 8217,
+   * i.e. a ~2% transparent margin on the right. It is the same on both, so
+   * there is no theme-switch shift; it only means a centred wordmark sits
+   * ~1px left of true centre, which is below the threshold of noticing.
+   */
+  wordmark: {
+    ratio: 8382 / 1829,
+    art: [
+      { src: "/Logo/BlackTextLogo.png", display: "block dark:hidden" },
+      { src: "/Logo/WhiteTextLogo.png", display: "hidden dark:block" },
+    ],
+  },
+} as const;
 
 export default function Logo({
   size = 38,
   className = "",
+  variant = "lockup",
 }: {
   /** Rendered height of the wordmark, in px. Width scales with it. */
   size?: number;
   className?: string;
+  /** "wordmark" drops the mascot glyph - used in the navbar. */
+  variant?: keyof typeof VARIANTS;
 }) {
+  const { ratio: RATIO, art: ART } = VARIANTS[variant];
+
   return (
     <Link
       href="/"

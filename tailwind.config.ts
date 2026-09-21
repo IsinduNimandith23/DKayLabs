@@ -56,6 +56,10 @@ const config: Config = {
         },
       },
       fontFamily: {
+        // Brand display face. Declared with @font-face in app/globals.css
+        // rather than next/font/local - see the note there. Currently scoped
+        // to the hero; point `display` at it to take it sitewide.
+        machina: ["Neue Machina", "var(--font-display)", "system-ui", "sans-serif"],
         // Wired up to next/font CSS variables in app/layout.tsx
         display: ["var(--font-display)", "system-ui", "sans-serif"], // Plus Jakarta Sans
         // Same face as `display` by design - see the loader note in app/layout.tsx.

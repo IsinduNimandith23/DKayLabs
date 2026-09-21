@@ -13,7 +13,7 @@ import WordReveal from "@/components/ui/WordReveal";
  */
 export default function NotFound() {
   return (
-    <main className="pt-16">
+    <main className="pt-nav">
       <section className="relative pb-28 pt-16 sm:pb-36 sm:pt-24">
         <GlowOrb className="left-1/2 top-0 -translate-x-1/2 bg-primary/15" size={600} />
 

@@ -15,9 +15,9 @@ export const metadata: Metadata = pageMetadata({
 
 export default function PortfolioPage() {
   return (
-    <main className="pt-16">
+    <main className="pt-nav">
       {/* Top padding is lighter than the bottom - see the note in
-          components/sections/Products.tsx: <main> already adds pt-16 to
+          components/sections/Products.tsx: <main> already adds .pt-nav to
           clear the fixed navbar. */}
       <section className="relative pb-28 pt-16 sm:pb-32 sm:pt-20">
         <GlowOrb className="left-1/2 top-0 -translate-x-1/2 bg-primary/15" size={600} />

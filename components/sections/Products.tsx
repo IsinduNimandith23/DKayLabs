@@ -10,7 +10,7 @@ import { PRODUCTS } from "@/lib/constants";
  */
 export default function Products() {
   // Lighter top padding than bottom: this is always the first section on its
-  // route, where the parent <main> already adds pt-16 to clear the fixed
+  // route, where the parent <main> already adds .pt-nav to clear the fixed
   // navbar. A full py-36 on top of that left a dead band of empty space.
   return (
     <section id="products" className="relative scroll-mt-24 pb-28 pt-16 sm:pb-36 sm:pt-20">

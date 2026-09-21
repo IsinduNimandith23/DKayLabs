@@ -12,7 +12,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function PrivacyPage() {
   return (
-    <main className="pt-16">
+    <main className="pt-nav">
       <LegalDoc doc={PRIVACY} />
     </main>
   );
