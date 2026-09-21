@@ -77,7 +77,7 @@ function ShowcaseCard({ item, active }: { item: Showcase; active: boolean }) {
               src={item.image}
               alt=""
               fill
-              sizes="(max-width: 640px) 240px, 340px"
+              sizes="(max-width: 640px) 290px, 340px"
               quality={85}
               className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
             />
@@ -125,16 +125,20 @@ function ringOffset(i: number, active: number, n: number) {
   return d;
 }
 
-/** Fan pose for a card `d` places from centre. Past +-2 cards are hidden. */
-function pose(d: number) {
+/**
+ * Fan pose for a card `d` places from centre. Past +-2 cards are hidden.
+ * `compact` (phones) packs the neighbours in tighter so they peek in from the
+ * screen edges, and drops the outer pair, which would land fully off-screen.
+ */
+function pose(d: number, compact: boolean) {
   const a = Math.abs(d);
   return {
-    x: `${d * 62}%`,
-    y: `${a * a * 3.5}%`,
-    rotateZ: d * 7,
-    rotateY: -d * 16,
-    scale: 1 - a * 0.08,
-    opacity: a > 2 ? 0 : 1,
+    x: `${d * (compact ? 40 : 62)}%`,
+    y: `${a * a * (compact ? 3 : 3.5)}%`,
+    rotateZ: d * (compact ? 6 : 7),
+    rotateY: -d * (compact ? 20 : 16),
+    scale: 1 - a * (compact ? 0.12 : 0.08),
+    opacity: a > (compact ? 1 : 2) ? 0 : 1,
     // Same function list at every step so framer can tween between them.
     filter: `brightness(${[1, 0.7, 0.32][Math.min(a, 2)]}) blur(${[0, 0.15, 0.8][Math.min(a, 2)]}px)`,
   };
@@ -173,7 +177,17 @@ export default function FeaturedWork() {
   // A pan ends in a click on whatever card is under the pointer - swallow it.
   const dragged = useRef(false);
 
-  const go = useCallback((step: number) => setActive((a) => (a + step + n) % n), [n]);
+  // Width only - unlike useIsMobile, a touch tablet should keep the full fan.
+  const [compact, setCompact] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const sync = () => setCompact(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  const go =useCallback((step: number) => setActive((a) => (a + step + n) % n), [n]);
 
   // Re-armed on every change, so a manual step restarts the countdown.
   useEffect(() => {
@@ -190,7 +204,7 @@ export default function FeaturedWork() {
   };
 
   return (
-    <section className="relative overflow-x-clip py-28 sm:py-36">
+    <section className="relative overflow-x-clip py-20 sm:py-36">
       <div className="relative">
         <h2 className="px-6 text-center font-machina text-[length:clamp(2rem,8.5vw,5.5rem)] leading-none tracking-[-0.02em]">
           <WordReveal text="Proof" className="font-extralight text-ink" />
@@ -216,12 +230,12 @@ export default function FeaturedWork() {
               // Let the trailing click see the flag, then clear it.
               window.setTimeout(() => (dragged.current = false), 0);
             }}
-            className="relative mx-auto mt-14 aspect-[400/380] w-[240px] cursor-grab touch-pan-y select-none outline-none [perspective:1400px] active:cursor-grabbing sm:mt-20 sm:w-[290px] lg:w-[340px]"
+            className="relative mx-auto mt-12 aspect-[400/380] w-[72vw] max-w-[290px] cursor-grab touch-pan-y select-none outline-none [perspective:1400px] active:cursor-grabbing sm:mt-20 sm:w-[290px] lg:w-[340px] lg:max-w-[340px]"
           >
             {SHOWCASE.map((item, i) => {
               const d = ringOffset(i, active, n);
               const isActive = d === 0;
-              const hidden = Math.abs(d) > 2;
+              const hidden = Math.abs(d) > (compact ? 1 : 2);
               const linkProps = item.external
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {};
@@ -241,7 +255,7 @@ export default function FeaturedWork() {
                     if (!dragged.current && !isActive) setActive(i);
                   }}
                   initial={false}
-                  animate={pose(d)}
+                  animate={pose(d, compact)}
                   transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 170, damping: 26, mass: 0.9 }}
                   style={{ zIndex: 10 - Math.abs(d), pointerEvents: hidden ? "none" : "auto" }}
                   className="absolute inset-0 block rounded-[1.75rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
@@ -257,8 +271,9 @@ export default function FeaturedWork() {
           {`${SHOWCASE[active].service}: ${SHOWCASE[active].title}, ${active + 1} of ${n}`}
         </p>
 
-        {/* Room for the lowered outer cards before the controls. */}
-        <div className="mt-20 flex items-center justify-center gap-4 px-6 sm:mt-24">
+        {/* Room for the lowered outer cards before the controls - less on
+            phones, where only the near neighbours show. */}
+        <div className="mt-12 flex items-center justify-center gap-3 px-6 sm:mt-24 sm:gap-4">
           <NavButton dir={-1} onClick={() => go(-1)} />
           <Link
             href="/portfolio"
