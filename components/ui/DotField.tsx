@@ -50,11 +50,12 @@ const VEL_DECAY = 3; // v *= exp(-k*dt) once the pointer goes quiet
 const IDLE_S = 0.04; // "quiet" threshold
 
 /** sigma = min(MAX, BASE + SPEED * |v|) * cell - the reveal grows with speed.
- *  Saturates at (10-3)/0.012 = 583 px/s, i.e. below any real mouse movement,
- *  so in practice this reads as 3 cells at rest and 10 the moment you move. */
-const SIGMA_BASE = 3;
+ *  op.al runs 3 -> 10 cells; ours is ~30% tighter. Saturates at
+ *  (7-2)/0.012 = 417 px/s, i.e. below any real mouse movement, so in practice
+ *  this reads as 2 cells at rest and 7 the moment you move. */
+const SIGMA_BASE = 2;
 const SIGMA_SPEED = 0.012;
-const SIGMA_MAX = 10;
+const SIGMA_MAX = 7;
 
 const MAX_DT = 0.1; // frame clamp, so a stalled tab does not jump the trail
 
@@ -72,14 +73,14 @@ const CELL_RATIO = 0.0042839;
 const CELL_MIN = 4;
 
 /**
- * ONE flat grey for every step of the ramp - this is op.al's, and it is most
- * of what makes theirs look like theirs. The ramp reads as density because the
- * GLYPH grows (· -> ◦ -> • -> ●), not because the colour changes. #777 over
- * #131313 is equivalent to ink at ~0.45 alpha, so the resting field is a good
- * deal more present than a faint wash would be.
+ * One grey per step of the ramp, coldest to hottest. op.al uses a single flat
+ * grey; here the resting field (·) is pushed right down toward the ground so
+ * it reads as texture, and the cursor trail only climbs a few steps above it
+ * (well short of op.al's #777), so the whole field stays quiet behind the copy.
+ * Dark ground is #131313, light is #f2f0ef.
  */
-const GREY_DARK = "#777777";
-const GREY_LIGHT = "#969696";
+const RAMP_DARK = ["#242424", "#2e2e2e", "#3b3b3b", "#4a4a4a"] as const;
+const RAMP_LIGHT = ["#e0dedd", "#d4d2d1", "#c6c4c3", "#b6b4b3"] as const;
 
 /** Set to a palette token to tint from the brand instead of op.al's neutral -
  *  "--c-primary" for orange, "--c-ink" to follow the text colour. */
@@ -117,7 +118,15 @@ function readToken(
   return fallback;
 }
 
-export default function DotField({ className = "" }: { className?: string }) {
+export default function DotField({
+  className = "",
+  scrollHandoff = true,
+}: {
+  className?: string;
+  /** Parallax + fade out as the parent scrolls away. Turn off for a
+   *  position:fixed field that stays behind the whole page. */
+  scrollHandoff?: boolean;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduced = useReducedMotion();
 
@@ -180,12 +189,12 @@ export default function DotField({ className = "" }: { className?: string }) {
     function buildAtlas() {
       if (!atlasCtx) return;
 
-      let fill: string;
+      let fills: readonly string[];
       if (TINT_TOKEN) {
         const [r, g, b] = readToken(TINT_TOKEN, [19, 19, 19]);
-        fill = `rgba(${r}, ${g}, ${b}, ${TINT_ALPHA})`;
+        fills = GLYPHS.map(() => `rgba(${r}, ${g}, ${b}, ${TINT_ALPHA})`);
       } else {
-        fill = isDark ? GREY_DARK : GREY_LIGHT;
+        fills = isDark ? RAMP_DARK : RAMP_LIGHT;
       }
 
       const fontCss = Math.max(6, Math.round(1.1 * cell));
@@ -211,10 +220,9 @@ export default function DotField({ className = "" }: { className?: string }) {
          is invisible either way. */
       const notdefW = atlasCtx.measureText("￿").width;
 
-      atlasCtx.fillStyle = fill;
-      atlasCtx.strokeStyle = fill;
-
       for (let i = 0; i < GLYPHS.length; i++) {
+        atlasCtx.fillStyle = fills[i];
+        atlasCtx.strokeStyle = fills[i];
         const cx = i * tileDev + tileDev / 2;
         const cy = tileDev / 2;
         const advance = atlasCtx.measureText(GLYPHS[i]).width;
@@ -372,7 +380,9 @@ export default function DotField({ className = "" }: { className?: string }) {
          thrashes. getBoundingClientRect already accounts for the parallax
          transform, which is why pointer mapping needs no correction for it. */
       const rect = canvas!.getBoundingClientRect();
-      const host = canvas!.parentElement?.getBoundingClientRect();
+      const host = scrollHandoff
+        ? canvas!.parentElement?.getBoundingClientRect()
+        : undefined;
 
       /* --- pointer ------------------------------------------------- */
       const inside =
@@ -571,7 +581,7 @@ export default function DotField({ className = "" }: { className?: string }) {
       ro.disconnect();
       mo.disconnect();
     };
-  }, [reduced]);
+  }, [reduced, scrollHandoff]);
 
   return (
     <canvas

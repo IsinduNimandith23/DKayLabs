@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
-import DotField from "@/components/ui/DotField";
-
 /**
  * Homepage hero - type only, no artwork.
  *
@@ -62,13 +60,7 @@ export default function Hero() {
       id="top"
       className="relative flex min-h-[100svh] items-center overflow-hidden py-[calc(var(--nav-h)+1.5rem)]"
     >
-      {/*
-        Oversized on purpose: the field lags the page by PARALLAX of the
-        scroll, so a flush inset-0 canvas would open a gap along the top edge
-        as the hero leaves. 15% of headroom covers the whole travel, and the
-        section already clips.
-      */}
-      <DotField className="absolute inset-x-0 -top-[15%] z-0 h-[130%] w-full" />
+      {/* The DotField behind this copy is page-level - see app/page.tsx. */}
 
       {/*
         The frame insets the copy 227 of 1920px on BOTH sides = 11.82%, and

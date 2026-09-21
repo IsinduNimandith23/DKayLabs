@@ -5,6 +5,7 @@ import FeaturedWork from "@/components/sections/FeaturedWork";
 import ServicesPreview from "@/components/sections/ServicesPreview";
 import Testimonials from "@/components/sections/Testimonials";
 import WorkTogether from "@/components/sections/WorkTogether";
+import PageDotField from "@/components/ui/PageDotField";
 import { SITE } from "@/lib/constants";
 import { pageMetadata } from "@/lib/seo";
 
@@ -17,6 +18,8 @@ export const metadata: Metadata = pageMetadata({
 export default function Home() {
   return (
     <main>
+      {/* The hero's dot field, fixed behind every section of the page. */}
+      <PageDotField />
       <Hero />
       <Marquee />
       <FeaturedWork />
