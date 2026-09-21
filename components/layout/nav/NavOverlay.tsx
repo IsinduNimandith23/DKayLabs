@@ -8,7 +8,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import ServiceIcon from "@/components/ui/ServiceIcon";
 import { useScrollLock } from "@/lib/hooks/useScrollLock";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
-import { NAV_LINKS, PRODUCTS, PRODUCT_STATUS, SITE, SOCIALS } from "@/lib/constants";
+import { NAV_LINKS, PRODUCTS, PRODUCT_STATUS } from "@/lib/constants";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -118,8 +118,8 @@ export default function NavOverlay({
           transition={{ duration: reduced ? 0 : 0.35, ease: EASE }}
         >
           {/* Near-opaque rather than merely frosted: the hero artwork behind
-              it is high-contrast, and the contact column has to stay legible
-              over whatever part of the page the menu happens to open on. The
+              it is high-contrast, and the menu has to stay legible over
+              whatever part of the page it happens to open on. The
               few percent that do bleed through are smeared past recognition
               by a blur radius well beyond Tailwind's scale - at this tint,
               anything smaller leaves the hero's display type readable as a
@@ -134,7 +134,7 @@ export default function NavOverlay({
             variants={list}
             initial="hidden"
             animate="show"
-            className="relative mx-auto grid min-h-[100dvh] w-full max-w-[1920px] content-start gap-14 px-6 pb-20 pt-[calc(var(--nav-h)+5rem)] sm:px-10 lg:grid-cols-[1fr_20rem] lg:gap-20 lg:px-32 2xl:px-44"
+            className="relative mx-auto grid min-h-[100dvh] w-full max-w-[1920px] content-start px-6 pb-20 pt-[calc(var(--nav-h)+5rem)] sm:px-10 lg:px-32 2xl:px-44"
           >
             {/* ── Primary navigation ───────────────────────────── */}
             <ul className="flex flex-col">
@@ -214,56 +214,6 @@ export default function NavOverlay({
                 );
               })}
             </ul>
-
-            {/* ── Contact column ───────────────────────────────── */}
-            <div className="flex flex-col gap-8 lg:pt-3">
-              <div className="overflow-hidden">
-                <motion.div variants={row} className="flex flex-col gap-3">
-                  <span className="label-mono">Get in touch</span>
-                  <a
-                    href={`mailto:${SITE.email}`}
-                    className="text-base font-semibold text-ink transition-colors duration-200 hover:text-primary"
-                  >
-                    {SITE.email}
-                  </a>
-                  <a
-                    href={`tel:${SITE.phone.replace(/\s/g, "")}`}
-                    className="text-base font-semibold text-ink transition-colors duration-200 hover:text-primary"
-                  >
-                    {SITE.phone}
-                  </a>
-                </motion.div>
-              </div>
-
-              <div className="overflow-hidden">
-                <motion.div variants={row} className="flex flex-col gap-1.5">
-                  <span className="label-mono">Studio</span>
-                  <span className="text-sm text-muted">{SITE.location}</span>
-                  <span className="text-sm text-muted">{SITE.hours}</span>
-                </motion.div>
-              </div>
-
-              <div className="overflow-hidden">
-                <motion.div variants={row} className="flex flex-col gap-3">
-                  <span className="label-mono">Follow</span>
-                  <div className="flex flex-wrap gap-x-5 gap-y-2">
-                    {/* Same filter as the Footer: entries still on "#" have
-                        no live profile and must not render. */}
-                    {SOCIALS.filter((s) => s.href !== "#").map((s) => (
-                      <a
-                        key={s.key}
-                        href={s.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-muted transition-colors duration-200 hover:text-primary"
-                      >
-                        {s.label}
-                      </a>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-            </div>
           </motion.nav>
         </motion.div>
       )}

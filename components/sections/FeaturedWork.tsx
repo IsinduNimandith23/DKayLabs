@@ -146,21 +146,6 @@ function pose(d: number, compact: boolean) {
 
 const AUTOPLAY_MS = 5000;
 
-function NavButton({ dir, onClick }: { dir: -1 | 1; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={dir < 0 ? "Previous service" : "Next service"}
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/25 text-ink transition-colors duration-300 hover:border-primary hover:bg-primary hover:text-on-primary"
-    >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        {dir < 0 ? <polyline points="15 18 9 12 15 6" /> : <polyline points="9 18 15 12 9 6" />}
-      </svg>
-    </button>
-  );
-}
-
 /**
  * "Proof Of Concept" - one card per service, fanned in 3D around the one in
  * focus. Side cards are clickable to bring them forward; the stage also
@@ -271,17 +256,15 @@ export default function FeaturedWork() {
           {`${SHOWCASE[active].service}: ${SHOWCASE[active].title}, ${active + 1} of ${n}`}
         </p>
 
-        {/* Room for the lowered outer cards before the controls - less on
+        {/* Room for the lowered outer cards before the link - less on
             phones, where only the near neighbours show. */}
-        <div className="mt-12 flex items-center justify-center gap-3 px-6 sm:mt-24 sm:gap-4">
-          <NavButton dir={-1} onClick={() => go(-1)} />
+        <div className="mt-12 flex items-center justify-center px-6 sm:mt-24">
           <Link
             href="/portfolio"
             className="inline-flex items-center rounded-full border-2 border-ink/80 px-6 py-3 font-machina text-sm font-bold text-ink transition-all duration-300 hover:border-primary hover:bg-primary hover:text-on-primary hover:shadow-glow"
           >
             <RollText>Wanna See More?</RollText>
           </Link>
-          <NavButton dir={1} onClick={() => go(1)} />
         </div>
       </div>
     </section>
