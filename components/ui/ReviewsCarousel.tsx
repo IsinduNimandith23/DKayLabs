@@ -28,7 +28,7 @@ function useVisibleCount() {
 
 function QuoteMark() {
   return (
-    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#262626]">
+    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 dark:bg-[#262626]">
       <svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor" aria-hidden className="text-primary">
         <path d="M0 12V7.2C0 3.4 1.9.9 5.3 0l.7 1.5C4.2 2.2 3.3 3.5 3.2 5.3H6V12H0Zm8 0V7.2C8 3.4 9.9.9 13.3 0l.7 1.5c-1.8.7-2.7 2-2.8 3.8H14V12H8Z" />
       </svg>
@@ -38,7 +38,7 @@ function QuoteMark() {
 
 function ReviewCard({ t }: { t: Testimonial }) {
   return (
-    <figure className="flex h-full flex-col rounded-lg bg-[#131313] p-5">
+    <figure className="flex h-full flex-col rounded-lg bg-surface p-5 shadow-bevel dark:bg-[#131313] dark:shadow-none">
       <QuoteMark />
       <blockquote className="mt-3 flex-1 font-['Helvetica_Neue',Helvetica,Arial,sans-serif] text-[0.8rem] font-light italic leading-[1.35] text-ink/90">
         &ldquo;{t.quote}&rdquo;

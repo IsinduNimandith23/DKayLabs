@@ -18,7 +18,7 @@ export default function Testimonials() {
         </h2>
 
         <Reveal delay={0.1}>
-          <div className="overflow-hidden rounded-3xl bg-[#1e1e1e] p-5 sm:p-10 lg:px-12 lg:py-14">
+          <div className="overflow-hidden rounded-3xl bg-sunken dark:bg-[#1e1e1e] p-5 sm:p-10 lg:px-12 lg:py-14">
             <ReviewsCarousel items={TESTIMONIALS} />
           </div>
         </Reveal>
