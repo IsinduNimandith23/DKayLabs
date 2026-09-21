@@ -15,10 +15,10 @@ import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
  *   label  - over an element with `data-cursor="<word>"`: a large ring with
  *            that word sliding up inside it
  *
- * The dot is white on `mix-blend-mode: difference`, so it reads on the dark
- * hero and the light sections without per-section theming. The ring is its
- * own layer WITHOUT the blend, otherwise the brand orange would invert to
- * blue on light backgrounds.
+ * The dot is a solid colour picked from the surface under the pointer
+ * (see isDarkUnder) - white on dark sections, brand black on light ones.
+ * Not `mix-blend-mode: difference`: that inverts hue too, so the dot turned
+ * blue over the orange headline.
  *
  * Only mounts for a fine, hovering pointer (mouse / trackpad). The native
  * cursor is hidden via `html.has-custom-cursor` (globals.css), and that class
@@ -30,10 +30,31 @@ const SIZE = 96;
 // Radii in the 0-100 viewBox, same scale as the reference.
 const R = { idle: 6, focus: 17, label: 48 } as const;
 
-type CursorState = { kind: "idle" } | { kind: "focus" } | { kind: "label"; text: string };
+type CursorState =
+  { kind: "idle" } | { kind: "focus" } | { kind: "label"; text: string };
 
 const INTERACTIVE =
   'a, button, [role="button"], label, summary, select, input, textarea, [data-cursor]';
+
+/*
+ * Is the surface under `target` dark? Walks up to the first element with a
+ * mostly-opaque background colour and checks its luminance - the automatic
+ * version of metalab's per-section cursor theme. Text colour is ignored on
+ * purpose: over the orange headline the dot should still read against the
+ * dark section it sits in, not flip because of the glyph.
+ */
+function isDarkUnder(target: EventTarget | null): boolean {
+  let el = target instanceof Element ? target : null;
+  while (el) {
+    const m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
+    if (m && (m[3] === undefined || Number(m[3]) > 0.5)) {
+      const [r, g, b] = m.map(Number);
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b < 140;
+    }
+    el = el.parentElement;
+  }
+  return document.documentElement.classList.contains("dark");
+}
 
 function stateFor(target: EventTarget | null): CursorState {
   if (!(target instanceof Element)) return { kind: "idle" };
@@ -48,6 +69,7 @@ export default function Cursor() {
   const [enabled, setEnabled] = useState(false);
   const [visible, setVisible] = useState(false);
   const [state, setState] = useState<CursorState>({ kind: "idle" });
+  const [onDark, setOnDark] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
 
@@ -76,10 +98,12 @@ export default function Cursor() {
       setVisible(true);
     };
     const onOver = (e: PointerEvent) => {
+      setOnDark(isDarkUnder(e.target));
       const next = stateFor(e.target);
       setState((prev) =>
         prev.kind === next.kind &&
-        (next.kind !== "label" || (prev.kind === "label" && prev.text === next.text))
+        (next.kind !== "label" ||
+          (prev.kind === "label" && prev.text === next.text))
           ? prev
           : next,
       );
@@ -114,7 +138,8 @@ export default function Cursor() {
   const t = { duration: reduced ? 0 : 0.3, ease };
 
   const dotR = state.kind === "idle" ? R.idle : state.kind === "focus" ? 1 : 0;
-  const ringR = state.kind === "idle" ? 0 : state.kind === "focus" ? R.focus : R.label;
+  const ringR =
+    state.kind === "idle" ? 0 : state.kind === "focus" ? R.focus : R.label;
 
   return (
     <div
@@ -128,8 +153,24 @@ export default function Cursor() {
         transform: "translate3d(-200px, -200px, 0)",
       }}
     >
-      {/* Ring - brand orange, no blend. */}
-      <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full overflow-visible">
+      {/* Dot - solid, white on dark surfaces and brand black on light. */}
+      <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
+        <motion.circle
+          cx={50}
+          cy={50}
+          fill={onDark ? "#FFFFFF" : "#131313"}
+          style={{ transition: "fill 0.2s" }}
+          initial={false}
+          animate={{ r: dotR }}
+          transition={t}
+        />
+      </svg>
+
+      {/* Ring - brand orange. */}
+      <svg
+        viewBox="0 0 100 100"
+        className="absolute inset-0 h-full w-full overflow-visible"
+      >
         <motion.circle
           cx={50}
           cy={50}
@@ -142,21 +183,6 @@ export default function Cursor() {
         />
       </svg>
 
-      {/* Dot - white + difference, so it inverts against whatever is below. */}
-      <svg
-        viewBox="0 0 100 100"
-        className="absolute inset-0 h-full w-full mix-blend-difference"
-      >
-        <motion.circle
-          cx={50}
-          cy={50}
-          fill="#fff"
-          initial={false}
-          animate={{ r: dotR }}
-          transition={t}
-        />
-      </svg>
-
       {/* Label - slides up in, and up and out on exit. */}
       <span className="relative h-[1.1em] overflow-hidden text-sm font-medium leading-none text-primary">
         <AnimatePresence initial={false}>
@@ -165,7 +191,10 @@ export default function Cursor() {
               key={state.text}
               className="block whitespace-nowrap"
               initial={{ y: "110%" }}
-              animate={{ y: 0, transition: { duration: reduced ? 0 : 0.45, ease } }}
+              animate={{
+                y: 0,
+                transition: { duration: reduced ? 0 : 0.45, ease },
+              }}
               exit={{
                 y: "-110%",
                 position: "absolute",
