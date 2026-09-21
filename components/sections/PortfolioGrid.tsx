@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import ProjectCard from "@/components/ui/ProjectCard";
+import RollText from "@/components/ui/RollText";
 import { PROJECTS, SERVICES } from "@/lib/constants";
 
 // "All" + one tab per service, kept in sync with the SERVICES list.
@@ -39,7 +40,7 @@ export default function PortfolioGrid() {
                   : "border-ink/10 bg-surface/50 text-muted hover:border-primary/40 hover:text-ink"
               }`}
             >
-              {filter}
+              <RollText>{filter}</RollText>
             </button>
           );
         })}
@@ -81,7 +82,7 @@ export default function PortfolioGrid() {
             href="/contact"
             className="btn-shine mt-6 inline-block cursor-pointer rounded-full bg-primary px-6 py-3 text-xs font-bold uppercase tracking-wider text-on-primary shadow-glow transition-all duration-200 hover:bg-primary-dark hover:shadow-glow-lg"
           >
-            Start a Project
+            <RollText>Start a Project</RollText>
           </Link>
         </motion.div>
       )}

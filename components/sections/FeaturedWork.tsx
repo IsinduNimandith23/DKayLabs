@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
+import RollText from "@/components/ui/RollText";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { PROJECTS, type Project } from "@/lib/constants";
 
@@ -124,7 +125,7 @@ function Header() {
           href="/portfolio"
           className="inline-flex items-center gap-2.5 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-surface transition-all duration-300 hover:bg-primary hover:text-on-primary hover:shadow-glow"
         >
-          All Works
+          <RollText>All Works</RollText>
           <svg
             width="16"
             height="16"

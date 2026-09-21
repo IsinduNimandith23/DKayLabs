@@ -2,6 +2,7 @@ import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 import GlowOrb from "@/components/ui/GlowOrb";
 import WordReveal from "@/components/ui/WordReveal";
+import RollText from "@/components/ui/RollText";
 
 /*
  * Catches both a bad URL and the notFound() call in
@@ -40,13 +41,13 @@ export default function NotFound() {
                 href="/"
                 className="btn-shine w-full cursor-pointer rounded-full bg-primary px-8 py-4 text-sm font-bold uppercase tracking-wider text-on-primary shadow-glow transition-all duration-200 hover:bg-primary-dark hover:shadow-glow-lg sm:w-auto"
               >
-                Back Home
+                <RollText>Back Home</RollText>
               </Link>
               <Link
                 href="/contact"
                 className="w-full cursor-pointer rounded-full border border-muted/30 bg-surface/40 px-8 py-4 text-sm font-bold uppercase tracking-wider text-ink backdrop-blur transition-all duration-200 hover:border-muted/60 hover:bg-surface/70 sm:w-auto"
               >
-                Get in Touch
+                <RollText>Get in Touch</RollText>
               </Link>
             </div>
           </Reveal>

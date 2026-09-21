@@ -3,6 +3,7 @@ import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
 import ServiceIcon from "@/components/ui/ServiceIcon";
+import RollText from "@/components/ui/RollText";
 import { PRODUCT_STATUS, type Product } from "@/lib/constants";
 
 /** Full write-up for a single product, rendered at /products/<slug>. */
@@ -24,7 +25,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            All products
+            <RollText>All products</RollText>
           </Link>
         </Reveal>
 
@@ -130,7 +131,9 @@ export default function ProductDetail({ product }: { product: Product }) {
               href={`/contact?product=${encodeURIComponent(product.name)}`}
               className="btn-shine shrink-0 cursor-pointer rounded-full border border-primary/50 bg-surface/70 px-8 py-3.5 text-center text-sm font-semibold uppercase tracking-wider text-ink transition-all duration-200 hover:bg-primary hover:text-on-primary hover:shadow-glow"
             >
-              {inProgress ? "Request early access" : "Get in touch"}
+              <RollText>
+                {inProgress ? "Request early access" : "Get in touch"}
+              </RollText>
             </Link>
           </div>
         </Reveal>

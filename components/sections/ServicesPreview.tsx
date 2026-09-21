@@ -2,6 +2,7 @@ import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
 import ServiceIcon from "@/components/ui/ServiceIcon";
+import RollText from "@/components/ui/RollText";
 import { SERVICES } from "@/lib/constants";
 
 /**
@@ -53,7 +54,7 @@ export default function ServicesPreview() {
               href="/services"
               className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted transition-colors duration-200 hover:text-primary"
             >
-              Explore all services
+              <RollText>Explore all services</RollText>
               <svg
                 width="16"
                 height="16"

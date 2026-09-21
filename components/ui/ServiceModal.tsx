@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import ServiceIcon from "@/components/ui/ServiceIcon";
+import RollText from "@/components/ui/RollText";
 import { PRICING_NOTE, type Service } from "@/lib/constants";
 
 /**
@@ -196,7 +197,9 @@ export default function ServiceModal({
                 onClick={onClose}
                 className="btn-shine flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-on-primary transition-all duration-200 hover:bg-primary-dark hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                {isComingSoon ? "Apply for early access" : "Apply for this service"}
+                <RollText>
+                  {isComingSoon ? "Apply for early access" : "Apply for this service"}
+                </RollText>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />

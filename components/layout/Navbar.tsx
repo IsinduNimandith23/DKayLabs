@@ -9,6 +9,7 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import NavMenuButton from "@/components/layout/nav/NavMenuButton";
 import NavClock from "@/components/layout/nav/NavClock";
 import NavOverlay from "@/components/layout/nav/NavOverlay";
+import RollText from "@/components/ui/RollText";
 import { useNavProgress } from "@/lib/hooks/useNavProgress";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -138,7 +139,7 @@ export default function Navbar() {
                   <polyline points="3 7 12 13 21 7" />
                 </svg>
                 <span className="nav-cta-label hidden text-xs font-semibold uppercase tracking-wider lg:block">
-                  Contact
+                  <RollText>Contact</RollText>
                 </span>
               </Link>
             </div>

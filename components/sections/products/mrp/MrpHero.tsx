@@ -2,6 +2,7 @@ import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
+import RollText from "@/components/ui/RollText";
 import { MRP_ENQUIRY_HREF, MRP_PAGE } from "@/lib/constants";
 import MrpDashboardMock from "./MrpDashboardMock";
 
@@ -26,7 +27,7 @@ export default function MrpHero() {
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            All products
+            <RollText>All products</RollText>
           </Link>
         </Reveal>
 
@@ -54,13 +55,13 @@ export default function MrpHero() {
               href={MRP_ENQUIRY_HREF}
               className="btn-shine cursor-pointer rounded-full bg-primary px-8 py-4 text-center text-sm font-bold uppercase tracking-wider text-on-primary shadow-glow transition-all duration-200 hover:bg-primary-dark hover:shadow-glow-lg"
             >
-              {hero.primaryCta}
+              <RollText>{hero.primaryCta}</RollText>
             </Link>
             <Link
               href="#whats-live"
               className="cursor-pointer rounded-full border border-muted/30 bg-surface/40 px-8 py-4 text-center text-sm font-bold uppercase tracking-wider text-ink backdrop-blur transition-all duration-200 hover:border-muted/60 hover:bg-surface/70"
             >
-              {hero.secondaryCta}
+              <RollText>{hero.secondaryCta}</RollText>
             </Link>
           </div>
         </Reveal>

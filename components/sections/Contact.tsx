@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
 import GlowOrb from "@/components/ui/GlowOrb";
+import RollText from "@/components/ui/RollText";
 import {
   SERVICES,
   PRODUCTS,
@@ -195,7 +196,7 @@ export default function Contact() {
               ) : status === "success" ? (
                 "Message sent ✓"
               ) : (
-                "Send Message"
+                <RollText>Send Message</RollText>
               )}
             </button>
 

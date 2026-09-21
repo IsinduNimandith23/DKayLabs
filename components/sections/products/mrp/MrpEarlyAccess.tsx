@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
+import RollText from "@/components/ui/RollText";
 import { MRP_ENQUIRY_HREF, MRP_PAGE } from "@/lib/constants";
 
 const { earlyAccess } = MRP_PAGE;
@@ -48,7 +49,7 @@ export default function MrpEarlyAccess() {
                   href={MRP_ENQUIRY_HREF}
                   className="btn-shine w-full cursor-pointer rounded-full bg-primary px-8 py-4 text-sm font-bold uppercase tracking-wider text-on-primary shadow-glow transition-all duration-200 hover:bg-primary-dark hover:shadow-glow-lg sm:w-auto"
                 >
-                  {earlyAccess.cta}
+                  <RollText>{earlyAccess.cta}</RollText>
                 </Link>
               </div>
 

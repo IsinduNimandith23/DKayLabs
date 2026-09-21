@@ -349,6 +349,54 @@ html.lenis body {
     transform: translateX(130%) skewX(-15deg);
   }
 
+  /* Rolling button label (components/ui/RollText.tsx). Every letter is its
+     own clipped window; its track is one line tall - the copy hangs below
+     it at top: 100% - so translating the track by -100% swaps exactly one
+     line for the other. --roll-delay staggers the letters left to right.
+     Triggered by whichever link or button contains it. */
+  .roll-text {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  .roll-text__chars {
+    display: inline-flex;
+  }
+  .roll-text__char {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+  }
+  .roll-text__track {
+    position: relative;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--roll-delay, 0s);
+  }
+  .roll-text__line {
+    display: block;
+  }
+  .roll-text__copy {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+  }
+  :is(a, button):not(:disabled):hover .roll-text__track,
+  :is(a, button):focus-visible .roll-text__track {
+    transform: translateY(-100%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .roll-text__track {
+      transition: none;
+    }
+    :is(a, button):not(:disabled):hover .roll-text__track,
+    :is(a, button):focus-visible .roll-text__track {
+      transform: none;
+    }
+  }
+
   /* ----------------------------------------------------------
      NAVBAR
      The bar starts full-bleed with no background and contracts into a

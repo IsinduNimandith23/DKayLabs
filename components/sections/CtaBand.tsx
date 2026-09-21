@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
+import RollText from "@/components/ui/RollText";
 
 /** Final conversion push before the footer. */
 export default function CtaBand() {
@@ -36,13 +37,13 @@ export default function CtaBand() {
                   href="/contact"
                   className="btn-shine w-full cursor-pointer rounded-full bg-primary px-8 py-4 text-sm font-bold uppercase tracking-wider text-on-primary shadow-glow transition-all duration-200 hover:bg-primary-dark hover:shadow-glow-lg sm:w-auto"
                 >
-                  Start a Project
+                  <RollText>Start a Project</RollText>
                 </Link>
                 <Link
                   href="/services"
                   className="w-full cursor-pointer rounded-full border border-muted/30 bg-surface/40 px-8 py-4 text-sm font-bold uppercase tracking-wider text-ink backdrop-blur transition-all duration-200 hover:border-muted/60 hover:bg-surface/70 sm:w-auto"
                 >
-                  See Services
+                  <RollText>See Services</RollText>
                 </Link>
               </div>
             </div>
