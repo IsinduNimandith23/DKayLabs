@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import Reveal from "@/components/ui/Reveal";
-import WordReveal from "@/components/ui/WordReveal";
-import GlowOrb from "@/components/ui/GlowOrb";
+import PageHero from "@/components/ui/PageHero";
 import PortfolioGrid from "@/components/sections/PortfolioGrid";
-import CtaBand from "@/components/sections/CtaBand";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -16,38 +13,17 @@ export const metadata: Metadata = pageMetadata({
 export default function PortfolioPage() {
   return (
     <main className="pt-nav">
-      {/* Top padding is lighter than the bottom - see the note in
-          components/sections/Products.tsx: <main> already adds .pt-nav to
-          clear the fixed navbar. */}
-      <section className="relative pb-28 pt-16 sm:pb-32 sm:pt-20">
-        <GlowOrb className="left-1/2 top-0 -translate-x-1/2 bg-primary/15" size={600} />
-
-        <div className="relative mx-auto max-w-6xl px-6">
-          <div className="mb-16 text-center">
-            <Reveal>
-              <p className="label-mono mb-3">
-                Portfolio
-              </p>
-            </Reveal>
-            <h1 className="text-4xl font-bold sm:text-6xl">
-              <WordReveal text="Work that's " className="text-ink" />
-              <WordReveal text="live right now" className="text-metal" delay={0.2} />
-            </h1>
-            <Reveal delay={0.3}>
-              <p className="mx-auto mt-4 max-w-2xl text-muted">
-                Every project below is shipped and serving real customers. Click
-                any card to visit the live site.
-              </p>
-            </Reveal>
-          </div>
-
-          <Reveal delay={0.15}>
-            <PortfolioGrid />
-          </Reveal>
-        </div>
-      </section>
-
-      <CtaBand />
+      {/* Last section before the footer: the bottom padding tops PageHero's
+          own pb-10 up to the py-28 / sm:py-36 rhythm the other sections use. */}
+      <div className="pb-[4.5rem] sm:pb-[6.5rem]">
+        <PageHero
+          label="Our live work"
+          lines={["Our", "Live", "Work"]}
+          intro="Every project below is shipped and serving real customers. Pick one to visit the live site."
+        >
+          <PortfolioGrid />
+        </PageHero>
+      </div>
     </main>
   );
 }
