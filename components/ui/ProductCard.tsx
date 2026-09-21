@@ -31,6 +31,7 @@ export default function ProductCard({
 
       <Link
         href={`/products/${product.slug}`}
+        data-cursor="View"
         className="glass relative flex h-full cursor-pointer flex-col rounded-2xl p-7 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary group-hover:-translate-y-2 group-hover:border-primary/40 group-hover:shadow-glow"
       >
         {/* Header: icon + status badge */}

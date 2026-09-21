@@ -28,6 +28,7 @@ function WorkCard({ project, index }: { project: Project; index: number }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${project.title} - visit live site`}
+      data-cursor="Visit"
       className="group relative block w-[78vw] max-w-[520px] shrink-0 snap-center overflow-hidden rounded-2xl border border-ink/10 bg-surface transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-glow"
     >
       <div className="relative aspect-[19/9] w-full overflow-hidden">

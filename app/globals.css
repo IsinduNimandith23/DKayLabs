@@ -505,6 +505,16 @@ html.lenis body {
 }
 
 /* ============================================================
+   Custom cursor (components/ui/Cursor.tsx)
+   ============================================================
+   The class is only set once a real mouse has moved, so touch and
+   keyboard users always keep the native cursor. */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+/* ============================================================
    Accessibility - honor reduced motion globally
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {

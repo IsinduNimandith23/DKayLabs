@@ -5,6 +5,7 @@ import SmoothScroll from "@/components/providers/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import Cursor from "@/components/ui/Cursor";
 import JsonLd from "@/components/seo/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { SITE } from "@/lib/constants";
@@ -159,6 +160,7 @@ export default function RootLayout({
           <Footer />
           <WhatsAppButton />
         </SmoothScroll>
+        <Cursor />
       </body>
     </html>
   );

@@ -68,6 +68,7 @@ export default function ProjectCard({ project }: { project: Project }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${project.title} - visit live site`}
+      data-cursor="Visit"
       className="glass group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-2 hover:border-primary/40 hover:shadow-glow"
     >
       <ProjectVisual project={project} />
