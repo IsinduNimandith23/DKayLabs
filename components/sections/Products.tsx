@@ -26,6 +26,9 @@ export default function Products() {
         <ul className="border-b border-ink/20">
           {PRODUCTS.map((product, i) => {
             const href = `/products/${product.slug}`;
+            // A product with its own site is another app, which <Link> can't
+            // navigate into - a plain anchor does a full page load instead.
+            const Anchor = product.ownSite ? "a" : Link;
 
             return (
               <li
@@ -42,12 +45,12 @@ export default function Products() {
                     <div>
                       <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
                         <h2 className="font-machina text-[length:clamp(1.75rem,6vw,3.5rem)] font-medium uppercase leading-[0.95] tracking-[-0.02em] text-ink">
-                          <Link
+                          <Anchor
                             href={href}
                             className="inline-block transition-[transform,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-2 hover:text-primary"
                           >
                             {product.name}
-                          </Link>
+                          </Anchor>
                         </h2>
 
                         <span className="mt-2 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
@@ -68,7 +71,7 @@ export default function Products() {
                             {product.description}
                           </p>
 
-                          <Link
+                          <Anchor
                             href={href}
                             className="group/cta mt-8 inline-flex items-center gap-3 rounded-full border border-ink/70 py-2 pl-6 pr-2 text-xs font-bold text-ink transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-on-primary lg:mt-auto"
                           >
@@ -81,7 +84,7 @@ export default function Products() {
                               height={261}
                               className="h-7 w-7 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/cta:rotate-45"
                             />
-                          </Link>
+                          </Anchor>
                         </div>
 
                         <div>

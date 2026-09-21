@@ -49,7 +49,6 @@ const STATIC_ROUTES: {
 
 /** Keyed by slug so a new product can't silently inherit a stale date. */
 const PRODUCT_LAST_MODIFIED: Record<string, string> = {
-  mrp: "2026-08-28",
   "driving-school": "2026-08-24",
 };
 
@@ -65,8 +64,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     // Derived from the same PRODUCTS array that generateStaticParams uses in
     // app/products/[slug]/page.tsx, so the sitemap cannot list a route that
-    // doesn't exist - or miss one that does.
-    ...PRODUCTS.map((product) => ({
+    // doesn't exist - or miss one that does. A product with its own site
+    // publishes its own sitemap, which robots.ts points crawlers at.
+    ...PRODUCTS.filter((product) => !product.ownSite).map((product) => ({
       url: absoluteUrl(`/products/${product.slug}`),
       lastModified:
         PRODUCT_LAST_MODIFIED[product.slug] ?? PRODUCT_FALLBACK_LAST_MODIFIED,

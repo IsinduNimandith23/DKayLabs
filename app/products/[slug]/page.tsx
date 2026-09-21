@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetail from "@/components/sections/ProductDetail";
 import CtaBand from "@/components/sections/CtaBand";
-import MrpPage from "@/components/sections/products/mrp";
 import JsonLd from "@/components/seo/JsonLd";
 import { productBreadcrumbSchema, productSchema } from "@/lib/schema";
 import { PRODUCTS, SITE } from "@/lib/constants";
@@ -13,14 +12,20 @@ import { pageMetadata } from "@/lib/seo";
  * written for them instead. Anything not listed here falls through to the
  * shared component, which stays the default - a bespoke page is earned, not
  * the starting point.
+ *
+ * A product that has outgrown even that gets a site of its own (`ownSite`),
+ * which next.config.mjs rewrites in - it never reaches this route at all.
  */
-const RICH_PAGES: Record<string, () => JSX.Element> = {
-  mrp: MrpPage,
-};
+const RICH_PAGES: Record<string, () => JSX.Element> = {};
 
-/** Every product is known at build time, so prerender all of them. */
+/**
+ * Every product is known at build time, so prerender all of them - except
+ * the ones served by their own site, whose URL this route must not claim.
+ */
 export function generateStaticParams() {
-  return PRODUCTS.map((product) => ({ slug: product.slug }));
+  return PRODUCTS.filter((product) => !product.ownSite).map((product) => ({
+    slug: product.slug,
+  }));
 }
 
 /*

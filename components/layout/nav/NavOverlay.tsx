@@ -173,35 +173,41 @@ export default function NavOverlay({
                         accordion. */}
                     {children && (
                       <ul className="mb-3 ml-6 flex flex-col gap-1 border-l border-ink/10 pl-4">
-                        {children.map((product) => (
-                          <li key={product.slug} className="overflow-hidden">
-                            <motion.div variants={row}>
-                              <Link
-                                href={`/products/${product.slug}`}
-                                onClick={onClose}
-                                className="group/item flex items-start gap-3 rounded-xl p-2 transition-colors duration-200 hover:bg-primary/10"
-                              >
-                                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
-                                  <ServiceIcon icon={product.icon} size={18} />
-                                </span>
-                                <span className="min-w-0">
-                                  <span className="flex flex-wrap items-center gap-2">
-                                    <span className="text-sm font-semibold text-ink">
-                                      {product.name}
+                        {children.map((product) => {
+                          // A product with its own site is another app, which
+                          // <Link> can't navigate into.
+                          const Anchor = product.ownSite ? "a" : Link;
+
+                          return (
+                            <li key={product.slug} className="overflow-hidden">
+                              <motion.div variants={row}>
+                                <Anchor
+                                  href={`/products/${product.slug}`}
+                                  onClick={onClose}
+                                  className="group/item flex items-start gap-3 rounded-xl p-2 transition-colors duration-200 hover:bg-primary/10"
+                                >
+                                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+                                    <ServiceIcon icon={product.icon} size={18} />
+                                  </span>
+                                  <span className="min-w-0">
+                                    <span className="flex flex-wrap items-center gap-2">
+                                      <span className="text-sm font-semibold text-ink">
+                                        {product.name}
+                                      </span>
+                                      <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary-dark">
+                                        <span className="h-1 w-1 rounded-full bg-primary-light" />
+                                        {PRODUCT_STATUS[product.status]}
+                                      </span>
                                     </span>
-                                    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary-dark">
-                                      <span className="h-1 w-1 rounded-full bg-primary-light" />
-                                      {PRODUCT_STATUS[product.status]}
+                                    <span className="mt-0.5 block text-xs leading-relaxed text-muted">
+                                      {product.tagline}
                                     </span>
                                   </span>
-                                  <span className="mt-0.5 block text-xs leading-relaxed text-muted">
-                                    {product.tagline}
-                                  </span>
-                                </span>
-                              </Link>
-                            </motion.div>
-                          </li>
-                        ))}
+                                </Anchor>
+                              </motion.div>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </li>

@@ -101,6 +101,24 @@ public/
 - The 3D scene is lazy-loaded (client-only), DPR-capped, and scales down on
   mobile / coarse-pointer devices.
 
+## The MRP site
+
+`/products/mrp` is not a page in this app. It's the DKayMRP site, a separate
+Next.js project (`MRP Product Website`) with `basePath: "/products/mrp"`, and
+`next.config.mjs` rewrites `/products/mrp/*` to its deployment (Next.js
+multi-zones). The address bar stays on www.dkaylabs.com.
+
+- **`MRP_SITE_URL`** is that deployment's origin (e.g.
+  `https://dkaymrp.vercel.app`). Production builds fail without it on
+  purpose: a failed Vercel deploy leaves the previous one live, where a
+  missing rewrite would ship a 404. Locally it defaults to the MRP dev
+  server on `http://localhost:3800`, so run both to see the page.
+- The product is flagged `ownSite: true` in `PRODUCTS`. That keeps it out of
+  `app/products/[slug]` and this sitemap, adds its sitemap and `/api/` rule
+  to `robots.txt`, and makes the links to it plain `<a>`. `<Link>` would
+  try a client-side navigation into another app.
+
 ## Deploy
 
-Push to GitHub and import into Vercel - zero config.
+Push to GitHub and import into Vercel - zero config beyond `MRP_SITE_URL`
+(see above).
