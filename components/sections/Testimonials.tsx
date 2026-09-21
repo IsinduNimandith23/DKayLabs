@@ -11,7 +11,9 @@ export default function Testimonials() {
   return (
     <section className="relative py-28 sm:py-36">
       <div className="relative mx-auto max-w-5xl px-6">
-        <h2 className="mb-14 font-machina text-[length:clamp(2.5rem,7vw,4.5rem)] leading-none tracking-[-0.02em] sm:mb-20">
+        {/* The three words have no spaces between them, so the line can't
+            wrap - the 9vw floor keeps it inside a 320px phone. */}
+        <h2 className="mb-14 font-machina text-[length:clamp(1.75rem,9vw,4.5rem)] leading-none tracking-[-0.02em] sm:mb-20">
           <WordReveal text="Our" className="font-extralight text-ink" />
           <WordReveal text="Client" className="font-medium text-ink" delay={0.1} />
           <WordReveal text="Reviews" className="font-black text-primary" delay={0.2} />
