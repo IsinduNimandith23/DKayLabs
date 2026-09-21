@@ -1,6 +1,7 @@
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import ContactForm from "@/components/ui/ContactForm";
+import SocialIcon from "@/components/ui/SocialIcon";
 import { SITE, SOCIALS } from "@/lib/constants";
 
 // Direct lines, in the order people reach for them. `href` is optional:
@@ -35,7 +36,9 @@ export default function Contact() {
         lines={["Get", "In", "Touch"]}
         intro="Tell us about your project. We usually reply within one business day."
       >
-        <div className="grid gap-16 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-20">
+        {/* A wide gutter keeps the detail rows and the form's underlines
+            from reading as one block. */}
+        <div className="grid gap-16 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-32 xl:gap-40">
           <Reveal>
             <dl className="border-b border-ink/20">
               {DETAILS.map(({ label, value, href, external }) => (
@@ -58,16 +61,17 @@ export default function Contact() {
               ))}
             </dl>
 
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+            <ul className="mt-8 flex flex-wrap gap-3">
               {LIVE_SOCIALS.map((social) => (
                 <li key={social.key}>
                   <a
                     href={social.href}
+                    aria-label={social.label}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-machina text-sm text-ink/60 transition-colors duration-300 hover:text-primary"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/20 text-ink/60 transition-colors duration-300 hover:border-primary hover:text-primary"
                   >
-                    {social.label}
+                    <SocialIcon name={social.key} />
                   </a>
                 </li>
               ))}

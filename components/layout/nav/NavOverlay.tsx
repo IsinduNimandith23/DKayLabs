@@ -117,14 +117,11 @@ export default function NavOverlay({
           exit={{ opacity: 0 }}
           transition={{ duration: reduced ? 0 : 0.35, ease: EASE }}
         >
-          {/* Near-opaque rather than merely frosted: the hero artwork behind
-              it is high-contrast, and the menu has to stay legible over
-              whatever part of the page it happens to open on. The
-              few percent that do bleed through are smeared past recognition
-              by a blur radius well beyond Tailwind's scale - at this tint,
-              anything smaller leaves the hero's display type readable as a
-              ghost. */}
-          <div className="absolute inset-0 bg-base/[0.97] backdrop-blur-[96px]" />
+          {/* Fully opaque, not frosted. A 97% tint plus a huge backdrop blur
+              was tried: the blur never took effect here, and the 3% that
+              leaked left the page's white type readable as a ghost behind
+              the menu. The primary-fade bloom above still gives it depth. */}
+          <div className="absolute inset-0 bg-base" />
           <div className="absolute inset-0 bg-primary-fade" />
 
           <motion.nav
@@ -138,7 +135,7 @@ export default function NavOverlay({
           >
             {/* ── Primary navigation ───────────────────────────── */}
             <ul className="flex flex-col">
-              {NAV_LINKS.map((link, i) => {
+              {NAV_LINKS.map((link) => {
                 const active = isActive(link.href);
                 const children =
                   link.href === "/products" ? PRODUCTS : undefined;
@@ -153,9 +150,6 @@ export default function NavOverlay({
                           aria-current={active ? "page" : undefined}
                           className="group flex items-baseline gap-4 py-1 sm:gap-6"
                         >
-                          <span className="w-6 shrink-0 font-mono text-[11px] tracking-widest text-muted-dim">
-                            {String(i + 1).padStart(2, "0")}
-                          </span>
                           <span
                             className={`font-display text-[clamp(2rem,6.5vw,4.25rem)] font-extrabold uppercase leading-[1.02] tracking-tight transition-colors duration-200 group-hover:text-ink ${
                               active ? "text-ink" : "text-muted"
@@ -178,7 +172,7 @@ export default function NavOverlay({
                         the room, so there's nothing to collapse behind an
                         accordion. */}
                     {children && (
-                      <ul className="mb-3 ml-10 flex flex-col gap-1 border-l border-ink/10 pl-4 sm:ml-12">
+                      <ul className="mb-3 ml-6 flex flex-col gap-1 border-l border-ink/10 pl-4">
                         {children.map((product) => (
                           <li key={product.slug} className="overflow-hidden">
                             <motion.div variants={row}>
