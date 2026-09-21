@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Products from "@/components/sections/Products";
-import CtaBand from "@/components/sections/CtaBand";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -14,7 +13,6 @@ export default function ProductsPage() {
   return (
     <main className="pt-nav">
       <Products />
-      <CtaBand />
     </main>
   );
 }
