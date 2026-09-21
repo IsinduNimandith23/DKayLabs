@@ -7,9 +7,10 @@ import Reveal from "@/components/ui/Reveal";
  * light / medium / black ladder, then an intro line with the arrow aimed down
  * at whatever follows. `children` sits under it, inside the same column.
  *
- * Headline size is 16cqw of the column - the widest last word in use,
- * PRODUCTS in Neue Machina Black, measures 5.69em after tracking, so it fills
- * 91% and nothing wraps. Check a new word against that before adding it.
+ * Headline size is 16cqw of the column, and no line may wrap: a line fills
+ * (advance in em x 16)% of it, plus 30% for the indented middle one. Widest
+ * in use are "TO HELP" (Medium, 3.98em + indent = 94%) and PRODUCTS (Black,
+ * 5.69em = 91%). Measure a new line against that before adding it.
  */
 export default function PageHero({
   label,
@@ -19,7 +20,7 @@ export default function PageHero({
 }: {
   /** Accessible name for the headline; the visible lines are aria-hidden. */
   label: string;
-  /** Exactly three words: light, medium (indented), black in primary. */
+  /** Exactly three lines: light, medium (indented), black in primary. */
   lines: [string, string, string];
   intro: ReactNode;
   children?: ReactNode;
