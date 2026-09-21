@@ -105,11 +105,14 @@ export default function Navbar() {
 
             {/* Absolutely positioned so the wordmark is optically centred in
                 the bar and, more to the point, never joins the flex line
-                that re-lays-out on every scrub frame. */}
-            <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                that re-lays-out on every scrub frame. The +3px drop is
+                optical: the artwork box includes the "y" descender (~22% of
+                its height), so box-centring leaves the letter bodies riding
+                high. 3px ~= 10% of the 32px size, which centres the bodies. */}
+            <div className="pointer-events-none absolute left-1/2 top-[calc(50%+3px)] -translate-x-1/2 -translate-y-1/2">
               <Logo
                 variant="wordmark"
-                size={26}
+                size={32}
                 className="pointer-events-auto"
               />
             </div>
