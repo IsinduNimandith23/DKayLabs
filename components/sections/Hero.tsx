@@ -59,7 +59,7 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="relative flex min-h-[100svh] items-center overflow-hidden"
+      className="relative flex min-h-[100svh] items-center overflow-hidden py-[calc(var(--nav-h)+1.5rem)]"
     >
       {/*
         Oversized on purpose: the field lags the page by PARALLAX of the
@@ -80,9 +80,22 @@ export default function Hero() {
           variants={container}
           initial={reduced ? undefined : "hidden"}
           animate={reduced ? undefined : "show"}
-          className="flex flex-col gap-12 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
+          className="flex flex-col items-center gap-10 [--hero-fs:min(calc((100vw_-_3rem)/4.2),26svh)] sm:gap-12 sm:[--hero-fs:min(calc((100vw_-_5rem)/4.2),26svh)] lg:flex-row lg:items-end lg:justify-between lg:gap-16 lg:[--hero-fs:clamp(3rem,11.144vw,13.375rem)]"
         >
-          <h1 className="flex flex-col font-machina text-[clamp(3rem,11.144vw,13.375rem)] leading-none">
+          {/*
+            Below lg the composition stacks, so the frame's 11.144vw would
+            leave the headline filling barely half the width of a phone. There
+            it is sized off the widest line instead: "CRAFT." is 3.947em of
+            advance, so dividing the content width (viewport less the px-6 /
+            px-10 gutters) by 4.2 fills it with ~6% slack for a desktop
+            scrollbar. The 26svh cap keeps the stack (headline ~2.66em tall)
+            inside a landscape phone. lg returns to the measured frame size.
+
+            The stack is centred on the page below lg; lg restores the frame's
+            left-aligned headline (lg:items-end on the parent overrides
+            items-center).
+          */}
+          <h1 className="flex flex-col text-center font-machina lg:text-left text-[length:var(--hero-fs)] leading-none">
             {LINES.map(({ text, bold, mt }) => (
               <span
                 key={text}
@@ -120,7 +133,7 @@ export default function Hero() {
           >
             <Link
               href="/contact"
-              className="group inline-flex flex-col items-center font-machina text-[clamp(1.5rem,3.898vw,4.675rem)] leading-none text-ink"
+              className="group inline-flex flex-col items-center font-machina text-[length:calc(var(--hero-fs)*0.4)] leading-none text-ink lg:text-[clamp(1.5rem,3.898vw,4.675rem)]"
             >
               {/* Centred over "Together?", as the frame has it: the two ink
                   spans' centres sit 11.5px apart out of 1528, and "Build" is
