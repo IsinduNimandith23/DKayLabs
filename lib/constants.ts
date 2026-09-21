@@ -551,6 +551,11 @@ export type Service = {
   /** Slideshow shown beside the homepage services list on hover. Paths in
    *  /public. Falls back to portfolio screenshots when unset. */
   images?: string[];
+  /** The one piece of work this service's card shows in the homepage
+   *  showcase - a PROJECTS title, or a PRODUCTS slug for in-house work.
+   *  With neither set, the card becomes a "start yours" invite. */
+  featuredProject?: string;
+  featuredProduct?: string;
   /** Long-form copy shown when the service's row is opened on /services. */
   detail: {
     /** One or two paragraphs expanding on `description`. */
@@ -613,6 +618,7 @@ export const SERVICES: Service[] = [
       "Blazing-fast, conversion-focused sites built on modern stacks - pixel-perfect, animated, and engineered to rank.",
     icon: "code",
     status: "available",
+    featuredProject: "CGShift",
     detail: {
       overview:
         "We build marketing sites, landing pages, and content-driven platforms that load instantly and turn visitors into customers. Every build starts from your goals - not a template - and ships with clean, maintainable code you actually own.",
@@ -651,6 +657,7 @@ export const SERVICES: Service[] = [
       "End-to-end product engineering: auth, billing, dashboards, and scalable cloud infrastructure that grows with you.",
     icon: "layers",
     status: "available",
+    featuredProduct: "mrp",
     detail: {
       overview:
         "From idea to paying users. We handle the unglamorous parts of a SaaS - auth, roles, subscriptions, webhooks, admin tooling - so you can focus on the product itself. Built multi-tenant from day one so scaling later isn't a rewrite.",
@@ -670,6 +677,7 @@ export const SERVICES: Service[] = [
       "High-converting online stores with seamless checkout, payments, and inventory - built to sell around the clock.",
     icon: "cart",
     status: "available",
+    featuredProject: "Fallowkind",
     detail: {
       overview:
         "Storefronts engineered around the checkout. We obsess over the path from product page to paid order - fewer steps, faster loads, fewer abandoned carts - and connect the back office so inventory, shipping, and orders stay in sync.",
@@ -689,6 +697,7 @@ export const SERVICES: Service[] = [
       "Interfaces that look sharp and convert harder - research-driven design systems, prototypes, and pixel-perfect handoff.",
     icon: "design",
     status: "available",
+    featuredProject: "The Brush Master",
     detail: {
       overview:
         "Design that earns its keep. We start with your users and your funnel, then build an interface and a design system around what moves the numbers - handed off in a state engineers can build from without guesswork.",
@@ -708,6 +717,7 @@ export const SERVICES: Service[] = [
       "Rank higher and reach further - technical SEO, content strategy, and campaigns that turn traffic into revenue.",
     icon: "seo",
     status: "available",
+    featuredProject: "New Sagarika Driving School",
     detail: {
       overview:
         "Traffic is only useful if it converts. We fix the technical foundation first, then build content and campaigns around the keywords your buyers actually search - and report on revenue, not vanity metrics.",
@@ -727,6 +737,7 @@ export const SERVICES: Service[] = [
       "Updates, monitoring, backups, and support - we keep your site fast, secure, and always online after launch.",
     icon: "wrench",
     status: "available",
+    featuredProject: "Serendib Prime",
     detail: {
       overview:
         "Launch day is the start, not the finish. We keep your site patched, backed up, and monitored around the clock - and you get a real person to call when something breaks, not a ticket queue.",

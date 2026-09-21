@@ -1,221 +1,283 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
-import GlowOrb from "@/components/ui/GlowOrb";
+import ServiceIcon from "@/components/ui/ServiceIcon";
 import RollText from "@/components/ui/RollText";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
-import { PROJECTS, type Project } from "@/lib/constants";
+import { PRODUCTS, PROJECTS, SERVICES, type IconKey } from "@/lib/constants";
+import { serviceSlug } from "@/lib/services";
+
+/** One card in the showcase - a service, fronted by one piece of its work. */
+type Showcase = {
+  service: string;
+  icon: IconKey;
+  title: string;
+  href: string;
+  external: boolean;
+  image?: string;
+  /** "Visit" / "View" / "Start" - the cursor label and the link's verb. */
+  verb: string;
+};
 
 /**
- * Numbered work card.
- *
- * The screenshot is held at its native 19:9 so `object-cover` never has to
- * scale it up - cropping a desktop capture to a squarer box zooms straight
- * past the site's own layout. The card gets its height from a caption bar
- * under the image instead, which also keeps the title off the screenshot's
- * own copy. Only the big index stays overlaid, on a short scrim.
+ * Resolve each service to the work it shows: a client project, else an
+ * in-house product, else an open invite (or "coming soon" for services that
+ * haven't launched). Mapping lives on SERVICES in lib/constants.ts.
  */
-function WorkCard({ project, index }: { project: Project; index: number }) {
-  const number = String(index + 1).padStart(2, "0");
+const SHOWCASE: Showcase[] = SERVICES.map((s) => {
+  const base = { service: s.title, icon: s.icon };
+  const project = PROJECTS.find((p) => p.title === s.featuredProject);
+  if (project) {
+    return { ...base, title: project.title, href: project.url, external: true, image: project.image, verb: "Visit" };
+  }
+  const product = PRODUCTS.find((p) => p.slug === s.featuredProduct);
+  if (product) {
+    return { ...base, title: product.name, href: `/products/${product.slug}`, external: false, verb: "View" };
+  }
+  if (s.status === "coming-soon") {
+    return { ...base, title: "Coming Soon", href: `/services#${serviceSlug(s.title)}`, external: false, verb: "View" };
+  }
+  return {
+    ...base,
+    title: "Yours Next?",
+    href: `/contact?service=${encodeURIComponent(s.title)}`,
+    external: false,
+    verb: "Start",
+  };
+});
 
+/*
+ * Card geometry, in the inner panel's own 376 x 356 box. The dark body rises
+ * into a tab on the left - the title's seat - then steps down to the right
+ * over a soft slope, like a file folder laid over the artwork. The SVG keeps
+ * its aspect (the card does too), so the curves never stretch.
+ */
+const PANEL_PATH =
+  "M0 110Q0 90 20 90H186C198 90 204 93 211 100L228 117C234 123 240 126 250 126H356Q376 126 376 146V356H0Z";
+
+function ArrowGlyph() {
+  // Swallowtail arrow from the reference card: a straight shaft into two
+  // inward-bowing strokes meeting at the tip.
   return (
-    <a
-      href={project.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`${project.title} - visit live site`}
-      data-cursor="Visit"
-      className="group relative block w-[78vw] max-w-[520px] shrink-0 snap-center overflow-hidden rounded-2xl border border-ink/10 bg-surface transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-glow"
-    >
-      <div className="relative aspect-[19/9] w-full overflow-hidden">
-        {project.image ? (
-          /* Quality is raised from the default 75 - these text-heavy
-             screenshots soften noticeably under normal compression. */
-          <Image
-            src={project.image}
-            alt={`${project.title} website screenshot`}
-            fill
-            sizes="(max-width: 640px) 78vw, 520px"
-            quality={90}
-            className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-surface via-base to-sunken">
-            <span className="flex h-20 w-20 items-center justify-center rounded-2xl border border-primary/30 bg-surface/70 font-display text-2xl text-primary backdrop-blur">
-              {project.monogram}
-            </span>
-          </div>
-        )}
-
-        {/* Short scrim - just enough to seat the index, not enough to wash out
-            the screenshot. */}
-        <div
-          aria-hidden
-          className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/35 to-transparent"
-        />
-
-        {/* Hover arrow, top-right. */}
-        <span className="absolute right-4 top-4 flex h-9 w-9 translate-y-1 items-center justify-center rounded-full bg-white/10 text-white opacity-0 backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:bg-primary group-hover:opacity-100">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <path d="M7 17L17 7" />
-            <path d="M8 7h9v9" />
-          </svg>
-        </span>
-
-        <p className="absolute bottom-4 left-5 font-display text-3xl font-extrabold leading-none tracking-tight text-white sm:text-[2.5rem]">
-          {number}
-        </p>
-      </div>
-
-      <div className="px-5 py-5 sm:px-6">
-        <h3 className="truncate text-lg font-bold leading-tight text-ink sm:text-xl">
-          {project.title}
-        </h3>
-        <p className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
-          {project.category}
-        </p>
-      </div>
-    </a>
+    <svg viewBox="0 0 24 24" className="h-[46%] w-[46%]" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" aria-hidden>
+      <path d="M5.5 18.5L18 6" />
+      <path d="M9.5 5.5C13.5 6.3 16.3 6.2 18 6C17.8 7.7 17.7 10.5 18.5 14.5" />
+    </svg>
   );
 }
 
 /**
- * Horizontal inset shared by the headline and the card rail. Deliberately the
- * same scale as the navbar's container so the section lines up with it.
+ * Folder-tab showcase card. Sized by its parent; everything inside scales
+ * with it through container-query units, so it holds the same proportions at
+ * every breakpoint.
  */
-const GUTTER = "w-full max-w-[1920px] px-6 sm:px-10 lg:px-32 2xl:px-44";
-
-/**
- * Left headline + right "All Works" pill.
- * `items-start` puts the pill level with the headline's first line rather
- * than its baseline.
- */
-function Header() {
+function ShowcaseCard({ item, active }: { item: Showcase; active: boolean }) {
   return (
-    <div
-      className={`mx-auto flex flex-wrap items-start justify-between gap-6 ${GUTTER}`}
-    >
-      <h2 className="text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
-        {/* Typographic apostrophe, not the straight quote. */}
-        <WordReveal text="Let’s See" className="text-ink" />
-        <br />
-        <WordReveal text="Our " className="text-ink" delay={0.12} />
-        <WordReveal text="Work" className="text-primary" delay={0.24} />
-      </h2>
+    <div className="group relative h-full w-full rounded-[1.75rem] border border-ink/10 bg-surface p-[1.75%] shadow-bevel [container-type:inline-size]">
+      <div className="relative h-full w-full overflow-hidden rounded-[1.375rem] bg-sunken">
+        {/* Artwork - the project's screenshot, else a branded field with the
+            service's icon where a client logo would sit. */}
+        <div className="absolute inset-x-0 top-0 h-[46%]">
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 240px, 340px"
+              quality={85}
+              className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/35 via-primary/10 to-sunken">
+              <span className="absolute right-[7%] top-[14%] text-ink/80">
+                <ServiceIcon icon={item.icon} size={36} />
+              </span>
+            </div>
+          )}
+        </div>
 
-      {/* Inverted pill: `ink` fill with `surface` text flips correctly in both
-          themes - white pill on dark, black pill on light. */}
-      <Reveal delay={0.2}>
-        <Link
-          href="/portfolio"
-          className="inline-flex items-center gap-2.5 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-surface transition-all duration-300 hover:bg-primary hover:text-on-primary hover:shadow-glow"
+        <svg viewBox="0 0 376 356" className="absolute inset-0 h-full w-full fill-base" aria-hidden>
+          <path d={PANEL_PATH} />
+        </svg>
+
+        {/* Wraps rather than truncates. The width stops at the tab's flat top
+            (x 186 of 376 = 49.5%), so the first line never runs out over the
+            artwork; a second line drops into the full-width body below. */}
+        <h3 className="absolute left-[7.5%] top-[28.5%] line-clamp-2 max-w-[42%] break-words font-machina text-[5cqw] font-bold leading-[1.1] text-ink">
+          {item.title}
+        </h3>
+
+        <p className="absolute bottom-[8%] left-[7.5%] max-w-[60%] font-machina text-[4cqw] leading-tight text-ink/85">
+          {item.service}
+        </p>
+
+        <span
+          className={`absolute bottom-[5.5%] right-[5.5%] flex aspect-square w-[16%] items-center justify-center rounded-full bg-primary text-white transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            active ? "group-hover:rotate-45 group-hover:scale-110" : ""
+          }`}
         >
-          <RollText>All Works</RollText>
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </Link>
-      </Reveal>
+          <ArrowGlyph />
+        </span>
+      </div>
     </div>
   );
 }
 
+/** Shortest signed distance from `active` to `i` around a ring of `n`. */
+function ringOffset(i: number, active: number, n: number) {
+  let d = (i - active) % n;
+  if (d > n / 2) d -= n;
+  if (d < -n / 2) d += n;
+  return d;
+}
+
+/** Fan pose for a card `d` places from centre. Past +-2 cards are hidden. */
+function pose(d: number) {
+  const a = Math.abs(d);
+  return {
+    x: `${d * 62}%`,
+    y: `${a * a * 3.5}%`,
+    rotateZ: d * 7,
+    rotateY: -d * 16,
+    scale: 1 - a * 0.08,
+    opacity: a > 2 ? 0 : 1,
+    // Same function list at every step so framer can tween between them.
+    filter: `brightness(${[1, 0.7, 0.32][Math.min(a, 2)]}) blur(${[0, 0.15, 0.8][Math.min(a, 2)]}px)`,
+  };
+}
+
+const AUTOPLAY_MS = 5000;
+
+function NavButton({ dir, onClick }: { dir: -1 | 1; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={dir < 0 ? "Previous service" : "Next service"}
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/25 text-ink transition-colors duration-300 hover:border-primary hover:bg-primary hover:text-on-primary"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        {dir < 0 ? <polyline points="15 18 9 12 15 6" /> : <polyline points="9 18 15 12 9 6" />}
+      </svg>
+    </button>
+  );
+}
+
 /**
- * Scroll-driven horizontal work gallery.
- * The tall section pins its content full-screen while vertical scroll
- * pans the card strip sideways. Cards alternate a small vertical offset
- * so the strip reads as a staggered row rather than a flat rail.
- * Falls back to a native swipeable row under reduced motion.
+ * "Proof Of Concept" - one card per service, fanned in 3D around the one in
+ * focus. Side cards are clickable to bring them forward; the stage also
+ * takes a swipe/drag and the arrow keys, and rotates on its own while it's in
+ * view and nobody is interacting with it.
  */
 export default function FeaturedWork() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const stripRef = useRef<HTMLDivElement>(null);
-  const [range, setRange] = useState(0);
+  const n = SHOWCASE.length;
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
   const reduced = useReducedMotion();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(stageRef, { amount: 0.4 });
+  // A pan ends in a click on whatever card is under the pointer - swallow it.
+  const dragged = useRef(false);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], [0, -range]);
+  const go = useCallback((step: number) => setActive((a) => (a + step + n) % n), [n]);
 
-  // How far the strip must travel: its full width minus one viewport.
+  // Re-armed on every change, so a manual step restarts the countdown.
   useEffect(() => {
-    const measure = () => {
-      if (!stripRef.current) return;
-      setRange(Math.max(0, stripRef.current.scrollWidth - window.innerWidth));
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [reduced]);
+    if (reduced || paused || !inView) return;
+    const id = window.setTimeout(() => go(1), AUTOPLAY_MS);
+    return () => window.clearTimeout(id);
+  }, [active, reduced, paused, inView, go]);
 
-  const cards = PROJECTS.map((project, i) => (
-    <div key={project.title} className={i % 2 === 1 ? "sm:pt-12" : ""}>
-      <WorkCard project={project} index={i} />
-    </div>
-  ));
-
-  // Reduced motion: plain swipeable row, no scroll-jacking.
-  if (reduced) {
-    return (
-      <section className="relative py-28 sm:py-36">
-        <GlowOrb className="right-0 top-16 bg-primary/15" size={480} />
-        <div className="relative">
-          <Header />
-          <div
-            className={`mx-auto mt-12 flex snap-x snap-mandatory items-start gap-6 overflow-x-auto pb-4 ${GUTTER}`}
-          >
-            {cards}
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "ArrowLeft") go(-1);
+    else if (e.key === "ArrowRight") go(1);
+    else return;
+    e.preventDefault();
+  };
 
   return (
-    // Shorter than the old 280vh: the narrower cards make for a shorter strip,
-    // so the same scroll length would pan noticeably slower.
-    <section ref={sectionRef} className="relative h-[230vh]">
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
-        <GlowOrb className="right-0 top-16 bg-primary/15" size={480} />
+    <section className="relative overflow-x-clip py-28 sm:py-36">
+      <div className="relative">
+        <h2 className="px-6 text-center font-machina text-[length:clamp(2rem,8.5vw,5.5rem)] leading-none tracking-[-0.02em]">
+          <WordReveal text="Proof" className="font-extralight text-ink" />
+          <WordReveal text="Of" className="font-medium text-ink" delay={0.1} />
+          <WordReveal text="Concept" className="font-black text-primary" delay={0.2} />
+        </h2>
 
-        <div className="relative">
-          <Header />
-
+        <Reveal delay={0.15}>
           <motion.div
-            ref={stripRef}
-            style={{ x }}
-            className={`mx-auto mt-10 flex items-start gap-6 sm:mt-12 ${GUTTER}`}
+            ref={stageRef}
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Work by service"
+            tabIndex={0}
+            onKeyDown={onKeyDown}
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onFocus={() => setPaused(true)}
+            onBlur={() => setPaused(false)}
+            onPanStart={() => (dragged.current = true)}
+            onPanEnd={(_, info) => {
+              if (Math.abs(info.offset.x) > 40) go(info.offset.x < 0 ? 1 : -1);
+              // Let the trailing click see the flag, then clear it.
+              window.setTimeout(() => (dragged.current = false), 0);
+            }}
+            className="relative mx-auto mt-14 aspect-[400/380] w-[240px] cursor-grab touch-pan-y select-none outline-none [perspective:1400px] active:cursor-grabbing sm:mt-20 sm:w-[290px] lg:w-[340px]"
           >
-            {cards}
+            {SHOWCASE.map((item, i) => {
+              const d = ringOffset(i, active, n);
+              const isActive = d === 0;
+              const hidden = Math.abs(d) > 2;
+              const linkProps = item.external
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {};
+
+              return (
+                <motion.a
+                  key={item.service}
+                  href={item.href}
+                  {...linkProps}
+                  draggable={false}
+                  aria-hidden={hidden || undefined}
+                  tabIndex={isActive ? 0 : -1}
+                  aria-label={`${item.service}: ${item.title} - ${item.verb.toLowerCase()}`}
+                  data-cursor={isActive ? item.verb : undefined}
+                  onClick={(e) => {
+                    if (dragged.current || !isActive) e.preventDefault();
+                    if (!dragged.current && !isActive) setActive(i);
+                  }}
+                  initial={false}
+                  animate={pose(d)}
+                  transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 170, damping: 26, mass: 0.9 }}
+                  style={{ zIndex: 10 - Math.abs(d), pointerEvents: hidden ? "none" : "auto" }}
+                  className="absolute inset-0 block rounded-[1.75rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                >
+                  <ShowcaseCard item={item} active={isActive} />
+                </motion.a>
+              );
+            })}
           </motion.div>
+        </Reveal>
+
+        <p aria-live="polite" className="sr-only">
+          {`${SHOWCASE[active].service}: ${SHOWCASE[active].title}, ${active + 1} of ${n}`}
+        </p>
+
+        {/* Room for the lowered outer cards before the controls. */}
+        <div className="mt-20 flex items-center justify-center gap-4 px-6 sm:mt-24">
+          <NavButton dir={-1} onClick={() => go(-1)} />
+          <Link
+            href="/portfolio"
+            className="inline-flex items-center rounded-full border-2 border-ink/80 px-6 py-3 font-machina text-sm font-bold text-ink transition-all duration-300 hover:border-primary hover:bg-primary hover:text-on-primary hover:shadow-glow"
+          >
+            <RollText>Wanna See More?</RollText>
+          </Link>
+          <NavButton dir={1} onClick={() => go(1)} />
         </div>
       </div>
     </section>
