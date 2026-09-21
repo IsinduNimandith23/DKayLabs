@@ -60,17 +60,6 @@ const SHOWCASE: Showcase[] = SERVICES.map((s) => {
 const PANEL_PATH =
   "M0 110Q0 90 20 90H186C198 90 204 93 211 100L228 117C234 123 240 126 250 126H356Q376 126 376 146V356H0Z";
 
-function ArrowGlyph() {
-  // Swallowtail arrow from the reference card: a straight shaft into two
-  // inward-bowing strokes meeting at the tip.
-  return (
-    <svg viewBox="0 0 24 24" className="h-[46%] w-[46%]" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" aria-hidden>
-      <path d="M5.5 18.5L18 6" />
-      <path d="M9.5 5.5C13.5 6.3 16.3 6.2 18 6C17.8 7.7 17.7 10.5 18.5 14.5" />
-    </svg>
-  );
-}
-
 /**
  * Folder-tab showcase card. Sized by its parent; everything inside scales
  * with it through container-query units, so it holds the same proportions at
@@ -117,11 +106,11 @@ function ShowcaseCard({ item, active }: { item: Showcase; active: boolean }) {
         </p>
 
         <span
-          className={`absolute bottom-[5.5%] right-[5.5%] flex aspect-square w-[16%] items-center justify-center rounded-full bg-primary text-white transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`absolute bottom-[6%] right-[6%] aspect-square w-[13.5%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             active ? "group-hover:rotate-45 group-hover:scale-110" : ""
           }`}
         >
-          <ArrowGlyph />
+          <Image src="/button.png" alt="" fill sizes="56px" />
         </span>
       </div>
     </div>
