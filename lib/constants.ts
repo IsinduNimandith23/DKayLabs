@@ -548,6 +548,9 @@ export type Service = {
   /** Inline icon key, resolved in ServiceCard. */
   icon: IconKey;
   status: "available" | "coming-soon";
+  /** Slideshow shown beside the homepage services list on hover. Paths in
+   *  /public. Falls back to portfolio screenshots when unset. */
+  images?: string[];
   /** Long-form copy shown in the ServiceModal when the card is clicked. */
   detail: {
     /** One or two paragraphs expanding on `description`. */
@@ -758,17 +761,21 @@ export const SERVICES: Service[] = [
   },
 ];
 
-/** Scrolling keyword strip shown under the hero. */
-export const MARQUEE_ITEMS = [
-  "Websites",
-  "SaaS Platforms",
-  "AI Products",
-  "UI / UX Design",
-  "E-Commerce",
-  "Automation",
-  "Branding",
-  "Performance",
-] as const;
+export type Partner = {
+  name: string;
+  /** White logo in /public/partners. Until one is set, the name renders as a
+   *  text placeholder in its slot. */
+  logo?: string;
+};
+
+/** Partner logo strip shown under the hero. */
+export const PARTNERS: Partner[] = [
+  { name: "Fallowkind" },
+  { name: "CG Shift" },
+  { name: "New Sagarika Driving School" },
+  { name: "Serendib Prime" },
+  { name: "Brushmaster" },
+];
 
 export type Project = {
   title: string;
@@ -844,25 +851,6 @@ export const PROJECTS: Project[] = [
   },
 ];
 
-/** Homepage "Our Drive" section - why we do this. */
-export const DRIVES = [
-  {
-    title: "Your win is the metric",
-    description:
-      "We don't measure success in deliverables shipped - we measure it in the ground you gain. Traffic, conversions, market position: that's the scoreboard.",
-  },
-  {
-    title: "Quality without compromise",
-    description:
-      "Every build is engineered like it carries our own name - because it does. No templates, no shortcuts, no 'good enough'.",
-  },
-  {
-    title: "Partners, not vendors",
-    description:
-      "We stay in your corner after launch. Iterating, optimizing, and scaling alongside you as the goals get bigger.",
-  },
-] as const;
-
 export type Testimonial = {
   quote: string;
   name: string;
@@ -876,8 +864,8 @@ export type Testimonial = {
  * visitor, and marking them up as schema.org AggregateRating (the obvious
  * next SEO step) would be a structured-data policy violation on top of it.
  *
- * Add quotes here as they come in. Testimonials.tsx switches from a static
- * row to the scrolling marquee once there are three.
+ * Add quotes here as they come in. The reviews carousel starts rotating once
+ * there are more quotes than cards on screen.
  */
 export const TESTIMONIALS: Testimonial[] = [
   {

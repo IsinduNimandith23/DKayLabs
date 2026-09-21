@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -144,28 +145,26 @@ export default function Hero() {
                   '?' carries a 0.374em right side bearing, so centring the
                   boxes lands "Build" 0.176em right of where centring the ink
                   puts it. Translate, so it stays out of layout. */}
-              <span className="inline-flex -translate-x-[0.176em] items-start gap-[0.0907em]">
+              <span className="inline-flex -translate-x-[0.176em] items-baseline gap-[0.0907em]">
                 <span className="font-normal">Build</span>
-                {/* 0.735em across - exactly the ascender height - and offset
-                    so its top lands on the ascender and its bottom on the
-                    baseline, which is how the frame places it. */}
-                <span
+                {/* 0.735em across - exactly the ascender height - with its
+                    bottom on the baseline, so its top lands on the ascender,
+                    which is how the frame places it.
+
+                    Baseline-aligned (an image's baseline is its bottom edge)
+                    rather than offset from the line box top: the font leaves
+                    USE_TYPO_METRICS off, so Windows lays it out with the win
+                    metrics (1.04/0.27), not hhea (0.735/0.23), which drops
+                    the baseline 0.1325em lower than an offset can predict. */}
+                <Image
+                  src="/button.png"
+                  alt=""
                   aria-hidden
-                  className="mt-[0.0175em] grid h-[0.735em] w-[0.735em] shrink-0 place-items-center rounded-full bg-primary text-on-primary transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[0.12em] group-hover:translate-x-[0.12em] group-hover:bg-primary-dark"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.75}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-[0.411em] w-[0.411em]"
-                  >
-                    <path d="M7 17 17 7" />
-                    <path d="M8 7h9v9" />
-                  </svg>
-                </span>
+                  width={261}
+                  height={261}
+                  priority
+                  className="h-[0.735em] w-[0.735em] shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[0.12em] group-hover:translate-x-[0.12em]"
+                />
               </span>
               <span className="font-extrabold" style={{ marginTop: "-0.2151em" }}>
                 Together?

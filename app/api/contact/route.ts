@@ -25,12 +25,13 @@ const FROM = "DKayLABS <noreply@send.dkaylabs.com>";
 const TO = process.env.CONTACT_INBOX ?? "contact@dkaylabs.com";
 
 // Keep the request body small so a bot can't push megabytes through the form.
-const LIMITS = { name: 100, email: 200, phone: 40, message: 5000 };
+const LIMITS = { name: 100, email: 200, phone: 40, country: 80, message: 5000 };
 
 type Payload = {
   name?: unknown;
   email?: unknown;
   phone?: unknown; // optional
+  country?: unknown; // optional - only the homepage form sends it
   message?: unknown;
   company?: unknown; // honeypot - real users never see this field
 };
@@ -71,6 +72,7 @@ export async function POST(request: Request) {
   const name = clean(body.name, LIMITS.name);
   const email = clean(body.email, LIMITS.email);
   const phone = clean(body.phone, LIMITS.phone); // optional - "" is valid
+  const country = clean(body.country, LIMITS.country); // optional
   const message = clean(body.message, LIMITS.message);
 
   if (!name || !email || !message) {
@@ -104,11 +106,12 @@ export async function POST(request: Request) {
         <p style="font-family:sans-serif"><strong>Name:</strong> ${escapeHtml(name)}</p>
         <p style="font-family:sans-serif"><strong>Email:</strong> ${escapeHtml(email)}</p>
         ${phone ? `<p style="font-family:sans-serif"><strong>Phone:</strong> ${escapeHtml(phone)}</p>` : ""}
+        ${country ? `<p style="font-family:sans-serif"><strong>Country:</strong> ${escapeHtml(country)}</p>` : ""}
         <p style="font-family:sans-serif"><strong>Message:</strong></p>
         <p style="font-family:sans-serif;white-space:pre-wrap">${escapeHtml(message)}</p>
       `,
       // Plain-text fallback for clients that don't render HTML.
-      text: `New contact form submission\n\nName: ${name}\nEmail: ${email}\n${phone ? `Phone: ${phone}\n` : ""}\n${message}`,
+      text: `New contact form submission\n\nName: ${name}\nEmail: ${email}\n${phone ? `Phone: ${phone}\n` : ""}${country ? `Country: ${country}\n` : ""}\n${message}`,
     }),
   });
 
