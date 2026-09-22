@@ -27,6 +27,48 @@ const TO = process.env.CONTACT_INBOX ?? "contact@dkaylabs.com";
 // Keep the request body small so a bot can't push megabytes through the form.
 const LIMITS = { name: 100, email: 200, phone: 40, country: 80, message: 5000 };
 
+// Per-IP sliding window: 3 submissions every 10 minutes. Enough for a person
+// fixing a typo, not enough to flood the inbox or burn the Resend quota.
+//
+// The window lives in memory, so it's per serverless instance and resets on a
+// cold start. It stops floods and double-submits, not a bot fanned out across
+// many instances - that would need a shared store (e.g. Upstash Redis).
+const RATE_LIMIT = { max: 3, windowMs: 10 * 60 * 1000 };
+const hits = new Map<string, number[]>();
+
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  const cutoff = now - RATE_LIMIT.windowMs;
+
+  // Sweep idle IPs now and then so the map can't grow without bound.
+  if (hits.size > 1000) {
+    hits.forEach((times, key) => {
+      if (times[times.length - 1] <= cutoff) hits.delete(key);
+    });
+  }
+
+  const recent = (hits.get(ip) ?? []).filter((t) => t > cutoff);
+  if (recent.length >= RATE_LIMIT.max) {
+    hits.set(ip, recent);
+    const retryAfter = Math.ceil((recent[0] + RATE_LIMIT.windowMs - now) / 1000);
+    return { limited: true, retryAfter };
+  }
+
+  recent.push(now);
+  hits.set(ip, recent);
+  return { limited: false, retryAfter: 0 };
+}
+
+// Vercel puts the real client first in x-forwarded-for.
+function clientIp(request: Request) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  return (
+    forwarded?.split(",")[0].trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
 type Payload = {
   name?: unknown;
   email?: unknown;
@@ -50,6 +92,15 @@ function escapeHtml(value: string) {
 }
 
 export async function POST(request: Request) {
+  // First, before any parsing, so a flood is turned away as cheaply as possible.
+  const { limited, retryAfter } = isRateLimited(clientIp(request));
+  if (limited) {
+    return NextResponse.json(
+      { error: "Too many messages - please try again in a few minutes." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } },
+    );
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.error("[contact] RESEND_API_KEY is not set");
