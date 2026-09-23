@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import RollText from "@/components/ui/RollText";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { PROJECTS, SERVICES, type Project } from "@/lib/constants";
+import { serviceSlug } from "@/lib/services";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -19,6 +20,25 @@ const FILTERS = ["All", ...SERVICES.map((s) => s.title)];
  */
 export default function PortfolioGrid() {
   const [active, setActive] = useState("All");
+
+  // Open on the filter named by ?service=<slug> (the homepage showcase links
+  // here that way). Read from window rather than useSearchParams so this
+  // doesn't force a Suspense boundary on the static route. Only slugs of
+  // services we offer are accepted.
+  useEffect(() => {
+    const slug = new URLSearchParams(window.location.search).get("service");
+    const match = SERVICES.find((s) => serviceSlug(s.title) === slug);
+    if (match) setActive(match.title);
+  }, []);
+
+  // Keep the URL in step so a refresh or shared link lands on the same filter.
+  const select = (label: string) => {
+    setActive(label);
+    const url = new URL(window.location.href);
+    if (label === "All") url.searchParams.delete("service");
+    else url.searchParams.set("service", serviceSlug(label));
+    window.history.replaceState(window.history.state, "", url);
+  };
 
   const visible = active === "All" ? PROJECTS : PROJECTS.filter((p) => p.service === active);
 
@@ -37,7 +57,7 @@ export default function PortfolioGrid() {
             <button
               key={label}
               type="button"
-              onClick={() => setActive(label)}
+              onClick={() => select(label)}
               aria-pressed={isActive}
               className={`group flex cursor-pointer items-center gap-3 border-t border-ink/15 py-3 text-left font-machina text-[0.8rem] leading-tight outline-none transition-colors duration-300 focus-visible:bg-ink/5 sm:py-3.5 sm:text-[0.95rem] ${
                 isActive ? "text-primary" : "text-ink/55 hover:text-ink"

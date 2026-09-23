@@ -8,9 +8,11 @@ import Reveal from "@/components/ui/Reveal";
  * at whatever follows. `children` sits under it, inside the same column.
  *
  * Headline size is 16cqw of the column, and no line may wrap: a line fills
- * (advance in em x 16)% of it, plus 30% for the indented middle one. Widest
- * in use are "TO HELP" (Medium, 3.98em + indent = 94%) and PRODUCTS (Black,
- * 5.69em = 91%). Measure a new line against that before adding it.
+ * (advance in em x 16)% of it, plus 16% for the indented middle one. The
+ * indent is deliberately short - the middle line should tuck under the tail
+ * of the first, not drift off to the right. Widest in use are PRODUCTS
+ * (Black, 5.69em = 91%) and "TO HELP" (Medium, 3.98em + indent = 80%).
+ * Measure a new line against that before adding it.
  */
 export default function PageHero({
   label,
@@ -27,7 +29,7 @@ export default function PageHero({
 }) {
   const styles = [
     "font-extralight text-ink",
-    "font-medium text-ink pl-[30%]",
+    "font-medium text-ink pl-[16%]",
     "font-black text-primary",
   ];
 

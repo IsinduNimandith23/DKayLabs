@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import Cursor from "@/components/ui/Cursor";
+import PageDotField from "@/components/ui/PageDotField";
 import JsonLd from "@/components/seo/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { SITE } from "@/lib/constants";
@@ -154,6 +155,10 @@ export default function RootLayout({
         <JsonLd data={websiteSchema()} />
       </head>
       <body>
+        {/* The hero's dot field, fixed behind every route. Lives here rather
+            than per-page so it survives the app/template.tsx transition
+            instead of tearing down and rebuilding its canvas on navigation. */}
+        <PageDotField />
         <SmoothScroll>
           <Navbar />
           {children}

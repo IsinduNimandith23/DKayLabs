@@ -6,7 +6,8 @@ import { createPortal } from "react-dom";
 import DotField from "@/components/ui/DotField";
 
 /**
- * The hero's DotField, fixed behind an entire page.
+ * The hero's DotField, fixed behind every route. Mounted once in
+ * app/layout.tsx, so navigation never tears the canvas down and rebuilds it.
  *
  * Portalled to <body> because `position: fixed` is only fixed to the viewport
  * when no ancestor has a transform or `will-change: transform` - and the page

@@ -398,18 +398,34 @@ export const SERVICES: Service[] = [
 
 export type Partner = {
   name: string;
-  /** White logo in /public/partners. Until one is set, the name renders as a
-   *  text placeholder in its slot. */
+  /** Transparent-background logo in /public/partners, trimmed to the mark and
+   *  normalised to a common height. The strip renders it as a flat silhouette
+   *  in the theme's ink colour, so the file's own colours don't matter.
+   *  Until one is set, the name renders as a text placeholder in its slot. */
   logo?: string;
+  /** The logo's real pixel size - the strip sizes by height, so this is only
+   *  here to give next/image the right aspect ratio. */
+  width?: number;
+  height?: number;
 };
 
 /** Partner logo strip shown under the hero. */
 export const PARTNERS: Partner[] = [
-  { name: "Fallowkind" },
-  { name: "CG Shift" },
-  { name: "New Sagarika Driving School" },
-  { name: "Serendib Prime" },
-  { name: "Brushmaster" },
+  { name: "Fallowkind", logo: "/partners/fallowkind.png", width: 397, height: 61 },
+  { name: "CG Shift", logo: "/partners/cg-shift.png", width: 271, height: 144 },
+  {
+    name: "New Sagarika Driving School",
+    logo: "/partners/sagarika-driving-school.png",
+    width: 352,
+    height: 144,
+  },
+  {
+    name: "Serendib Prime",
+    logo: "/partners/serendib-prime.png",
+    width: 207,
+    height: 144,
+  },
+  { name: "Brushmaster", logo: "/partners/brushmaster.png", width: 109, height: 144 },
 ];
 
 export type Project = {

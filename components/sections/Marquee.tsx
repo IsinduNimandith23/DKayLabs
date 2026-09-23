@@ -8,8 +8,13 @@ import { PARTNERS } from "@/lib/constants";
  * so the loop is seamless). Freezes automatically under reduced motion
  * via the global media query in globals.css.
  *
- * Logos are supplied white, for the dark theme; the light theme inverts them
- * to black. Partners without a logo yet show their name as a placeholder.
+ * Logos come in as transparent PNGs in their own brand colours, and the strip
+ * flattens them to a single ink-coloured silhouette: `brightness-0` crushes
+ * every opaque pixel to black for the light theme, and `dark:invert` flips that
+ * to white for the dark one. That keeps five logos of wildly different palettes
+ * reading as one set, and it is the only treatment that survives both themes -
+ * several of them are dark navy or near-black, which would vanish on #131313.
+ * Partners without a logo yet show their name as a placeholder.
  */
 export default function Marquee() {
   // Two identical copies back-to-back = seamless -50% loop.
@@ -25,7 +30,7 @@ export default function Marquee() {
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-base to-transparent sm:w-40" />
 
       <ul className="flex w-max animate-marquee items-center">
-        {items.map(({ name, logo }, i) => (
+        {items.map(({ name, logo, width, height }, i) => (
           <li
             key={i}
             // The second copy exists only for the loop.
@@ -36,9 +41,9 @@ export default function Marquee() {
               <Image
                 src={logo}
                 alt={name}
-                width={240}
-                height={96}
-                className="h-full w-auto object-contain invert dark:invert-0"
+                width={width ?? 240}
+                height={height ?? 96}
+                className="h-full w-auto object-contain brightness-0 dark:invert"
               />
             ) : (
               <span className="whitespace-nowrap font-display text-lg uppercase tracking-[0.2em] text-ink/80 sm:text-xl">

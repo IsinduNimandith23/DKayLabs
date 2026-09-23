@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
@@ -12,42 +12,49 @@ import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { PRODUCTS, PROJECTS, SERVICES, type IconKey } from "@/lib/constants";
 import { serviceSlug } from "@/lib/services";
 
-/** One card in the showcase - a service, fronted by one piece of its work. */
+/** A piece of work filed in a service's folder - or an empty slot for yours. */
+type Sheet =
+  | { kind: "work"; title: string; label: string; image?: string; icon?: IconKey }
+  | { kind: "invite" };
+
+/** One card in the showcase - a service's folder, with its work filed inside. */
 type Showcase = {
   service: string;
   icon: IconKey;
-  title: string;
+  /** Always three: the service's own work first, then open slots. */
+  sheets: Sheet[];
+  /** How many of `sheets` are real work. */
+  count: number;
+  comingSoon: boolean;
+  /** The portfolio, pre-filtered to this service. */
   href: string;
-  external: boolean;
-  image?: string;
-  /** "Visit" / "View" / "Start" - the cursor label and the link's verb. */
-  verb: string;
 };
 
-/**
- * Resolve each service to the work it shows: a client project, else an
- * in-house product, else an open invite (or "coming soon" for services that
- * haven't launched). Mapping lives on SERVICES in lib/constants.ts.
- */
-const SHOWCASE: Showcase[] = SERVICES.map((s) => {
-  const base = { service: s.title, icon: s.icon };
-  const project = PROJECTS.find((p) => p.title === s.featuredProject);
-  if (project) {
-    return { ...base, title: project.title, href: project.url, external: true, image: project.image, verb: "Visit" };
-  }
+const SHEET_COUNT = 3;
+
+/** Client projects under the service, plus its in-house product if any. */
+function workFor(s: (typeof SERVICES)[number]): Sheet[] {
+  const work: Sheet[] = PROJECTS.filter((p) => p.service === s.title).map((p) => ({
+    kind: "work",
+    title: p.title,
+    label: p.category,
+    image: p.image,
+  }));
   const product = PRODUCTS.find((p) => p.slug === s.featuredProduct);
-  if (product) {
-    return { ...base, title: product.name, href: `/products/${product.slug}`, external: false, verb: "View" };
-  }
-  if (s.status === "coming-soon") {
-    return { ...base, title: "Coming Soon", href: `/services#${serviceSlug(s.title)}`, external: false, verb: "View" };
-  }
+  if (product) work.push({ kind: "work", title: product.name, label: product.tagline, icon: product.icon });
+  return work.slice(0, SHEET_COUNT);
+}
+
+/** One folder per service, opening onto that service's filter on /portfolio. */
+const SHOWCASE: Showcase[] = SERVICES.map((s) => {
+  const work = workFor(s);
   return {
-    ...base,
-    title: "Yours Next?",
-    href: `/contact?service=${encodeURIComponent(s.title)}`,
-    external: false,
-    verb: "Start",
+    service: s.title,
+    icon: s.icon,
+    sheets: [...work, ...Array.from({ length: SHEET_COUNT - work.length }, () => ({ kind: "invite" }) as const)],
+    count: work.length,
+    comingSoon: s.status === "coming-soon",
+    href: `/portfolio?service=${serviceSlug(s.title)}`,
   };
 });
 
@@ -58,60 +65,113 @@ const SHOWCASE: Showcase[] = SERVICES.map((s) => {
  * its aspect (the card does too), so the curves never stretch.
  */
 const PANEL_PATH =
-  "M0 110Q0 90 20 90H186C198 90 204 93 211 100L228 117C234 123 240 126 250 126H356Q376 126 376 146V356H0Z";
+  "M0 140Q0 120 20 120H186C198 120 204 123 211 130L228 147C234 153 240 156 250 156H356Q376 156 376 176V356H0Z";
+
+/*
+ * Each sheet's two poses, front to back. All three share one box - a wide
+ * slot at the screenshots' native ~19:9 - and are told apart by transform
+ * alone. At rest they stack straight back inside the folder, each one
+ * smaller and higher so its top edge shows over the one in front; on hover
+ * the two behind lift out past the top of the card
+ * and fan to either side while the front one rises a touch. Translates are in
+ * the sheet's own size, and every pose keeps its bottom edge behind the sheet
+ * in front or the folder panel.
+ */
+const SHEETS = [
+  { rest: "translate(0,0)", lift: "translate(0,-12%)", delay: "0ms" },
+  { rest: "translate(0,-12%) scale(0.94)", lift: "translate(3%,-44%) rotate(4deg) scale(0.9)", delay: "50ms" },
+  { rest: "translate(0,-24%) scale(0.88)", lift: "translate(-3%,-74%) rotate(-4deg) scale(0.82)", delay: "100ms" },
+] as const;
+
+/** One filed sheet: a project screenshot, a product, or an open slot. */
+function SheetFace({ sheet }: { sheet: Sheet }) {
+  if (sheet.kind === "invite") {
+    return (
+      <span className="absolute inset-0 flex items-center justify-center rounded-[inherit] border border-dashed border-ink/25 bg-surface text-ink/35">
+        <span className="font-machina text-[8cqw] font-extralight leading-none">+</span>
+      </span>
+    );
+  }
+  if (sheet.image) {
+    return <Image src={sheet.image} alt="" fill sizes="(max-width: 640px) 290px, 340px" className="object-cover object-top" />;
+  }
+  return (
+    <span className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/40 via-primary/15 to-surface text-primary">
+      {sheet.icon && <ServiceIcon icon={sheet.icon} size={28} />}
+    </span>
+  );
+}
 
 /**
  * Folder-tab showcase card. Sized by its parent; everything inside scales
  * with it through container-query units, so it holds the same proportions at
  * every breakpoint.
+ *
+ * Built in three layers so the filed sheets sit between them: the folder
+ * back, the sheets, then the folder front (panel, text, button). Only the
+ * back and front clip to the rounded box - the sheets are free to rise out
+ * over the top of the card.
  */
 function ShowcaseCard({ item, active }: { item: Showcase; active: boolean }) {
   return (
     <div className="group relative h-full w-full rounded-[1.75rem] border border-ink/10 bg-surface p-[1.75%] shadow-bevel [container-type:inline-size]">
-      <div className="relative h-full w-full overflow-hidden rounded-[1.375rem] bg-sunken">
-        {/* Artwork - the project's screenshot, else a branded field with the
-            service's icon where a client logo would sit. */}
-        <div className="absolute inset-x-0 top-0 h-[46%]">
-          {item.image ? (
-            <Image
-              src={item.image}
-              alt=""
-              fill
-              sizes="(max-width: 640px) 290px, 340px"
-              quality={85}
-              className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/35 via-primary/10 to-sunken">
-              <span className="absolute right-[7%] top-[14%] text-ink/80">
-                <ServiceIcon icon={item.icon} size={36} />
-              </span>
+      <div className="relative h-full w-full">
+        <div className="absolute inset-0 overflow-hidden rounded-[1.375rem] bg-gradient-to-b from-ink/[0.07] via-sunken to-sunken" />
+
+        {item.sheets.map((sheet, i) => {
+          const s = SHEETS[i];
+          return (
+            <div
+              key={i}
+              aria-hidden
+              style={
+                {
+                  zIndex: SHEET_COUNT - i,
+                  "--rest": s.rest,
+                  "--lift": s.lift,
+                  transitionDelay: s.delay,
+                } as CSSProperties
+              }
+              className={`absolute left-[3%] top-[12%] aspect-[19/9] w-[94%] overflow-hidden rounded-[2.6cqw] bg-sunken ring-1 ring-ink/10 shadow-[0_8px_24px_-8px_rgb(0_0_0/0.6)] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [transform:var(--rest)] motion-reduce:transition-none ${
+                active ? "group-hover:[transform:var(--lift)]" : ""
+              }`}
+            >
+              <SheetFace sheet={sheet} />
             </div>
-          )}
+          );
+        })}
+
+        <div className="absolute inset-0 z-10 overflow-hidden rounded-[1.375rem]">
+          <svg viewBox="0 0 376 356" className="absolute inset-0 h-full w-full fill-base" aria-hidden>
+            <path d={PANEL_PATH} />
+          </svg>
+
+          {/* Wraps rather than truncates. The width stops at the tab's flat top
+              (x 186 of 376 = 49.5%), so the first line never runs out over the
+              sheets; a second line drops into the full-width body below. */}
+          <h3 className="absolute left-[7.5%] top-[37%] line-clamp-2 max-w-[42%] break-words font-machina text-[5cqw] font-bold leading-[1.1] text-ink">
+            {item.service}
+          </h3>
+
+          <p className="absolute bottom-[7%] left-[7.5%] flex max-w-[60%] items-baseline gap-[2cqw] font-machina leading-none text-ink">
+            {item.count > 0 ? (
+              <>
+                <span className="text-[11cqw] font-medium">{item.count}</span>
+                <span className="text-[3.6cqw] text-ink/55">{item.count === 1 ? "Project" : "Projects"}</span>
+              </>
+            ) : (
+              <span className="text-[4.4cqw] text-ink/85">{item.comingSoon ? "Coming Soon" : "Yours Next?"}</span>
+            )}
+          </p>
+
+          <span
+            className={`absolute bottom-[6%] right-[6%] aspect-square w-[13.5%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              active ? "group-hover:rotate-45 group-hover:scale-110" : ""
+            }`}
+          >
+            <Image src="/button.png" alt="" fill sizes="56px" />
+          </span>
         </div>
-
-        <svg viewBox="0 0 376 356" className="absolute inset-0 h-full w-full fill-base" aria-hidden>
-          <path d={PANEL_PATH} />
-        </svg>
-
-        {/* Wraps rather than truncates. The width stops at the tab's flat top
-            (x 186 of 376 = 49.5%), so the first line never runs out over the
-            artwork; a second line drops into the full-width body below. */}
-        <h3 className="absolute left-[7.5%] top-[28.5%] line-clamp-2 max-w-[42%] break-words font-machina text-[5cqw] font-bold leading-[1.1] text-ink">
-          {item.title}
-        </h3>
-
-        <p className="absolute bottom-[8%] left-[7.5%] max-w-[60%] font-machina text-[4cqw] leading-tight text-ink/85">
-          {item.service}
-        </p>
-
-        <span
-          className={`absolute bottom-[6%] right-[6%] aspect-square w-[13.5%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            active ? "group-hover:rotate-45 group-hover:scale-110" : ""
-          }`}
-        >
-          <Image src="/button.png" alt="" fill sizes="56px" />
-        </span>
       </div>
     </div>
   );
@@ -221,20 +281,16 @@ export default function FeaturedWork() {
               const d = ringOffset(i, active, n);
               const isActive = d === 0;
               const hidden = Math.abs(d) > (compact ? 1 : 2);
-              const linkProps = item.external
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {};
 
               return (
                 <motion.a
                   key={item.service}
                   href={item.href}
-                  {...linkProps}
                   draggable={false}
                   aria-hidden={hidden || undefined}
                   tabIndex={isActive ? 0 : -1}
-                  aria-label={`${item.service}: ${item.title} - ${item.verb.toLowerCase()}`}
-                  data-cursor={isActive ? item.verb : undefined}
+                  aria-label={`${item.service} - view projects`}
+                  data-cursor={isActive ? "View" : undefined}
                   onClick={(e) => {
                     if (dragged.current || !isActive) e.preventDefault();
                     if (!dragged.current && !isActive) setActive(i);
@@ -253,7 +309,7 @@ export default function FeaturedWork() {
         </Reveal>
 
         <p aria-live="polite" className="sr-only">
-          {`${SHOWCASE[active].service}: ${SHOWCASE[active].title}, ${active + 1} of ${n}`}
+          {`${SHOWCASE[active].service}, ${active + 1} of ${n}`}
         </p>
 
         {/* Room for the lowered outer cards before the link - less on
