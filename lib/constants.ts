@@ -316,7 +316,7 @@ export const SERVICES: Service[] = [
     },
   },
   {
-    title: "UI/UX Design",
+    title: "Digital Design",
     description:
       "Interfaces that look sharp and convert harder - research-driven design systems, prototypes, and pixel-perfect handoff.",
     icon: "design",
@@ -505,36 +505,47 @@ export const PROJECTS: Project[] = [
     image: "/portfolio/website-development/NewSagarikaDrivingSchool.png",
   },
   {
-    title: "Sagarika Launch Post",
+    title: "New Sagarika Driving School Launch Post",
     category: "Social Media Design",
-    service: "UI/UX Design",
+    service: "Digital Design",
     description:
       "Launch post for New Sagarika Driving School's official page - an illustrated in-car lesson scene celebrating 65+ years on the road, with every branch's number up front.",
     tags: ["Social Media", "Illustration", "Branding"],
     monogram: "NS",
-    image: "/portfolio/ui-ux-design/SagarikaLaunchPost.jpg",
+    image: "/portfolio/digital-design/SagarikaLaunchPost.jpg",
     format: "poster",
   },
   {
-    title: "Sagarika Branches Post",
+    title: "New Sagarika Driving School Branches Post",
     category: "Social Media Design",
-    service: "UI/UX Design",
+    service: "Digital Design",
     description:
       "Branch-finder post for New Sagarika Driving School - five locations and their numbers set on 3D street signs over a hand-drawn road-icon pattern.",
     tags: ["Social Media", "3D", "Branding"],
     monogram: "NS",
-    image: "/portfolio/ui-ux-design/SagarikaBranchesPost.jpg",
+    image: "/portfolio/digital-design/SagarikaBranchesPost.jpg",
     format: "poster",
   },
   {
     title: "DKayLABS QR Poster",
     category: "Print Poster",
-    service: "UI/UX Design",
+    service: "Digital Design",
     description:
       "Our own print poster - a WhatsApp QR code that opens a chat with the team, framed by what we build, on a textured paper backdrop.",
     tags: ["Print", "QR", "Branding"],
     monogram: "DK",
-    image: "/portfolio/ui-ux-design/DKayLabsQRPoster.jpg",
+    image: "/portfolio/digital-design/DKayLabsQRPoster.jpg",
+    format: "poster",
+  },
+  {
+    title: "DKayLABS Intro Post",
+    category: "Social Media Design",
+    service: "Digital Design",
+    description:
+      "Our own launch post - what we build and how to reach us, with the site live on a phone and our 3D mascot perched on top.",
+    tags: ["Social Media", "3D", "Branding"],
+    monogram: "DK",
+    image: "/portfolio/digital-design/DKayLabsIntroPost.jpg",
     format: "poster",
   },
 ];
