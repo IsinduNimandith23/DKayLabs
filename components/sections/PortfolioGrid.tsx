@@ -15,8 +15,8 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 const FILTERS = ["All", ...SERVICES.map((s) => s.title)];
 
 /**
- * /portfolio: text filters over a two-up grid of live projects. Each tile
- * links out to the live site.
+ * /portfolio: text filters over a two-up grid of projects. Each tile links
+ * out to the live site, or to the full-size artwork for design pieces.
  */
 export default function PortfolioGrid() {
   const [active, setActive] = useState("All");
@@ -135,26 +135,32 @@ function EmptyState({ service }: { service: string }) {
 }
 
 function ProjectTile({ project, number }: { project: Project; number: number }) {
+  const poster = project.format === "poster";
   return (
     <a
-      href={project.url}
+      href={project.url ?? project.image}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${project.title} - visit live site`}
-      data-cursor="Visit"
+      aria-label={project.url ? `${project.title} - visit live site` : `${project.title} - view full design`}
+      data-cursor={project.url ? "Visit" : "View"}
       className="group block outline-none"
     >
       {/* Held at the screenshots' native ~19:9 so nothing is cropped or
-          upscaled; anchored to the top to keep each site's hero in frame. */}
+          upscaled; anchored to the top to keep each site's hero in frame.
+          Posters sit whole inside the same frame so the grid stays even. */}
       <div className="relative aspect-[19/9] overflow-hidden rounded-2xl bg-sunken ring-primary ring-offset-4 ring-offset-base dark:bg-[#1e1e1e] group-focus-visible:ring-2">
         {project.image ? (
           <Image
             src={project.image}
-            alt={`${project.title} website screenshot`}
+            alt={poster ? `${project.title} design` : `${project.title} website screenshot`}
             fill
-            sizes="(max-width: 640px) 90vw, 480px"
+            sizes={poster ? "(max-width: 640px) 45vw, 240px" : "(max-width: 640px) 90vw, 480px"}
             quality={90}
-            className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+            className={`transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              poster
+                ? "object-contain py-4 drop-shadow-[0_10px_24px_rgba(0,0,0,0.18)] group-hover:scale-[1.06]"
+                : "object-cover object-top group-hover:scale-[1.04]"
+            }`}
           />
         ) : (
           <span className="absolute inset-0 flex items-center justify-center font-machina text-5xl font-black text-primary">

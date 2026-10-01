@@ -1,6 +1,8 @@
 import { PROJECTS, type Service } from "./constants";
 
-const ALL_SHOTS = PROJECTS.flatMap((p) => (p.image ? [p.image] : []));
+// Website screenshots only - posters are filed under their own service, and
+// a driving-school flyer cycling under "SaaS Development" would mislead.
+const ALL_SHOTS = PROJECTS.flatMap((p) => (p.image && p.format !== "poster" ? [p.image] : []));
 
 /** A service's own images, else screenshots of work under it, else all work. */
 export function serviceImages(service: Service): string[] {

@@ -435,12 +435,16 @@ export type Project = {
   service: string;
   description: string;
   tags: string[];
-  /** Live site URL. */
-  url: string;
+  /** Live site URL. Unset for design work with nothing live to visit -
+   *  the tile then opens the full-size image instead. */
+  url?: string;
   /** Monogram - fallback thumbnail when no screenshot exists. */
   monogram: string;
-  /** Screenshot in /public/portfolio. */
+  /** Screenshot in /public/portfolio/<service-slug>/. */
   image?: string;
+  /** "poster" for portrait design pieces - shown whole, not cropped to the
+   *  19:9 screenshot frame. Defaults to "screenshot". */
+  format?: "screenshot" | "poster";
 };
 
 /** Real shipped work - first three are featured on the homepage. */
@@ -454,7 +458,7 @@ export const PROJECTS: Project[] = [
     tags: ["Agency", "Portfolio", "Marketing"],
     url: "https://www.cgshift.com/",
     monogram: "CG",
-    image: "/portfolio/CGShift.png",
+    image: "/portfolio/website-development/CGShift.png",
   },
   {
     title: "Fallowkind",
@@ -465,7 +469,7 @@ export const PROJECTS: Project[] = [
     tags: ["E-Commerce", "Branding", "Fashion"],
     url: "https://www.fallowkind.com/",
     monogram: "FK",
-    image: "/portfolio/Fallowkind.png",
+    image: "/portfolio/e-commerce-solutions/Fallowkind.png",
   },
   {
     title: "The Brush Master",
@@ -476,7 +480,7 @@ export const PROJECTS: Project[] = [
     tags: ["E-Commerce", "Digital Goods", "Creators"],
     url: "https://www.thebrushmaster.shop/",
     monogram: "BM",
-    image: "/portfolio/Brushmaster.png",
+    image: "/portfolio/e-commerce-solutions/Brushmaster.png",
   },
   {
     title: "Serendib Prime",
@@ -487,7 +491,7 @@ export const PROJECTS: Project[] = [
     tags: ["E-Commerce", "FMCG", "Delivery"],
     url: "https://www.serendibprime.lk/",
     monogram: "SP",
-    image: "/portfolio/SerendibPrime.png",
+    image: "/portfolio/e-commerce-solutions/SerendibPrime.png",
   },
   {
     title: "New Sagarika Driving School",
@@ -498,7 +502,40 @@ export const PROJECTS: Project[] = [
     tags: ["Business Site", "Local SEO", "Lead Gen"],
     url: "https://www.newsagarikadrivingschool.lk/",
     monogram: "NS",
-    image: "/portfolio/NewSagarikaDrivingSchool.png",
+    image: "/portfolio/website-development/NewSagarikaDrivingSchool.png",
+  },
+  {
+    title: "Sagarika Launch Post",
+    category: "Social Media Design",
+    service: "UI/UX Design",
+    description:
+      "Launch post for New Sagarika Driving School's official page - an illustrated in-car lesson scene celebrating 65+ years on the road, with every branch's number up front.",
+    tags: ["Social Media", "Illustration", "Branding"],
+    monogram: "NS",
+    image: "/portfolio/ui-ux-design/SagarikaLaunchPost.jpg",
+    format: "poster",
+  },
+  {
+    title: "Sagarika Branches Post",
+    category: "Social Media Design",
+    service: "UI/UX Design",
+    description:
+      "Branch-finder post for New Sagarika Driving School - five locations and their numbers set on 3D street signs over a hand-drawn road-icon pattern.",
+    tags: ["Social Media", "3D", "Branding"],
+    monogram: "NS",
+    image: "/portfolio/ui-ux-design/SagarikaBranchesPost.jpg",
+    format: "poster",
+  },
+  {
+    title: "DKayLABS QR Poster",
+    category: "Print Poster",
+    service: "UI/UX Design",
+    description:
+      "Our own print poster - a WhatsApp QR code that opens a chat with the team, framed by what we build, on a textured paper backdrop.",
+    tags: ["Print", "QR", "Branding"],
+    monogram: "DK",
+    image: "/portfolio/ui-ux-design/DKayLabsQRPoster.jpg",
+    format: "poster",
   },
 ];
 
