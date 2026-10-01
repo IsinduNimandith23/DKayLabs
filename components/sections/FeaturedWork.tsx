@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
@@ -59,119 +59,190 @@ const SHOWCASE: Showcase[] = SERVICES.map((s) => {
 });
 
 /*
- * Card geometry, in the inner panel's own 376 x 356 box. The dark body rises
- * into a tab on the left - the title's seat - then steps down to the right
- * over a soft slope, like a file folder laid over the artwork. The SVG keeps
- * its aspect (the card does too), so the curves never stretch.
+ * Folder geometry, in the card's own 400 x 380 box. The back plate is a plain
+ * rounded slab; the front flap rises into a tab on the left, then steps down
+ * to the right over a soft slope, like a file folder seen face on. The card
+ * holds its aspect, so the mask never stretches the curves.
  */
-const PANEL_PATH =
-  "M0 140Q0 120 20 120H186C198 120 204 123 211 130L228 147C234 153 240 156 250 156H356Q376 156 376 176V356H0Z";
+const FRONT_PATH =
+  "M0 102Q0 78 24 78H170C181 78 187 81 194 88L208 100C214 105 220 108 230 108H376Q400 108 400 132V352Q400 380 372 380H28Q0 380 0 352Z";
+
+const FRONT_MASK = `url("data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 380"><path d="${FRONT_PATH}"/></svg>`,
+)}")`;
+
+/* Frosted flap in the site's own dark surfaces, blurred over the sheets behind it. */
+const FRONT_STYLE: CSSProperties = {
+  maskImage: FRONT_MASK,
+  WebkitMaskImage: FRONT_MASK,
+  maskSize: "100% 100%",
+  WebkitMaskSize: "100% 100%",
+  backgroundImage:
+    "linear-gradient(to bottom, rgb(var(--c-surface) / 0.96), rgb(var(--c-base) / 0.97))",
+};
+
+const EASE = "duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none";
 
 /*
  * Each sheet's two poses, front to back. All three share one box - a wide
- * slot at the screenshots' native ~19:9 - and are told apart by transform
- * alone. At rest they stack straight back inside the folder, each one
- * smaller and higher so its top edge shows over the one in front; on hover
- * the two behind lift out past the top of the card
- * and fan to either side while the front one rises a touch. Translates are in
- * the sheet's own size, and every pose keeps its bottom edge behind the sheet
- * in front or the folder panel.
+ * slot at the screenshots' native ~19:9, so they show whole - and are
+ * told apart by transform alone. At rest the front two sit down inside the
+ * back plate splayed apart - the front one tipped right over the one behind
+ * it - with just their tops showing between the plate's edge and the flap;
+ * the third waits lower, out of sight. On hover they rise out and fan wider,
+ * the back one highest. Translates are in the sheet's own size, and every
+ * pose keeps its bottom edge behind the flap.
  */
 const SHEETS = [
-  { rest: "translate(0,0)", lift: "translate(0,-12%)", delay: "0ms" },
-  { rest: "translate(0,-12%) scale(0.94)", lift: "translate(3%,-44%) rotate(4deg) scale(0.9)", delay: "50ms" },
-  { rest: "translate(0,-24%) scale(0.88)", lift: "translate(-3%,-74%) rotate(-4deg) scale(0.82)", delay: "100ms" },
+  { rest: "translate(10%,12%) rotate(5deg)", lift: "translate(12%,-58%) rotate(6deg)", delay: "0ms" },
+  { rest: "translate(-9%,5%) rotate(-3deg)", lift: "translate(-14%,-64%) rotate(-8deg)", delay: "40ms" },
+  { rest: "translate(0,30%) rotate(0deg)", lift: "translate(0,-72%) rotate(-2deg)", delay: "80ms" },
 ] as const;
 
-/** One filed sheet: a project screenshot, a product, or an open slot. */
+/** A blank page with a folded corner - the open-slot glyph. */
+function DocGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M6 3h8l5 5v13H6z" />
+      <path d="M14 3v5h5" />
+    </svg>
+  );
+}
+
+/** One filed sheet of paper: a project screenshot, a product, or an open slot. */
 function SheetFace({ sheet }: { sheet: Sheet }) {
   if (sheet.kind === "invite") {
     return (
-      <span className="absolute inset-0 flex items-center justify-center rounded-[inherit] border border-dashed border-ink/25 bg-surface text-ink/35">
-        <span className="font-machina text-[8cqw] font-extralight leading-none">+</span>
+      <span className="absolute inset-0 flex items-start justify-center pt-[5%] text-neutral-400">
+        <DocGlyph className="w-[16%]" />
       </span>
     );
   }
   if (sheet.image) {
-    return <Image src={sheet.image} alt="" fill sizes="(max-width: 640px) 290px, 340px" className="object-cover object-top" />;
+    return (
+      <span className="absolute inset-0 overflow-hidden rounded-[inherit] bg-neutral-900">
+        <Image src={sheet.image} alt="" fill sizes="(max-width: 640px) 240px, 300px" className="object-cover object-top" />
+      </span>
+    );
   }
   return (
-    <span className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/40 via-primary/15 to-surface text-primary">
-      {sheet.icon && <ServiceIcon icon={sheet.icon} size={28} />}
+    <span className="absolute inset-0 flex flex-col items-center justify-start gap-[6%] pt-[5%] text-primary">
+      {sheet.icon && (
+        <span className="w-[14%] [&>svg]:h-auto [&>svg]:w-full">
+          <ServiceIcon icon={sheet.icon} />
+        </span>
+      )}
+      <span className="max-w-[80%] truncate rounded-[1cqw] bg-neutral-900 px-[2.2cqw] py-[0.9cqw] font-machina text-[2.6cqw] font-bold uppercase leading-none tracking-wide text-white">
+        {sheet.title}
+      </span>
+    </span>
+  );
+}
+
+type Work = Extract<Sheet, { kind: "work" }>;
+
+/** Round thumbnail in the flap's bottom-left stack, one per piece of work. */
+function Chip({ sheet, first }: { sheet: Work; first: boolean }) {
+  return (
+    <span
+      className={`relative aspect-square w-[9cqw] overflow-hidden rounded-full bg-white ring-[0.6cqw] ring-base ${
+        first ? "" : "-ml-[2.6cqw]"
+      }`}
+    >
+      {sheet.image ? (
+        <Image src={sheet.image} alt="" fill sizes="40px" className="object-cover object-top" />
+      ) : (
+        <span className="absolute inset-0 flex items-center justify-center text-primary [&>svg]:h-[55%] [&>svg]:w-[55%]">
+          {sheet.icon && <ServiceIcon icon={sheet.icon} />}
+        </span>
+      )}
     </span>
   );
 }
 
 /**
- * Folder-tab showcase card. Sized by its parent; everything inside scales
- * with it through container-query units, so it holds the same proportions at
+ * Folder showcase card. Sized by its parent; everything inside scales with
+ * it through container-query units, so it holds the same proportions at
  * every breakpoint.
  *
- * Built in three layers so the filed sheets sit between them: the folder
- * back, the sheets, then the folder front (panel, text, button). Only the
- * back and front clip to the rounded box - the sheets are free to rise out
- * over the top of the card.
+ * Built in three layers so the filed sheets sit between them: the back
+ * plate, the sheets, then the frosted front flap (title, chips, button).
+ * Nothing clips the sheets - they are free to rise out over the top of the
+ * folder. Hover/focus come from the `group` on the link around the card.
  */
 function ShowcaseCard({ item, active }: { item: Showcase; active: boolean }) {
+  const edgeId = useId();
+  const work = item.sheets.filter((s): s is Work => s.kind === "work");
+
   return (
-    <div className="group relative h-full w-full rounded-[1.75rem] border border-ink/10 bg-surface p-[1.75%] shadow-bevel [container-type:inline-size]">
-      <div className="relative h-full w-full">
-        <div className="absolute inset-0 overflow-hidden rounded-[1.375rem] bg-gradient-to-b from-ink/[0.07] via-sunken to-sunken" />
+    <div className="relative h-full w-full [container-type:inline-size] [filter:drop-shadow(0_18px_24px_rgb(0_0_0/0.3))]">
+      <div className="absolute inset-x-0 bottom-0 top-[7%] rounded-[7cqw] bg-surface bg-gradient-to-b from-ink/[0.07] to-transparent ring-1 ring-inset ring-ink/10" />
 
-        {item.sheets.map((sheet, i) => {
-          const s = SHEETS[i];
-          return (
-            <div
-              key={i}
-              aria-hidden
-              style={
-                {
-                  zIndex: SHEET_COUNT - i,
-                  "--rest": s.rest,
-                  "--lift": s.lift,
-                  transitionDelay: s.delay,
-                } as CSSProperties
-              }
-              className={`absolute left-[3%] top-[12%] aspect-[19/9] w-[94%] overflow-hidden rounded-[2.6cqw] bg-sunken ring-1 ring-ink/10 shadow-[0_8px_24px_-8px_rgb(0_0_0/0.6)] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [transform:var(--rest)] motion-reduce:transition-none ${
-                active ? "group-hover:[transform:var(--lift)]" : ""
-              }`}
-            >
-              <SheetFace sheet={sheet} />
-            </div>
-          );
-        })}
-
-        <div className="absolute inset-0 z-10 overflow-hidden rounded-[1.375rem]">
-          <svg viewBox="0 0 376 356" className="absolute inset-0 h-full w-full fill-base" aria-hidden>
-            <path d={PANEL_PATH} />
-          </svg>
-
-          {/* Wraps rather than truncates. The width stops at the tab's flat top
-              (x 186 of 376 = 49.5%), so the first line never runs out over the
-              sheets; a second line drops into the full-width body below. */}
-          <h3 className="absolute left-[7.5%] top-[37%] line-clamp-2 max-w-[42%] break-words font-machina text-[5cqw] font-bold leading-[1.1] text-ink">
-            {item.service}
-          </h3>
-
-          <p className="absolute bottom-[7%] left-[7.5%] flex max-w-[60%] items-baseline gap-[2cqw] font-machina leading-none text-ink">
-            {item.count > 0 ? (
-              <>
-                <span className="text-[11cqw] font-medium">{item.count}</span>
-                <span className="text-[3.6cqw] text-ink/55">{item.count === 1 ? "Project" : "Projects"}</span>
-              </>
-            ) : (
-              <span className="text-[4.4cqw] text-ink/85">{item.comingSoon ? "Coming Soon" : "Yours Next?"}</span>
-            )}
-          </p>
-
-          <span
-            className={`absolute bottom-[6%] right-[6%] aspect-square w-[13.5%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              active ? "group-hover:rotate-45 group-hover:scale-110" : ""
+      {item.sheets.map((sheet, i) => {
+        const s = SHEETS[i];
+        return (
+          <div
+            key={i}
+            aria-hidden
+            style={{ zIndex: SHEET_COUNT - i, "--rest": s.rest, "--lift": s.lift, transitionDelay: s.delay } as CSSProperties}
+            className={`absolute left-[12%] top-[11%] aspect-[19/9] w-[76%] rounded-[2cqw] bg-neutral-50 shadow-[0_4px_14px_-4px_rgb(0_0_0/0.45)] ring-1 ring-black/10 transition-transform [transform:var(--rest)] ${EASE} ${
+              active ? "group-hover:[transform:var(--lift)] group-focus-visible:[transform:var(--lift)]" : ""
             }`}
           >
-            <Image src="/button.png" alt="" fill sizes="56px" />
-          </span>
+            <SheetFace sheet={sheet} />
+          </div>
+        );
+      })}
+
+      {/* The flap tips toward the viewer from its bottom edge as the sheets
+          lift, like a folder being thumbed open. */}
+      <div
+        className={`absolute inset-0 z-10 origin-bottom transition-transform ${EASE} ${
+          active
+            ? "group-hover:[transform:perspective(900px)_rotateX(-14deg)] group-focus-visible:[transform:perspective(900px)_rotateX(-14deg)]"
+            : ""
+        }`}
+      >
+        <div style={FRONT_STYLE} className="absolute inset-0 backdrop-blur-md" />
+        <svg viewBox="0 0 400 380" fill="none" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
+          <defs>
+            <linearGradient id={edgeId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="white" stopOpacity="0.45" />
+              <stop offset="0.35" stopColor="white" stopOpacity="0.08" />
+              <stop offset="1" stopColor="white" stopOpacity="0.04" />
+            </linearGradient>
+          </defs>
+          <path d={FRONT_PATH} stroke={`url(#${edgeId})`} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        </svg>
+
+        <h3 className="absolute left-[7%] top-[33%] line-clamp-2 max-w-[70%] break-words font-machina text-[6cqw] font-bold leading-[1.1] text-ink">
+          {item.service}
+        </h3>
+
+        <div className="absolute bottom-[8.5%] left-[7%] flex items-center gap-[2.6cqw]">
+          {work.length > 0 && (
+            <span className="flex items-center">
+              {work.map((sheet, i) => (
+                <Chip key={i} sheet={sheet} first={i === 0} />
+              ))}
+            </span>
+          )}
+          <p className="font-machina text-[3.8cqw] leading-none text-ink/70">
+            {item.count > 0
+              ? `${item.count} ${item.count === 1 ? "Project" : "Projects"}`
+              : item.comingSoon
+                ? "Coming Soon"
+                : "Yours Next?"}
+          </p>
         </div>
+
+        <span
+          className={`absolute bottom-[6%] right-[6%] aspect-square w-[13.5%] transition-transform ${EASE} ${
+            active ? "group-hover:rotate-45 group-hover:scale-110 group-focus-visible:rotate-45" : ""
+          }`}
+        >
+          <Image src="/button.png" alt="" fill sizes="56px" />
+        </span>
       </div>
     </div>
   );
@@ -232,7 +303,7 @@ export default function FeaturedWork() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  const go =useCallback((step: number) => setActive((a) => (a + step + n) % n), [n]);
+  const go = useCallback((step: number) => setActive((a) => (a + step + n) % n), [n]);
 
   // Re-armed on every change, so a manual step restarts the countdown.
   useEffect(() => {
@@ -299,7 +370,7 @@ export default function FeaturedWork() {
                   animate={pose(d, compact)}
                   transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 170, damping: 26, mass: 0.9 }}
                   style={{ zIndex: 10 - Math.abs(d), pointerEvents: hidden ? "none" : "auto" }}
-                  className="absolute inset-0 block rounded-[1.75rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  className="group absolute inset-0 block rounded-[7%] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                   <ShowcaseCard item={item} active={isActive} />
                 </motion.a>
