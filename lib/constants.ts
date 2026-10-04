@@ -99,6 +99,8 @@ export type Product = {
   status: "in-development" | "beta" | "live";
   /** Short bullets listed under the description on the product card. */
   highlights: string[];
+  /** App screenshot in /public, shown on the product card. */
+  image?: string;
   /**
    * /products/<slug> is served by the product's own site - a separate app
    * that next.config.mjs rewrites in - rather than by app/products/[slug].
@@ -139,6 +141,7 @@ export const PRODUCTS: Product[] = [
       "A permanent record of every stock movement",
       "Manufacturing, sales and accounting modules to follow",
     ],
+    image: "/portfolio/saas-development/DKayMRP.png",
     detail: {
       overview:
         "Most small manufacturers run their stock in a spreadsheet that only one person really understands - and the number in it is whatever someone last typed. The MRP Platform replaces it with a system where every quantity on screen traces back to a movement somebody actually recorded.\n\nIt is built to be adopted a piece at a time rather than all at once. Inventory is live today; manufacturing, sales and purchasing, and accounting are designed and follow behind it.",
@@ -319,7 +322,7 @@ export const SERVICES: Service[] = [
       "End-to-end product engineering: auth, billing, dashboards, and scalable cloud infrastructure that grows with you.",
     icon: "layers",
     status: "available",
-    featuredProduct: "mrp",
+    featuredProject: "MRP Platform",
     detail: {
       overview:
         "From idea to paying users. We handle the unglamorous parts of a SaaS - auth, roles, subscriptions, webhooks, admin tooling - so you can focus on the product itself. Built multi-tenant from day one so scaling later isn't a rewrite.",
@@ -541,6 +544,17 @@ export const PROJECTS: Project[] = [
     url: "https://www.newsagarikadrivingschool.lk/",
     monogram: "NS",
     image: "/portfolio/website-development/NewSagarikaDrivingSchool.png",
+  },
+  {
+    title: "MRP Platform",
+    category: "Manufacturing SaaS",
+    service: "SaaS Development",
+    description:
+      "Our own inventory and manufacturing platform for small manufacturers - live stock by warehouse, shelf and batch, with a permanent record behind every number.",
+    tags: ["SaaS", "Inventory", "In-House"],
+    url: "/products/mrp",
+    monogram: "MR",
+    image: "/portfolio/saas-development/DKayMRP.png",
   },
   {
     title: "New Sagarika Driving School Launch Post",

@@ -65,6 +65,27 @@ export default function Products() {
 
                       <p className="mt-3 font-machina text-sm text-ink/60">{product.tagline}</p>
 
+                      {product.image && (
+                        <Anchor
+                          href={href}
+                          tabIndex={-1}
+                          aria-hidden
+                          className="group/shot mt-8 block"
+                        >
+                          {/* Same ~19:9 frame as the portfolio tiles. */}
+                          <div className="relative aspect-[19/9] overflow-hidden rounded-2xl bg-sunken ring-1 ring-ink/10 dark:bg-[#1e1e1e]">
+                            <Image
+                              src={product.image}
+                              alt=""
+                              fill
+                              sizes="(max-width: 1024px) 90vw, 960px"
+                              quality={90}
+                              className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/shot:scale-[1.03]"
+                            />
+                          </div>
+                        </Anchor>
+                      )}
+
                       <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-14">
                         <div className="flex flex-col items-start">
                           <p className="max-w-xl text-[0.95rem] leading-relaxed text-muted">

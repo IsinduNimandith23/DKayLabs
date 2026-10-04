@@ -41,7 +41,8 @@ function workFor(s: (typeof SERVICES)[number]): Sheet[] {
     image: p.image,
   }));
   const product = PRODUCTS.find((p) => p.slug === s.featuredProduct);
-  if (product) work.push({ kind: "work", title: product.name, label: product.tagline, icon: product.icon });
+  if (product)
+    work.push({ kind: "work", title: product.name, label: product.tagline, image: product.image, icon: product.icon });
   return work.slice(0, SHEET_COUNT);
 }
 
