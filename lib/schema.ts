@@ -16,12 +16,20 @@
  * of the company.
  */
 
-import { SERVICES, SITE, SOCIALS, type Product } from "./constants";
+import {
+  FOUNDERS,
+  SERVICES,
+  SITE,
+  SOCIALS,
+  type Founder,
+  type Product,
+} from "./constants";
 import { absoluteUrl } from "./seo";
 
 /** Stable node identifiers. Fragments keep them distinct from real routes. */
 const ORG_ID = `${SITE.url}/#organization`;
 const SITE_ID = `${SITE.url}/#website`;
+const personId = (founder: Founder) => `${SITE.url}/about#${founder.slug}`;
 
 /**
  * Only profiles that actually exist. SOCIALS keeps unlaunched entries as "#"
@@ -67,6 +75,12 @@ export function organizationSchema() {
      */
     foundingDate: "2026",
     /*
+     * References, not copies - the Person nodes themselves are declared on
+     * /about by personSchema(). This is what ties a search for a founder's
+     * name to this organisation.
+     */
+    founder: FOUNDERS.map((founder) => ({ "@id": personId(founder) })),
+    /*
      * Derived from the same SERVICES array /services renders, so the topics we
      * claim expertise in cannot drift from the ones we actually publish.
      */
@@ -95,6 +109,21 @@ export function organizationSchema() {
       availableLanguage: ["English"],
     },
     ...(liveProfiles.length > 0 && { sameAs: liveProfiles }),
+  };
+}
+
+/** A co-founder, declared on /about and referenced by the Organization. */
+export function personSchema(founder: Founder) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": personId(founder),
+    name: founder.name,
+    jobTitle: founder.role,
+    description: founder.bio,
+    url: absoluteUrl("/about"),
+    worksFor: { "@id": ORG_ID },
+    ...(founder.sameAs.length > 0 && { sameAs: founder.sameAs }),
   };
 }
 

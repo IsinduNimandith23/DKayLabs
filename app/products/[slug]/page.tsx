@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetail from "@/components/sections/ProductDetail";
-import CtaBand from "@/components/sections/CtaBand";
+import ClosingCta from "@/components/sections/ClosingCta";
 import JsonLd from "@/components/seo/JsonLd";
 import { productBreadcrumbSchema, productSchema } from "@/lib/schema";
 import { PRODUCTS, SITE } from "@/lib/constants";
@@ -70,10 +70,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       <JsonLd data={productSchema(product)} />
       <JsonLd data={productBreadcrumbSchema(product)} />
       {RichPage ? <RichPage /> : <ProductDetail product={product} />}
-      {/* A bespoke page closes with its own CTA, so the shared band would just
-          stack a second one under it. The generic layout has no closing CTA of
-          its own and still needs this. */}
-      {!RichPage && <CtaBand />}
+      {/* A bespoke page closes with its own CTA, so the shared closer would
+          just stack a second one under it. The generic layout has no closing
+          CTA of its own and still needs this. */}
+      {!RichPage && <ClosingCta />}
     </main>
   );
 }

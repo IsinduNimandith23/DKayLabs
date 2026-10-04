@@ -30,6 +30,44 @@ export const SITE = {
   hours: "Available 24/7",
 } as const;
 
+/* ============================================================
+   Founders - rendered on /about and declared as schema.org
+   Person nodes (lib/schema.ts). The full names have to appear
+   on the page as plain text for a name search to find the site.
+   ============================================================ */
+
+export type Founder = {
+  name: string;
+  role: string;
+  /** Fragment for the Person node's @id: /about#<slug>. */
+  slug: string;
+  /** Uses the full name in a sentence - that is what ranks for it. */
+  bio: string;
+  /**
+   * Personal profiles under the founder's own name (LinkedIn, GitHub...).
+   * Become the Person node's `sameAs`. Leave empty until they exist - a dead
+   * link is a worse signal than none.
+   */
+  sameAs: string[];
+};
+
+export const FOUNDERS: Founder[] = [
+  {
+    name: "Isindu Nimandith",
+    role: "Co-founder",
+    slug: "isindu-nimandith",
+    bio: "Isindu Nimandith co-founded DKayLABS in Colombo, Sri Lanka, and leads the studio's websites, SaaS platforms and AI products from first sketch to launch.",
+    sameAs: [],
+  },
+  {
+    name: "Roshika Perera",
+    role: "Co-founder",
+    slug: "roshika-perera",
+    bio: "Roshika Perera co-founded DKayLABS in Colombo, Sri Lanka, and works alongside every client to turn their goals into digital products that perform.",
+    sameAs: [],
+  },
+];
+
 /** Inline icon keys, all resolved in components/ui/ServiceIcon.tsx. */
 export type IconKey =
   | "code"
@@ -607,6 +645,6 @@ export const SOCIALS = [
   { label: "Instagram", href: "https://www.instagram.com/dkaylabs_/", key: "instagram" },
   { label: "TikTok", href: "https://www.tiktok.com/@dkaylabs", key: "tiktok" },
   { label: "YouTube", href: "#", key: "youtube" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/dkaylabs", key: "linkedin" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/dkaylabs/", key: "linkedin" },
   { label: "Discord", href: "#", key: "discord" },
 ] as const;

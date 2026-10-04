@@ -9,7 +9,8 @@ import Cursor from "@/components/ui/Cursor";
 import PageDotField from "@/components/ui/PageDotField";
 import JsonLd from "@/components/seo/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
-import { SITE } from "@/lib/constants";
+import { FOUNDERS, SITE } from "@/lib/constants";
+import { absoluteUrl } from "@/lib/seo";
 
 // Plus Jakarta Sans carries both display and body - a geometric grotesque in
 // the Gilroy/Sofia Pro vein, which is the face the headline reference uses.
@@ -46,7 +47,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: `${SITE.name} - ${SITE.tagline}`,
   description: SITE.description,
-  authors: [{ name: SITE.name, url: SITE.url }],
+  authors: FOUNDERS.map((founder) => ({
+    name: founder.name,
+    url: absoluteUrl("/about"),
+  })),
   creator: SITE.name,
   publisher: SITE.name,
   /*

@@ -1,6 +1,15 @@
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
+import { FOUNDERS, SITE } from "@/lib/constants";
+
+/** "Isindu Nimandith" -> "IN". Stands in for a photo until there is one. */
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
 
 const STATS = [
   { value: "100%", label: "Client-first" },
@@ -10,13 +19,13 @@ const STATS = [
 
 /**
  * /about: headline + mission, a big-type statement, the three stats as a
- * hairline row, and the team line in the framed panel the homepage reviews
- * use.
+ * hairline row, then the people behind the company - a heading, an intro
+ * line and a card per founder. app/about/page.tsx closes with ClosingCta.
  */
 export default function About() {
   return (
-    // Last section before the footer: the bottom padding tops PageHero's own
-    // pb-10 up to the py-28 / sm:py-36 rhythm the other sections use.
+    // The bottom padding tops PageHero's own pb-10 up to the py-28 / sm:py-36
+    // rhythm the other sections use, before the ClosingCta that follows.
     <div id="about" className="scroll-mt-24 pb-[4.5rem] sm:pb-[6.5rem]">
       <PageHero
         label="Built to help you win"
@@ -55,22 +64,54 @@ export default function About() {
           ))}
         </ul>
 
-        <Reveal delay={0.1} className="mt-20 sm:mt-28">
-          <figure className="rounded-3xl bg-sunken p-8 dark:bg-[#1e1e1e] sm:p-12 lg:p-16">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 dark:bg-[#262626]">
-              <svg width="16" height="14" viewBox="0 0 14 12" fill="currentColor" aria-hidden className="text-primary">
-                <path d="M0 12V7.2C0 3.4 1.9.9 5.3 0l.7 1.5C4.2 2.2 3.3 3.5 3.2 5.3H6V12H0Zm8 0V7.2C8 3.4 9.9.9 13.3 0l.7 1.5c-1.8.7-2.7 2-2.8 3.8H14V12H8Z" />
-              </svg>
-            </span>
-            <blockquote className="mt-6 max-w-3xl font-machina text-[length:clamp(1.5rem,4vw,2.75rem)] font-light leading-[1.15] tracking-[-0.02em] text-ink">
-              We measure success by how far our{" "}
-              <span className="font-black text-primary">partners climb.</span>
-            </blockquote>
-            <figcaption className="mt-8 font-machina text-sm text-ink/60">
-              The DKayLABS Team
-            </figcaption>
-          </figure>
-        </Reveal>
+        {/* The people behind it: heading, one intro line, a card per founder.
+            Names are plain text, NOT WordReveal - that splits text into
+            per-word spans, and these have to reach the HTML Google fetches
+            as whole names for a name search to land here. */}
+        <section aria-labelledby="founders-heading" className="mt-28 sm:mt-36">
+          <h2
+            id="founders-heading"
+            className="font-machina text-[length:clamp(2.25rem,7vw,4.5rem)] leading-none tracking-[-0.02em]"
+          >
+            <WordReveal text="The people" className="font-extralight text-ink" />{" "}
+            <WordReveal text="behind" className="font-medium text-ink" delay={0.1} />{" "}
+            <WordReveal text={`${SITE.name}.`} className="font-black text-primary" delay={0.2} />
+          </h2>
+          <Reveal delay={0.2}>
+            <p className="mt-6 max-w-xl text-[0.95rem] leading-relaxed text-muted sm:mt-8">
+              {SITE.name} was started by two co-founders in {SITE.location},
+              who wanted digital products built properly - designed with care,
+              engineered to last.
+            </p>
+          </Reveal>
+
+          <ul className="mt-12 grid gap-6 sm:mt-16 sm:grid-cols-2">
+            {FOUNDERS.map((founder, i) => (
+              <li key={founder.slug} id={founder.slug} className="scroll-mt-24">
+                <Reveal delay={i * 0.12} className="h-full">
+                  <article className="h-full rounded-3xl bg-sunken p-8 dark:bg-[#1e1e1e] sm:p-10">
+                    {/* Photo slot - initials until there is a headshot. */}
+                    <span
+                      aria-hidden
+                      className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 font-machina text-xl font-black text-primary dark:bg-[#262626]"
+                    >
+                      {initials(founder.name)}
+                    </span>
+                    <h3 className="mt-8 font-machina text-[length:clamp(1.5rem,3.2vw,2.25rem)] font-black leading-[1.1] tracking-[-0.02em] text-ink">
+                      {founder.name}
+                    </h3>
+                    <p className="mt-2 font-machina text-sm text-primary">
+                      {founder.role}, {SITE.name}
+                    </p>
+                    <p className="mt-5 text-[0.95rem] leading-relaxed text-muted">
+                      {founder.bio}
+                    </p>
+                  </article>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        </section>
       </PageHero>
     </div>
   );

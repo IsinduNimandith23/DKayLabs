@@ -39,7 +39,7 @@ const STATIC_ROUTES: {
   { path: "/services", priority: 0.9, lastModified: "2026-08-24" },
   { path: "/portfolio", priority: 0.9, lastModified: "2026-08-24" },
   { path: "/products", priority: 0.8, lastModified: "2026-08-24" },
-  { path: "/about", priority: 0.7, lastModified: "2026-08-24" },
+  { path: "/about", priority: 0.7, lastModified: "2026-10-04" },
   { path: "/contact", priority: 0.7, lastModified: "2026-08-25" },
   // Legal pages: linked from the footer sitewide, so they get crawled either
   // way. Low priority - they exist to be findable, not to rank.
