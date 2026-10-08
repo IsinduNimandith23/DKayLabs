@@ -1,6 +1,7 @@
 import WordReveal from "@/components/ui/WordReveal";
 import ServicesList, { type ServiceRow } from "@/components/ui/ServicesList";
-import { SERVICES } from "@/lib/constants";
+import { DESIGN_SERVICE, SERVICES } from "@/lib/constants";
+import { getDesigns } from "@/lib/designs";
 import { serviceImages, serviceSlug } from "@/lib/services";
 
 /**
@@ -12,15 +13,22 @@ import { serviceImages, serviceSlug } from "@/lib/services";
  * token named `base`, so that class resolves to the page background colour.
  */
 
-const ROWS: ServiceRow[] = SERVICES.map((s) => ({
-  title: s.title,
-  description: s.description,
-  href: `/services#${serviceSlug(s.title)}`,
-  comingSoon: s.status === "coming-soon",
-  images: serviceImages(s),
-}));
-
 export default function ServicesPreview() {
+  // Digital Design plays its whole gallery, shuffled per view, so every
+  // design gets its turn instead of the same few leading every time.
+  const designs = getDesigns().map((d) => d.src);
+  const rows: ServiceRow[] = SERVICES.map((s) => {
+    const isDesign = s.title === DESIGN_SERVICE && designs.length > 0;
+    return {
+      title: s.title,
+      description: s.description,
+      href: `/services#${serviceSlug(s.title)}`,
+      comingSoon: s.status === "coming-soon",
+      images: isDesign ? designs : serviceImages(s),
+      shuffle: isDesign,
+    };
+  });
+
   return (
     <section className="relative py-28 sm:py-36">
       <div className="relative mx-auto max-w-5xl px-6">
@@ -30,7 +38,7 @@ export default function ServicesPreview() {
           <WordReveal text="Services" className="font-black text-primary" delay={0.2} />
         </h2>
 
-        <ServicesList services={ROWS} />
+        <ServicesList services={rows} />
       </div>
     </section>
   );

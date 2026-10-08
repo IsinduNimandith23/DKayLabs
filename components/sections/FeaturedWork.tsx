@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
@@ -9,8 +9,9 @@ import WordReveal from "@/components/ui/WordReveal";
 import ServiceIcon from "@/components/ui/ServiceIcon";
 import RollText from "@/components/ui/RollText";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
-import { PRODUCTS, PROJECTS, SERVICES, type IconKey } from "@/lib/constants";
+import { DESIGN_SERVICE, PRODUCTS, PROJECTS, SERVICES, type IconKey } from "@/lib/constants";
 import { serviceSlug } from "@/lib/services";
+import { shuffled } from "@/lib/shuffle";
 
 /** A piece of work filed in a service's folder - or an empty slot for yours. */
 type Sheet =
@@ -23,8 +24,10 @@ type Showcase = {
   icon: IconKey;
   /** Always three: the service's own work first, then open slots. */
   sheets: Sheet[];
-  /** How many of `sheets` are real work. */
+  /** How much work the service has published - can exceed the three sheets. */
   count: number;
+  /** What `count` counts. */
+  unit: "Project" | "Design";
   comingSoon: boolean;
   /** The portfolio, pre-filtered to this service. */
   href: string;
@@ -32,8 +35,11 @@ type Showcase = {
 
 const SHEET_COUNT = 3;
 
-/** Client projects under the service, plus its in-house product if any. */
-function workFor(s: (typeof SERVICES)[number]): Sheet[] {
+/** Client projects under the service, plus its in-house product if any.
+ *  Digital Design files `designPicks` - a draw from its gallery - instead. */
+function workFor(s: (typeof SERVICES)[number], designPicks: string[]): Sheet[] {
+  if (s.title === DESIGN_SERVICE)
+    return designPicks.map((image) => ({ kind: "work", title: "Design", label: "Graphic Design", image }));
   const work: Sheet[] = PROJECTS.filter((p) => p.service === s.title).map((p) => ({
     kind: "work",
     title: p.title,
@@ -46,18 +52,23 @@ function workFor(s: (typeof SERVICES)[number]): Sheet[] {
   return work.slice(0, SHEET_COUNT);
 }
 
-/** One folder per service, opening onto that service's filter on /portfolio. */
-const SHOWCASE: Showcase[] = SERVICES.map((s) => {
-  const work = workFor(s);
-  return {
-    service: s.title,
-    icon: s.icon,
-    sheets: [...work, ...Array.from({ length: SHEET_COUNT - work.length }, () => ({ kind: "invite" }) as const)],
-    count: work.length,
-    comingSoon: s.status === "coming-soon",
-    href: `/portfolio?service=${serviceSlug(s.title)}`,
-  };
-});
+/** One folder per service, opening onto that service's filter on /portfolio.
+ *  Digital Design counts its whole gallery, not just the three it shows. */
+function buildShowcase(designs: string[], designPicks: string[]): Showcase[] {
+  return SERVICES.map((s) => {
+    const work = workFor(s, designPicks);
+    const isDesign = s.title === DESIGN_SERVICE;
+    return {
+      service: s.title,
+      icon: s.icon,
+      sheets: [...work, ...Array.from({ length: SHEET_COUNT - work.length }, () => ({ kind: "invite" }) as const)],
+      count: isDesign ? designs.length : work.length,
+      unit: isDesign ? "Design" : "Project",
+      comingSoon: s.status === "coming-soon",
+      href: `/portfolio?service=${serviceSlug(s.title)}`,
+    };
+  });
+}
 
 /*
  * Folder geometry, in the card's own 400 x 380 box. The back plate is a plain
@@ -230,7 +241,7 @@ function ShowcaseCard({ item, active }: { item: Showcase; active: boolean }) {
           )}
           <p className="font-machina text-[3.8cqw] leading-none text-ink/70">
             {item.count > 0
-              ? `${item.count} ${item.count === 1 ? "Project" : "Projects"}`
+              ? `${item.count} ${item.unit}${item.count === 1 ? "" : "s"}`
               : item.comingSoon
                 ? "Coming Soon"
                 : "Yours Next?"}
@@ -284,8 +295,14 @@ const AUTOPLAY_MS = 5000;
  * takes a swipe/drag and the arrow keys, and rotates on its own while it's in
  * view and nobody is interacting with it.
  */
-export default function FeaturedWork() {
-  const n = SHOWCASE.length;
+export default function FeaturedWork({ designs }: { designs: string[] }) {
+  // The page is static, so the draw happens here in the browser: a fresh
+  // three from the whole Digital Design gallery on every load. The server
+  // render (and first paint) takes the first three, swapped straight after.
+  const [designPicks, setDesignPicks] = useState(() => designs.slice(0, SHEET_COUNT));
+  useEffect(() => setDesignPicks(shuffled(designs).slice(0, SHEET_COUNT)), [designs]);
+  const showcase = useMemo(() => buildShowcase(designs, designPicks), [designs, designPicks]);
+  const n = showcase.length;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduced = useReducedMotion();
@@ -349,7 +366,7 @@ export default function FeaturedWork() {
             }}
             className="relative mx-auto mt-12 aspect-[400/380] w-[72vw] max-w-[290px] cursor-grab touch-pan-y select-none outline-none [perspective:1400px] active:cursor-grabbing sm:mt-20 sm:w-[290px] lg:w-[340px] lg:max-w-[340px]"
           >
-            {SHOWCASE.map((item, i) => {
+            {showcase.map((item, i) => {
               const d = ringOffset(i, active, n);
               const isActive = d === 0;
               const hidden = Math.abs(d) > (compact ? 1 : 2);
@@ -381,7 +398,7 @@ export default function FeaturedWork() {
         </Reveal>
 
         <p aria-live="polite" className="sr-only">
-          {`${SHOWCASE[active].service}, ${active + 1} of ${n}`}
+          {`${showcase[active].service}, ${active + 1} of ${n}`}
         </p>
 
         {/* Room for the lowered outer cards before the link - less on

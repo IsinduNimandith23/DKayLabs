@@ -4,6 +4,7 @@ import { useEffect, useState, type FocusEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import { shuffled } from "@/lib/shuffle";
 
 export type ServiceRow = {
   title: string;
@@ -11,10 +12,16 @@ export type ServiceRow = {
   href: string;
   comingSoon: boolean;
   images: string[];
+  /** Play `images` in a fresh random order each time the row opens - for
+   *  big sets where a fixed order would only ever show the first few. */
+  shuffle?: boolean;
 };
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const SLIDE_MS = 2200;
+// Past this the progress dots stop reading as a position and become noise.
+const MAX_DOTS = 8;
+const SLIDE_SIZES = "(min-width: 1024px) 400px, 100vw";
 
 /**
  * Homepage services list. On hover-capable desktops, hovering a row shrinks
@@ -92,6 +99,7 @@ export default function ServicesList({ services }: { services: ServiceRow[] }) {
                             {!canHover && (
                               <Slideshow
                                 images={service.images}
+                                shuffle={service.shuffle}
                                 alt={service.title}
                                 className="mt-4 aspect-[21/10] w-full"
                               />
@@ -117,6 +125,7 @@ export default function ServicesList({ services }: { services: ServiceRow[] }) {
                           <div className="pl-8 pt-1">
                             <Slideshow
                               images={service.images}
+                              shuffle={service.shuffle}
                               alt={service.title}
                               className="aspect-[21/10] w-full"
                             />
@@ -158,16 +167,21 @@ export default function ServicesList({ services }: { services: ServiceRow[] }) {
   );
 }
 
-/** Auto-advancing crossfade. Restarts from the first image when remounted. */
+/** Auto-advancing crossfade. Restarts from the first image when remounted -
+ *  or, with `shuffle`, from a new random order. It only ever mounts after a
+ *  hover or tap, so the shuffle can't clash with the server render. */
 function Slideshow({
-  images,
+  images: source,
+  shuffle = false,
   alt,
   className = "",
 }: {
   images: string[];
+  shuffle?: boolean;
   alt: string;
   className?: string;
 }) {
+  const [images] = useState(() => (shuffle ? shuffled(source) : source));
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -177,9 +191,15 @@ function Slideshow({
   }, [images.length]);
 
   const src = images[index];
+  const next = images.length > 1 ? images[(index + 1) % images.length] : null;
 
   return (
     <div className={`relative overflow-hidden rounded-2xl bg-sunken ${className}`}>
+      {/* The upcoming slide, loaded invisibly at the same size so the
+          crossfade never lands on an image still downloading. */}
+      {next && (
+        <Image key={`next-${next}`} src={next} alt="" aria-hidden fill sizes={SLIDE_SIZES} className="pointer-events-none opacity-0" />
+      )}
       <AnimatePresence initial={false}>
         {src && (
           <motion.div
@@ -194,14 +214,14 @@ function Slideshow({
               src={src}
               alt={alt}
               fill
-              sizes="(min-width: 1024px) 400px, 100vw"
+              sizes={SLIDE_SIZES}
               className="object-contain"
             />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {images.length > 1 && (
+      {images.length > 1 && images.length <= MAX_DOTS && (
         <div className="absolute bottom-3 left-3 flex gap-1.5">
           {images.map((img, i) => (
             <span

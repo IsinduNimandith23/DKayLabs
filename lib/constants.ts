@@ -578,28 +578,6 @@ export const PROJECTS: Project[] = [
     image: "/portfolio/digital-design/graphic-design/sagarika-branches-post.webp",
     format: "poster",
   },
-  {
-    title: "DKayLABS QR Poster",
-    category: "Print Poster",
-    service: "Digital Design",
-    description:
-      "Our own print poster - a WhatsApp QR code that opens a chat with the team, framed by what we build, on a textured paper backdrop.",
-    tags: ["Print", "QR", "Branding"],
-    monogram: "DK",
-    image: "/portfolio/digital-design/graphic-design/dkaylabs-qr-poster.webp",
-    format: "poster",
-  },
-  {
-    title: "DKayLABS Intro Post",
-    category: "Social Media Design",
-    service: "Digital Design",
-    description:
-      "Our own launch post - what we build and how to reach us, with the site live on a phone and our 3D mascot perched on top.",
-    tags: ["Social Media", "3D", "Branding"],
-    monogram: "DK",
-    image: "/portfolio/digital-design/graphic-design/dkaylabs-intro-post.webp",
-    format: "poster",
-  },
 ];
 
 /** The service whose portfolio view is a gallery of design pieces. */
