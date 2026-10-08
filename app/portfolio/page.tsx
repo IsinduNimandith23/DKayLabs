@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import PortfolioGrid from "@/components/sections/PortfolioGrid";
+import { getDesigns } from "@/lib/designs";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -19,9 +20,9 @@ export default function PortfolioPage() {
         <PageHero
           label="Our live work"
           lines={["Our", "Live", "Work"]}
-          intro="Every project below is shipped and serving real customers. Pick one to visit the live site."
+          intro="Every project below is shipped and serving real customers. Pick one to visit the live site or view the full design."
         >
-          <PortfolioGrid />
+          <PortfolioGrid designs={getDesigns()} />
         </PageHero>
       </div>
     </main>

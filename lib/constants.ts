@@ -564,7 +564,7 @@ export const PROJECTS: Project[] = [
       "Launch post for New Sagarika Driving School's official page - an illustrated in-car lesson scene celebrating 65+ years on the road, with every branch's number up front.",
     tags: ["Social Media", "Illustration", "Branding"],
     monogram: "NS",
-    image: "/portfolio/digital-design/SagarikaLaunchPost.jpg",
+    image: "/portfolio/digital-design/graphic-design/sagarika-launch-post.jpg",
     format: "poster",
   },
   {
@@ -575,7 +575,7 @@ export const PROJECTS: Project[] = [
       "Branch-finder post for New Sagarika Driving School - five locations and their numbers set on 3D street signs over a hand-drawn road-icon pattern.",
     tags: ["Social Media", "3D", "Branding"],
     monogram: "NS",
-    image: "/portfolio/digital-design/SagarikaBranchesPost.jpg",
+    image: "/portfolio/digital-design/graphic-design/sagarika-branches-post.webp",
     format: "poster",
   },
   {
@@ -586,7 +586,7 @@ export const PROJECTS: Project[] = [
       "Our own print poster - a WhatsApp QR code that opens a chat with the team, framed by what we build, on a textured paper backdrop.",
     tags: ["Print", "QR", "Branding"],
     monogram: "DK",
-    image: "/portfolio/digital-design/DKayLabsQRPoster.jpg",
+    image: "/portfolio/digital-design/graphic-design/dkaylabs-qr-poster.webp",
     format: "poster",
   },
   {
@@ -597,10 +597,29 @@ export const PROJECTS: Project[] = [
       "Our own launch post - what we build and how to reach us, with the site live on a phone and our 3D mascot perched on top.",
     tags: ["Social Media", "3D", "Branding"],
     monogram: "DK",
-    image: "/portfolio/digital-design/DKayLabsIntroPost.jpg",
+    image: "/portfolio/digital-design/graphic-design/dkaylabs-intro-post.webp",
     format: "poster",
   },
 ];
+
+/** The service whose portfolio view is a gallery of design pieces. */
+export const DESIGN_SERVICE = "Digital Design";
+
+/** Digital Design sub-filters, each backed by a folder of artwork in
+ *  /public/portfolio/digital-design/<folder>/ - see lib/designs.ts. */
+export const DESIGN_CATEGORIES = [
+  { title: "Graphic Design", folder: "graphic-design" },
+  { title: "Web Design", folder: "web-design" },
+] as const;
+
+export type Design = {
+  /** Public path to the artwork. */
+  src: string;
+  /** Read off the filename: "remax-stylus-pen.jpg" -> "Remax Stylus Pen". */
+  title: string;
+  /** A DESIGN_CATEGORIES title. */
+  category: string;
+};
 
 export type Testimonial = {
   quote: string;

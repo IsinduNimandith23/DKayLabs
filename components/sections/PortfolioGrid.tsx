@@ -5,7 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import RollText from "@/components/ui/RollText";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
-import { PROJECTS, SERVICES, type Project } from "@/lib/constants";
+import {
+  DESIGN_CATEGORIES,
+  DESIGN_SERVICE,
+  PROJECTS,
+  SERVICES,
+  type Design,
+  type Project,
+} from "@/lib/constants";
 import { serviceSlug } from "@/lib/services";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -14,33 +21,58 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 // published work stay listed - their empty state is a lead, not a dead end.
 const FILTERS = ["All", ...SERVICES.map((s) => s.title)];
 
+// Second row under Digital Design: "All" + one per artwork folder.
+const SUB_FILTERS = ["All", ...DESIGN_CATEGORIES.map((c) => c.title)];
+
 /**
  * /portfolio: text filters over a two-up grid of projects. Each tile links
  * out to the live site, or to the full-size artwork for design pieces.
+ * Digital Design swaps the grid for a gallery of every design, with its own
+ * Graphic / Web sub-filters.
  */
-export default function PortfolioGrid() {
+export default function PortfolioGrid({ designs }: { designs: Design[] }) {
   const [active, setActive] = useState("All");
+  const [sub, setSub] = useState("All");
 
   // Open on the filter named by ?service=<slug> (the homepage showcase links
-  // here that way). Read from window rather than useSearchParams so this
+  // here that way), and under Digital Design the sub-filter named by
+  // ?type=<folder>. Read from window rather than useSearchParams so this
   // doesn't force a Suspense boundary on the static route. Only slugs of
   // services we offer are accepted.
   useEffect(() => {
-    const slug = new URLSearchParams(window.location.search).get("service");
-    const match = SERVICES.find((s) => serviceSlug(s.title) === slug);
-    if (match) setActive(match.title);
+    const params = new URLSearchParams(window.location.search);
+    const match = SERVICES.find((s) => serviceSlug(s.title) === params.get("service"));
+    if (!match) return;
+    setActive(match.title);
+    const type = DESIGN_CATEGORIES.find((c) => c.folder === params.get("type"));
+    if (match.title === DESIGN_SERVICE && type) setSub(type.title);
   }, []);
 
   // Keep the URL in step so a refresh or shared link lands on the same filter.
-  const select = (label: string) => {
-    setActive(label);
+  const syncUrl = (service: string, type: string) => {
     const url = new URL(window.location.href);
-    if (label === "All") url.searchParams.delete("service");
-    else url.searchParams.set("service", serviceSlug(label));
+    if (service === "All") url.searchParams.delete("service");
+    else url.searchParams.set("service", serviceSlug(service));
+    const folder = DESIGN_CATEGORIES.find((c) => c.title === type)?.folder;
+    if (folder) url.searchParams.set("type", folder);
+    else url.searchParams.delete("type");
     window.history.replaceState(window.history.state, "", url);
   };
 
+  const select = (label: string) => {
+    setActive(label);
+    setSub("All");
+    syncUrl(label, "All");
+  };
+
+  const selectSub = (label: string) => {
+    setSub(label);
+    syncUrl(active, label);
+  };
+
+  const isDesign = active === DESIGN_SERVICE;
   const visible = active === "All" ? PROJECTS : PROJECTS.filter((p) => p.service === active);
+  const visibleDesigns = sub === "All" ? designs : designs.filter((d) => d.category === sub);
 
   return (
     <MotionConfig reducedMotion="user">
@@ -51,31 +83,74 @@ export default function PortfolioGrid() {
         // lengths line up in columns - 9 filters make 3 clean rows from sm up.
         className="grid grid-cols-2 gap-x-6 border-b border-ink/20 sm:grid-cols-3 sm:gap-x-10"
       >
-        {FILTERS.map((label) => {
-          const isActive = label === active;
-          return (
-            <button
-              key={label}
-              type="button"
-              onClick={() => select(label)}
-              aria-pressed={isActive}
-              className={`group flex cursor-pointer items-center gap-3 border-t border-ink/15 py-3 text-left font-machina text-[0.8rem] leading-tight outline-none transition-colors duration-300 focus-visible:bg-ink/5 sm:py-3.5 sm:text-[0.95rem] ${
-                isActive ? "text-primary" : "text-ink/55 hover:text-ink"
-              }`}
-            >
-              <span
-                aria-hidden
-                className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-300 ${
-                  isActive ? "bg-primary" : "bg-ink/20 group-hover:bg-ink/60"
-                }`}
-              />
-              {label}
-            </button>
-          );
-        })}
+        {FILTERS.map((label) => (
+          <FilterButton key={label} label={label} active={label === active} onClick={() => select(label)} />
+        ))}
       </div>
 
-      {visible.length > 0 ? (
+      <AnimatePresence initial={false}>
+        {isDesign && (
+          <motion.div
+            key="sub-filters"
+            role="group"
+            aria-label="Filter designs by type"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.5, ease: EASE }}
+            className="overflow-hidden"
+          >
+            <div className="flex flex-wrap gap-2 pt-6">
+              {SUB_FILTERS.map((label) => {
+                const isActive = label === sub;
+                const count = label === "All" ? designs.length : designs.filter((d) => d.category === label).length;
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => selectSub(label)}
+                    aria-pressed={isActive}
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-1.5 font-machina text-xs outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-primary sm:text-[0.8rem] ${
+                      isActive
+                        ? "border-primary bg-primary text-on-primary"
+                        : "border-ink/20 text-ink/60 hover:border-ink/50 hover:text-ink"
+                    }`}
+                  >
+                    {label}
+                    <span className={`tabular-nums ${isActive ? "opacity-80" : "text-ink/35"}`}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {isDesign ? (
+        visibleDesigns.length > 0 ? (
+          <motion.ul
+            layout
+            className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 sm:mt-12 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4"
+          >
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visibleDesigns.map((design) => (
+                <motion.li
+                  layout
+                  key={design.src}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.5, ease: EASE }}
+                >
+                  <DesignTile design={design} />
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </motion.ul>
+        ) : (
+          <EmptyState key={sub} service={DESIGN_SERVICE} label={sub === "All" ? DESIGN_SERVICE : sub} />
+        )
+      ) : visible.length > 0 ? (
         <motion.ul layout className="mt-12 grid gap-x-8 gap-y-14 sm:mt-16 sm:grid-cols-2 sm:gap-y-20">
           <AnimatePresence mode="popLayout" initial={false}>
             {visible.map((project) => (
@@ -99,8 +174,30 @@ export default function PortfolioGrid() {
   );
 }
 
-/** A service with no published work yet - turned into a lead. */
-function EmptyState({ service }: { service: string }) {
+function FilterButton({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`group flex cursor-pointer items-center gap-3 border-t border-ink/15 py-3 text-left font-machina text-[0.8rem] leading-tight outline-none transition-colors duration-300 focus-visible:bg-ink/5 sm:py-3.5 sm:text-[0.95rem] ${
+        active ? "text-primary" : "text-ink/55 hover:text-ink"
+      }`}
+    >
+      <span
+        aria-hidden
+        className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-300 ${
+          active ? "bg-primary" : "bg-ink/20 group-hover:bg-ink/60"
+        }`}
+      />
+      {label}
+    </button>
+  );
+}
+
+/** A service (or design type) with no published work yet - turned into a
+ *  lead. `label` names the empty slice; `service` prefills the contact form. */
+function EmptyState({ service, label = service }: { service: string; label?: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -113,7 +210,7 @@ function EmptyState({ service }: { service: string }) {
         <span className="font-black text-primary">a project?</span>
       </p>
       <p className="mt-4 max-w-md text-[0.95rem] leading-relaxed text-muted">
-        We haven&apos;t published any {service} work yet. Yours could be the
+        We haven&apos;t published any {label} work yet. Yours could be the
         first one here.
       </p>
       <Link
@@ -131,6 +228,38 @@ function EmptyState({ service }: { service: string }) {
         />
       </Link>
     </motion.div>
+  );
+}
+
+/** One design in the Digital Design gallery - opens the full artwork. */
+function DesignTile({ design }: { design: Design }) {
+  return (
+    <a
+      href={design.src}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${design.title} - view full design`}
+      data-cursor="View"
+      className="group block outline-none"
+    >
+      {/* Social posts are 4:5; banners and squares sit whole inside the
+          same frame so the grid stays even. */}
+      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-sunken ring-primary ring-offset-4 ring-offset-base dark:bg-[#1e1e1e] group-focus-visible:ring-2">
+        <Image
+          src={design.src}
+          alt={`${design.title} design`}
+          fill
+          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
+          className="object-contain p-3 drop-shadow-[0_8px_18px_rgba(0,0,0,0.16)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] sm:p-4"
+        />
+      </div>
+      <p className="mt-3 font-machina text-[0.8rem] leading-snug text-ink/70 transition-colors duration-300 group-hover:text-primary sm:text-sm">
+        {design.title}
+      </p>
+      <p className="mt-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-ink/40">
+        {design.category}
+      </p>
+    </a>
   );
 }
 
