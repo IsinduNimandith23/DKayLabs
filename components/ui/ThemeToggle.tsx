@@ -16,6 +16,26 @@ import { useEffect, useState } from "react";
  * The `dark` class lives on <html>; every color token in globals.css is a CSS
  * variable keyed off it, so flipping the class re-themes the whole page.
  */
+/**
+ * Swap the theme class with every CSS transition switched off for that one
+ * frame. Most surfaces carry a `transition-colors`, so a plain class flip
+ * started hundreds of colour transitions at once - the main reason the
+ * toggle's click-to-paint (INP) measured 400-500ms on a mid-range phone. The
+ * theme is meant to snap anyway. The toggle's own sun/moon (`.theme-icon`)
+ * is exempt in globals.css, so the one animation the visitor is watching -
+ * the icon they just clicked - still plays.
+ */
+function flipTheme(dark: boolean) {
+  const root = document.documentElement;
+  root.classList.add("theme-switching");
+  root.classList.toggle("dark", dark);
+  // Two frames: the first paints the new theme with transitions off, the
+  // second re-enables them once that style has been committed.
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => root.classList.remove("theme-switching")),
+  );
+}
+
 export default function ThemeToggle({
   size = 44,
   className = "",
@@ -56,7 +76,7 @@ export default function ThemeToggle({
         // Storage unavailable - treat as "no explicit choice" and follow the OS.
       }
       if (stored) return;
-      document.documentElement.classList.toggle("dark", e.matches);
+      flipTheme(e.matches);
       setIsDark(e.matches);
     };
 
@@ -67,7 +87,7 @@ export default function ThemeToggle({
   function toggle() {
     const next = !isDark;
     setIsDark(next);
-    document.documentElement.classList.toggle("dark", next);
+    flipTheme(next);
     try {
       localStorage.setItem("theme", next ? "dark" : "light");
     } catch {
@@ -106,7 +126,7 @@ export default function ThemeToggle({
           strokeWidth="1.8"
           strokeLinecap="round"
           aria-hidden
-          className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+          className={`theme-icon absolute inset-0 h-5 w-5 transition-all duration-300 ${
             isDark ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
           }`}
         >
@@ -123,7 +143,7 @@ export default function ThemeToggle({
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden
-          className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+          className={`theme-icon absolute inset-0 h-5 w-5 transition-all duration-300 ${
             isDark ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
           }`}
         >

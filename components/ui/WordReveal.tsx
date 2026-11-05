@@ -8,6 +8,18 @@ import { motion, useReducedMotion } from "framer-motion";
  * Inline - safe to chain multiple instances (with different colors)
  * inside a single heading. No-op under prefers-reduced-motion.
  */
+/**
+ * A word boundary that takes up no room. Some headlines set their words flush
+ * ("OurCoreServices", separated only by weight and colour), which is the
+ * design - but with nothing between the spans the TEXT is one run-on word, and
+ * that's what crawlers, AI answer engines and screen readers get. This is a
+ * non-breaking space at font-size 0: the text gains a real gap, the layout
+ * gains nothing, and the headline can't start wrapping between words.
+ */
+export function WordGap() {
+  return <span className="text-[0px]">{" "}</span>;
+}
+
 export default function WordReveal({
   text,
   className = "",

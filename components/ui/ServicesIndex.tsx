@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import { MotionConfig, motion } from "framer-motion";
 import RollText from "@/components/ui/RollText";
 import { SERVICES } from "@/lib/constants";
-import { serviceSlug } from "@/lib/services";
+import { isServicePagePublished, serviceSlug } from "@/lib/services";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -64,6 +64,10 @@ export default function ServicesIndex() {
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>
+                  {/* Separates "01" from the title in the heading's text
+                      ("01 Website Development"); white space between grid
+                      items doesn't render. */}
+                  {" "}
 
                   <span className="font-machina text-[length:clamp(1.25rem,5.2vw,2.6rem)] font-medium uppercase leading-[1.05] tracking-[-0.01em] text-ink transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-2">
                     {service.title}
@@ -107,16 +111,22 @@ export default function ServicesIndex() {
                 </button>
               </h2>
 
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    key="panel"
+              {/*
+                Every panel is ALWAYS in the DOM - closed ones are collapsed to
+                zero height, not unmounted. Conditional mounting meant the
+                server HTML carried only the first service's write-up, so 7 of
+                8 services had no indexable copy at all. `initial={false}`
+                makes the server render each panel in its final open/closed
+                state, so nothing animates on load. Closed panels are hidden
+                from assistive tech and their link is taken out of tab order.
+              */}
+              <motion.div
                     id={panelId}
                     role="region"
                     aria-label={service.title}
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
+                    aria-hidden={!isOpen}
+                    initial={false}
+                    animate={isOpen ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
                     transition={{ duration: 0.6, ease: EASE }}
                     className="overflow-hidden"
                   >
@@ -131,12 +141,26 @@ export default function ServicesIndex() {
                           <span className="text-ink">{service.detail.timeline}</span>
                         </p>
 
+                        {/* Appears once the service's own page is published
+                            (lib/constants.ts `page`) - linking to a noindex
+                            page would only spend crawl budget. */}
+                        {isServicePagePublished(service) && (
+                          <Link
+                            href={`/services/${service.slug}`}
+                            tabIndex={isOpen ? undefined : -1}
+                            className="mt-4 inline-flex min-h-[44px] items-center font-machina text-sm text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:text-primary hover:decoration-primary"
+                          >
+                            More about {service.title.toLowerCase()}
+                          </Link>
+                        )}
+
                         <Link
                           href={`/contact?service=${encodeURIComponent(service.title)}`}
+                          tabIndex={isOpen ? undefined : -1}
                           className="group/cta mt-8 inline-flex items-center gap-3 rounded-full border border-ink/70 py-2 pl-6 pr-2 text-xs font-bold text-ink transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-on-primary lg:mt-auto"
                         >
                           <RollText>
-                            {comingSoon ? "Apply for early access" : "Apply for this service"}
+                            {comingSoon ? "Join the early-access list" : "Get a quote"}
                           </RollText>
                           <Image
                             src="/button.png"
@@ -166,9 +190,7 @@ export default function ServicesIndex() {
                         </ul>
                       </div>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              </motion.div>
             </li>
           );
         })}

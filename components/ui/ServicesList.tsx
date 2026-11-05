@@ -78,35 +78,40 @@ export default function ServicesList({ services }: { services: ServiceRow[] }) {
                         {service.title}
                       </span>
 
-                      <AnimatePresence initial={false}>
-                        {isActive && (
-                          <motion.div
-                            key="detail"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.5, ease: EASE }}
-                            className="overflow-hidden"
-                          >
-                            <p className="max-w-md pt-3 text-sm leading-relaxed text-muted">
-                              {service.description}
-                            </p>
-                            {service.comingSoon && (
-                              <span className="mt-2 inline-block font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
-                                Coming soon
-                              </span>
-                            )}
-                            {!canHover && (
-                              <Slideshow
-                                images={service.images}
-                                shuffle={service.shuffle}
-                                alt={service.title}
-                                className="mt-4 aspect-[21/10] w-full"
-                              />
-                            )}
-                          </motion.div>
+                      {/*
+                        The description is ALWAYS in the DOM, collapsed to zero
+                        height until the row opens. It used to mount only on
+                        hover/tap, so the server HTML carried no service copy
+                        at all. The slideshow stays conditional: it's images,
+                        not copy, and mounting eight of them would cost bytes.
+                      */}
+                      <motion.div
+                        // Collapsed copy stays out of the link's accessible
+                        // name, so a screen reader hears "Website
+                        // Development", not the whole paragraph.
+                        aria-hidden={!isActive}
+                        initial={false}
+                        animate={isActive ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
+                        transition={{ duration: 0.5, ease: EASE }}
+                        className="overflow-hidden"
+                      >
+                        <p className="max-w-md pt-3 text-sm leading-relaxed text-muted">
+                          {service.description}
+                        </p>
+                        {service.comingSoon && (
+                          <span className="mt-2 inline-block font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
+                            Coming soon
+                          </span>
                         )}
-                      </AnimatePresence>
+                        {!canHover && isActive && (
+                          <Slideshow
+                            images={service.images}
+                            shuffle={service.shuffle}
+                            alt={service.title}
+                            className="mt-4 aspect-[21/10] w-full"
+                          />
+                        )}
+                      </motion.div>
                     </div>
 
                     {/* Desktop: this row's own slideshow, unrolling in on the

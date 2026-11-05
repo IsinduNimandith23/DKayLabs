@@ -46,6 +46,9 @@ export default function PageHero({
               <span aria-hidden="true" className={`block text-[16cqw] ${styles[i]}`}>
                 {text}
               </span>
+              {/* Word boundary for text extractors; renders as nothing at
+                  the end of a block line. */}
+              {" "}
             </Reveal>
           ))}
         </h1>
@@ -62,7 +65,9 @@ export default function PageHero({
               alt=""
               width={261}
               height={261}
-              priority
+              // Decorative - eager so it isn't lazy above the fold, but not
+              // `priority` (fetchpriority=high) competing with the LCP.
+              loading="eager"
               className="h-[max(2.5rem,7cqw)] w-[max(2.5rem,7cqw)] rotate-180"
             />
           </Reveal>

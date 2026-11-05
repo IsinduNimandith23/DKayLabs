@@ -1,8 +1,5 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
 
 /**
  * Homepage hero - type only, no artwork.
@@ -27,6 +24,13 @@ import { motion, useReducedMotion } from "framer-motion";
  * and needs no padding/negative-margin compensation at all. Each line then
  * pulls itself up by (advance - 1) to land on its measured baseline.
  * `flex flex-col` is required: as plain blocks these margins would collapse.
+ *
+ * The entrance is CSS (.hero-line / .hero-cta in globals.css), not framer:
+ * the framer variants server-rendered the headline hidden and only revealed
+ * it after hydration, which held the page's LCP back by over a second on
+ * mobile. Same timing as before - lines rise from behind their masks on a
+ * 0.11s stagger after 0.15s, the CTA follows - and reduced motion is handled
+ * by the global prefers-reduced-motion rule. This is now a server component.
  */
 const LINES: { text: string; bold?: boolean; mt?: string }[] = [
   { text: "Where" },
@@ -35,26 +39,12 @@ const LINES: { text: string; bold?: boolean; mt?: string }[] = [
   { text: "CRAFT.", bold: true, mt: "-0.3995em" }, // advance 0.6005em
 ];
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.11, delayChildren: 0.15 } },
-};
-
-// 102% clears the line box (the glyphs occupy 0.965 of it), so each line is
-// fully hidden behind its mask before it rises.
-const line = {
-  hidden: { y: "102%" },
-  show: { y: "0%", transition: { duration: 1.05, ease: [0.16, 1, 0.3, 1] } },
-};
-
-const cta = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
-};
+const FIRST_DELAY = 0.15;
+const STAGGER = 0.11;
+// The CTA was the fifth child of the staggered container.
+const CTA_DELAY = FIRST_DELAY + STAGGER * LINES.length;
 
 export default function Hero() {
-  const reduced = useReducedMotion();
-
   return (
     <section
       id="top"
@@ -69,12 +59,7 @@ export default function Hero() {
         whole composition stops scaling at the frame width.
       */}
       <div className="relative z-10 mx-auto w-full max-w-[1920px] px-6 sm:px-10 lg:px-[min(11.82vw,227px)]">
-        <motion.div
-          variants={container}
-          initial={reduced ? undefined : "hidden"}
-          animate={reduced ? undefined : "show"}
-          className="flex flex-col items-center gap-10 [--hero-fs:min(calc((100vw_-_3rem)/4.2),26svh)] sm:gap-12 sm:[--hero-fs:min(calc((100vw_-_5rem)/4.2),26svh)] lg:flex-row lg:items-end lg:justify-between lg:gap-16 lg:[--hero-fs:clamp(3rem,11.144vw,13.375rem)]"
-        >
+        <div className="flex flex-col items-center gap-10 [--hero-fs:min(calc((100vw_-_3rem)/4.2),26svh)] sm:gap-12 sm:[--hero-fs:min(calc((100vw_-_5rem)/4.2),26svh)] lg:flex-row lg:items-end lg:justify-between lg:gap-16 lg:[--hero-fs:clamp(3rem,11.144vw,13.375rem)]">
           {/*
             Below lg the composition stacks, so the frame's 11.144vw would
             leave the headline filling barely half the width of a phone. There
@@ -89,23 +74,27 @@ export default function Hero() {
             items-center).
           */}
           <h1 className="flex flex-col text-center font-machina lg:text-left text-[length:var(--hero-fs)] leading-none">
-            {LINES.map(({ text, bold, mt }) => (
-              <span
-                key={text}
-                style={{ marginTop: mt }}
-                className="block overflow-hidden"
-              >
-                <motion.span
-                  variants={reduced ? undefined : line}
-                  className={`block ${
-                    bold ? "font-extrabold text-primary" : "font-light text-ink"
-                  }`}
+              {LINES.map(({ text, bold, mt }, i) => (
+                <span
+                  key={text}
+                  style={{ marginTop: mt }}
+                  className="block overflow-hidden"
                 >
-                  {text}
-                </motion.span>
-              </span>
-            ))}
-          </h1>
+                  <span
+                    style={{ animationDelay: `${FIRST_DELAY + STAGGER * i}s` }}
+                    className={`hero-line block ${
+                      bold ? "font-extrabold text-primary" : "font-light text-ink"
+                    }`}
+                  >
+                    {text}
+                  </span>
+                  {/* A real word boundary for the TEXT ("Where CODE meets
+                      CRAFT.", not "WhereCODEmeetsCRAFT.") - trailing white
+                      space at the end of a block line renders as nothing. */}
+                  {" "}
+                </span>
+              ))}
+            </h1>
 
           {/*
             CTA. font-size 74.8px at a 1920 frame = 3.898vw; baseline advance
@@ -120,9 +109,9 @@ export default function Hero() {
             advance box; '?' carries a 0.374em right side bearing that would
             otherwise hold the block 28px short of where the frame has it.
           */}
-          <motion.div
-            variants={reduced ? undefined : cta}
-            className="shrink-0 lg:mb-[0.63em] lg:-mr-[0.374em]"
+          <div
+            style={{ animationDelay: `${CTA_DELAY}s` }}
+            className="hero-cta shrink-0 lg:mb-[0.63em] lg:-mr-[0.374em]"
           >
             <Link
               href="/contact"
@@ -154,16 +143,22 @@ export default function Hero() {
                   aria-hidden
                   width={261}
                   height={261}
-                  priority
+                  // Eager, not `priority`: it's above the fold so it mustn't
+                  // lazy-load, but a decorative arrow shouldn't compete with
+                  // the real LCP for fetchpriority=high.
+                  loading="eager"
                   className="h-[0.735em] w-[0.735em] shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[0.12em] group-hover:translate-x-[0.12em]"
                 />
               </span>
+              {/* " " keeps the link's text "Build Together?", not
+                  "BuildTogether?" - white space between flex items renders
+                  as nothing. */}{" "}
               <span className="font-extrabold" style={{ marginTop: "-0.2151em" }}>
                 Together?
               </span>
             </Link>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

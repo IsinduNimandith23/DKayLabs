@@ -2,7 +2,8 @@ import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 import Reveal from "@/components/ui/Reveal";
 import BackToTop from "@/components/ui/BackToTop";
-import { NAV_LINKS, SOCIALS, SERVICES, SITE } from "@/lib/constants";
+import { NAV_LINKS, PRODUCTS, SOCIALS, SERVICES, SITE } from "@/lib/constants";
+import { isServicePagePublished, serviceSlug } from "@/lib/services";
 import SocialIcon from "@/components/ui/SocialIcon";
 
 export default function Footer() {
@@ -40,9 +41,12 @@ export default function Footer() {
             </div>
           </Reveal>
 
-          {/* Explore */}
+          {/* Explore. A real <nav> landmark: the header menu is a client-side
+              overlay that isn't in the server HTML, so this is the site
+              navigation crawlers and agents actually find. */}
           <Reveal delay={0.1}>
-            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-dim">
+            <nav aria-labelledby="footer-explore-heading">
+            <h4 id="footer-explore-heading" className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-dim">
               Explore
             </h4>
             <ul className="space-y-4">
@@ -57,19 +61,41 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              {/* The MRP platform is its own app, so it needs a plain <a>. It
+                  had no crawlable link outside /products - Search Console
+                  lists it "Discovered - currently not indexed". */}
+              {PRODUCTS.map((p) => (
+                <li key={p.slug}>
+                  <a
+                    href={`/products/${p.slug}`}
+                    className="group inline-flex cursor-pointer items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
+                  >
+                    <span className="h-px w-0 bg-primary transition-all duration-300 group-hover:w-4" />
+                    {p.name}
+                  </a>
+                </li>
+              ))}
             </ul>
+            </nav>
           </Reveal>
 
           {/* Services */}
           <Reveal delay={0.15}>
-            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-dim">
+            <nav aria-labelledby="footer-services-heading">
+            <h4 id="footer-services-heading" className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-dim">
               Services
             </h4>
             <ul className="space-y-4">
               {footerServices.map((s) => (
                 <li key={s.title}>
                   <Link
-                    href="/services"
+                    // Straight to the service: its own page once published,
+                    // else its row on /services (the hash opens it).
+                    href={
+                      isServicePagePublished(s)
+                        ? `/services/${serviceSlug(s.title)}`
+                        : `/services#${serviceSlug(s.title)}`
+                    }
                     className="group inline-flex cursor-pointer items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
                   >
                     <span className="h-px w-0 bg-primary transition-all duration-300 group-hover:w-4" />
@@ -78,6 +104,7 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+            </nav>
           </Reveal>
 
           {/* Get in touch */}

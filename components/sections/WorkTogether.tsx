@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
 import RollText from "@/components/ui/RollText";
@@ -16,7 +16,7 @@ export const fieldClass =
 // The headline's three lines. `indent` pushes WORK across so it sits under
 // the tail of LETS, the staggered block from the reference.
 const LINES = [
-  { text: "Lets", indent: false },
+  { text: "Let's", indent: false },
   { text: "Work", indent: true },
   { text: "Together", indent: false },
 ];
@@ -28,6 +28,12 @@ const LINES = [
 export default function WorkTogether() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  // When the form became usable - the API rejects sub-3s submissions.
+  const startedAt = useRef(0);
+
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, []);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,7 +45,10 @@ export default function WorkTogether() {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        body: JSON.stringify({
+          ...Object.fromEntries(new FormData(form)),
+          elapsed: Date.now() - startedAt.current,
+        }),
       });
 
       if (!response.ok) {
@@ -68,7 +77,7 @@ export default function WorkTogether() {
       <div className="mx-auto max-w-5xl px-6 [container-type:inline-size]">
         <div className="mx-auto w-fit">
         <h2
-          aria-label="Lets work together"
+          aria-label="Let's work together"
           className="font-machina font-normal uppercase leading-[0.74] tracking-[-0.04em] text-ink"
         >
           {LINES.map((line, i) => (
@@ -79,6 +88,9 @@ export default function WorkTogether() {
               >
                 {line.text}
               </span>
+              {/* Word boundary for text extractors; renders as nothing at
+                  the end of a block line. */}
+              {" "}
             </Reveal>
           ))}
         </h2>
@@ -131,14 +143,15 @@ export default function WorkTogether() {
               </div>
 
               <div className="flex flex-col gap-1">
+                {/* Optional, matching /contact - a required phone number is a
+                    common reason people abandon a first enquiry. */}
                 <label htmlFor="wt-phone" className={labelClass}>
-                  Phone*
+                  Phone
                 </label>
                 <input
                   id="wt-phone"
                   name="phone"
                   type="tel"
-                  required
                   autoComplete="tel"
                   placeholder="Include country code"
                   className={fieldClass}
@@ -174,10 +187,11 @@ export default function WorkTogether() {
               </div>
             </div>
 
-            {/* Honeypot: hidden from people, irresistible to bots. */}
+            {/* Honeypot: hidden from people, irresistible to bots. Opaque name
+                on purpose - see app/api/contact/route.ts. */}
             <input
               type="text"
-              name="company"
+              name="hp_x7"
               tabIndex={-1}
               autoComplete="off"
               aria-hidden="true"
@@ -202,17 +216,15 @@ export default function WorkTogether() {
                 )}
               </button>
 
-              {status === "success" && (
-                <p role="status" className="text-sm text-emerald-400">
-                  Thanks - we&apos;ll be in touch shortly.
-                </p>
-              )}
+              {/* Always mounted: a live region inserted at the same moment as
+                  its text is often not announced. */}
+              <p role="status" aria-live="polite" className="text-sm text-emerald-400 empty:hidden">
+                {status === "success" ? "Thanks - we'll be in touch shortly." : ""}
+              </p>
 
-              {status === "error" && (
-                <p role="alert" className="text-sm text-red-400">
-                  {error}
-                </p>
-              )}
+              <p role="alert" className="text-sm text-red-400 empty:hidden">
+                {status === "error" ? error : ""}
+              </p>
             </div>
           </form>
         </Reveal>

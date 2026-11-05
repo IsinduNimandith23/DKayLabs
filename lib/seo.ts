@@ -47,15 +47,34 @@ type PageSeo = {
    * Omit on the homepage, which uses the brand + tagline instead.
    */
   title?: string;
+  /**
+   * The complete <title>, used as-is with no brand suffix added. For the
+   * homepage, whose title should lead with the brand AND say what the
+   * company does and where - the tagline alone names no service or place,
+   * so it can't match any query beyond the brand name.
+   */
+  absoluteTitle?: string;
   description: string;
   /** Root-relative, no trailing slash: "/services". The homepage is "/". */
   path: string;
+  /**
+   * Keep the page out of the index (links still followed). For pages that
+   * exist but aren't ready to rank yet - a service or case-study page whose
+   * long-form content hasn't been written. Such pages must also stay out of
+   * the sitemap; app/sitemap.ts applies the same publish checks.
+   */
+  noindex?: boolean;
 };
 
-export function pageMetadata({ title, description, path }: PageSeo): Metadata {
-  const fullTitle = title
-    ? `${title} - ${SITE.name}`
-    : `${SITE.name} - ${SITE.tagline}`;
+export function pageMetadata({
+  title,
+  absoluteTitle,
+  description,
+  path,
+  noindex = false,
+}: PageSeo): Metadata {
+  const fullTitle =
+    absoluteTitle ?? (title ? `${title} - ${SITE.name}` : `${SITE.name} - ${SITE.tagline}`);
 
   return {
     title: fullTitle,
@@ -76,10 +95,10 @@ export function pageMetadata({ title, description, path }: PageSeo): Metadata {
      * thumbnail next to the result instead of a postage stamp.
      */
     robots: {
-      index: true,
+      index: !noindex,
       follow: true,
       googleBot: {
-        index: true,
+        index: !noindex,
         follow: true,
         "max-image-preview": "large",
         "max-snippet": -1,

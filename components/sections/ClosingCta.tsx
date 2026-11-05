@@ -38,6 +38,9 @@ export default function ClosingCta() {
               <span aria-hidden="true" className={`block text-[11cqw] ${line.style}`}>
                 {line.text}
               </span>
+              {/* Word boundary for text extractors; renders as nothing at
+                  the end of a block line. */}
+              {" "}
             </Reveal>
           ))}
         </h2>

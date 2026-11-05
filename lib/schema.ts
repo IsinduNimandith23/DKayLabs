@@ -23,6 +23,8 @@ import {
   SOCIALS,
   type Founder,
   type Product,
+  type Project,
+  type Service,
 } from "./constants";
 import { absoluteUrl } from "./seo";
 
@@ -37,6 +39,20 @@ const personId = (founder: Founder) => `${SITE.url}/about#${founder.slug}`;
  * a dead link is a bad entity signal.
  */
 const liveProfiles = SOCIALS.filter((s) => s.href !== "#").map((s) => s.href);
+
+/**
+ * Spellings people actually type for the brand. Shared by the Organization
+ * (entity matching) and the WebSite (Google's site-name feature reads the
+ * WebSite node's alternateName, not the Organization's).
+ */
+const BRAND_ALTERNATE_NAMES = ["DKay LABS", "DKay Labs", "D Kay Labs", "DKayLabs"];
+
+/**
+ * Only what we actually sell today. "Coming soon" services stay on the page
+ * (with their badge) but declaring them as offered Services / expertise in
+ * structured data would claim something the page itself says isn't live.
+ */
+const AVAILABLE_SERVICES = SERVICES.filter((service) => service.status === "available");
 
 export function organizationSchema() {
   return {
@@ -64,7 +80,7 @@ export function organizationSchema() {
      * person actually types; declaring them maps every variant onto THIS
      * entity instead of leaving a young domain to win on inference alone.
      */
-    alternateName: ["DKay LABS", "DKay Labs", "D Kay Labs", "DKayLabs"],
+    alternateName: BRAND_ALTERNATE_NAMES,
     url: SITE.url,
     description: SITE.description,
     slogan: SITE.tagline,
@@ -73,18 +89,19 @@ export function organizationSchema() {
      * precision. Its job is to separate this DKay from the ones that have been
      * trading since the 2010s, not to claim a specific launch day.
      */
-    foundingDate: "2026",
+    foundingDate: SITE.foundingYear,
     /*
-     * References, not copies - the Person nodes themselves are declared on
-     * /about by personSchema(). This is what ties a search for a founder's
-     * name to this organisation.
+     * References, not copies - the Person nodes themselves are declared
+     * sitewide by personSchema() in app/layout.tsx, so every page that
+     * carries this reference also carries its target. This is what ties a
+     * search for a founder's name to this organisation.
      */
     founder: FOUNDERS.map((founder) => ({ "@id": personId(founder) })),
     /*
      * Derived from the same SERVICES array /services renders, so the topics we
      * claim expertise in cannot drift from the ones we actually publish.
      */
-    knowsAbout: SERVICES.map((service) => service.title),
+    knowsAbout: AVAILABLE_SERVICES.map((service) => service.title),
     areaServed: "Worldwide",
     logo: {
       "@type": "ImageObject",
@@ -112,7 +129,7 @@ export function organizationSchema() {
   };
 }
 
-/** A co-founder, declared on /about and referenced by the Organization. */
+/** A co-founder, declared sitewide and referenced by the Organization. */
 export function personSchema(founder: Founder) {
   return {
     "@context": "https://schema.org",
@@ -134,6 +151,7 @@ export function websiteSchema() {
     "@id": SITE_ID,
     url: SITE.url,
     name: SITE.name,
+    alternateName: BRAND_ALTERNATE_NAMES,
     description: SITE.description,
     publisher: { "@id": ORG_ID },
     inLanguage: "en",
@@ -153,7 +171,7 @@ export function servicesSchema() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: `Services by ${SITE.name}`,
-    itemListElement: SERVICES.map((service, index) => ({
+    itemListElement: AVAILABLE_SERVICES.map((service, index) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
@@ -164,6 +182,42 @@ export function servicesSchema() {
         areaServed: "Worldwide",
       },
     })),
+  };
+}
+
+/** A single service's own page (/services/<slug>). */
+export function serviceSchema(service: Service, path: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${absoluteUrl(path)}#service`,
+    name: service.title,
+    serviceType: service.title,
+    description: service.description,
+    url: absoluteUrl(path),
+    provider: { "@id": ORG_ID },
+    areaServed: "Worldwide",
+  };
+}
+
+/**
+ * A case study (/portfolio/<slug>): the client's site as a CreativeWork we
+ * made. `url` is the case-study page; `sameAs` points at the live site.
+ */
+export function caseStudySchema(project: Project, path: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "@id": `${absoluteUrl(path)}#work`,
+    name: project.title,
+    headline: `${project.title} - ${project.category}`,
+    description: project.description,
+    url: absoluteUrl(path),
+    ...(project.url?.startsWith("http") && { sameAs: project.url }),
+    ...(project.image && { image: absoluteUrl(project.image) }),
+    keywords: project.tags.join(", "),
+    creator: { "@id": ORG_ID },
+    about: project.service,
   };
 }
 
@@ -191,13 +245,14 @@ export function productSchema(product: Product) {
   };
 }
 
-/** Trail for a product detail page: Home > Products > <name>. */
-export function productBreadcrumbSchema(product: Product) {
-  const trail = [
-    { name: "Home", path: "/" },
-    { name: "Products", path: "/products" },
-    { name: product.name, path: `/products/${product.slug}` },
-  ];
+type Crumb = { name: string; path: string };
+
+/**
+ * BreadcrumbList for any page. Pass the trail BELOW Home - Home is always
+ * the first crumb, so callers can't forget it or spell it differently.
+ */
+export function breadcrumbSchema(trailBelowHome: Crumb[]) {
+  const trail: Crumb[] = [{ name: "Home", path: "/" }, ...trailBelowHome];
 
   return {
     "@context": "https://schema.org",
@@ -209,4 +264,12 @@ export function productBreadcrumbSchema(product: Product) {
       item: absoluteUrl(crumb.path),
     })),
   };
+}
+
+/** Trail for a product detail page: Home > Products > <name>. */
+export function productBreadcrumbSchema(product: Product) {
+  return breadcrumbSchema([
+    { name: "Products", path: "/products" },
+    { name: product.name, path: `/products/${product.slug}` },
+  ]);
 }

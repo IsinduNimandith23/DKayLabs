@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import RollText from "@/components/ui/RollText";
 import { fieldClass, labelClass } from "@/components/sections/WorkTogether";
@@ -22,6 +22,12 @@ export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  // When the form became usable - the API rejects sub-3s submissions.
+  const startedAt = useRef(0);
+
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, []);
 
   // Prefill the message from ?service= or ?product=. Read from window rather
   // than useSearchParams so this doesn't force a Suspense boundary on the
@@ -56,7 +62,10 @@ export default function ContactForm() {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        body: JSON.stringify({
+          ...Object.fromEntries(new FormData(form)),
+          elapsed: Date.now() - startedAt.current,
+        }),
       });
 
       if (!response.ok) {
@@ -156,10 +165,11 @@ export default function ContactForm() {
         </div>
       </div>
 
-      {/* Honeypot: hidden from people, irresistible to bots. */}
+      {/* Honeypot: hidden from people, irresistible to bots. Opaque name on
+          purpose - see app/api/contact/route.ts. */}
       <input
         type="text"
-        name="company"
+        name="hp_x7"
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
@@ -194,17 +204,15 @@ export default function ContactForm() {
           )}
         </button>
 
-        {status === "success" && (
-          <p role="status" className="text-sm text-emerald-400">
-            Thanks - we&apos;ll be in touch shortly.
-          </p>
-        )}
+        {/* Always mounted: a live region inserted at the same moment as its
+            text is often not announced. */}
+        <p role="status" aria-live="polite" className="text-sm text-emerald-400 empty:hidden">
+          {status === "success" ? "Thanks - we'll be in touch shortly." : ""}
+        </p>
 
-        {status === "error" && (
-          <p role="alert" className="text-sm text-red-400">
-            {error}
-          </p>
-        )}
+        <p role="alert" className="text-sm text-red-400 empty:hidden">
+          {status === "error" ? error : ""}
+        </p>
       </div>
     </form>
   );

@@ -80,7 +80,14 @@ export default function Logo({
               src={art.src}
               width={width}
               height={size}
-              priority
+              /*
+               * Eager, not `priority`. Both theme variants render and CSS
+               * hides one, so `priority` sent fetchpriority=high for BOTH -
+               * including the one that's display:none - and the pair competed
+               * with the page's real LCP image. Eager still keeps the visible
+               * one from lazy-loading in the always-on-screen navbar.
+               */
+              loading="eager"
               sizes={`${width}px`}
               style={{ width: "auto", height: size }}
               className={`object-contain ${art.display}`}

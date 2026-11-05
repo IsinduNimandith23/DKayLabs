@@ -52,7 +52,7 @@ export function generateMetadata({
 
   return pageMetadata({
     title: product.name,
-    description: product.description,
+    description: product.metaDescription ?? product.description,
     path: `/products/${product.slug}`,
   });
 }

@@ -75,8 +75,20 @@ type Payload = {
   phone?: unknown; // optional
   country?: unknown; // optional - only the homepage form sends it
   message?: unknown;
-  company?: unknown; // honeypot - real users never see this field
+  /*
+   * Honeypot. Deliberately an opaque name: it used to be `company`, which
+   * browser autofill recognises as an organisation field and AI form-filling
+   * agents fill as a matter of course - either way a REAL enquiry was
+   * silently discarded. Nothing fills `hp_x7` except a bot stuffing every
+   * input it finds.
+   */
+  hp_x7?: unknown;
+  /** ms between the form rendering and its submission (see MIN_FILL_MS). */
+  elapsed?: unknown;
 };
+
+// No person fills name + email + message in under 3 seconds; scripts do.
+const MIN_FILL_MS = 3000;
 
 function clean(value: unknown, max: number) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -118,7 +130,23 @@ export async function POST(request: Request) {
   }
 
   // A filled honeypot means a bot. Return success so it doesn't retry.
-  if (clean(body.company, 100)) return NextResponse.json({ ok: true });
+  if (clean(body.hp_x7, 100)) {
+    console.warn("[contact] honeypot filled - submission discarded");
+    return NextResponse.json({ ok: true });
+  }
+
+  // Too fast to be human. Unlike the honeypot this answers with an error the
+  // form shows, so a person caught by it (implausible, but possible) can just
+  // press Send again instead of losing the message. A missing value means a
+  // page cached before this check shipped - let it through.
+  const elapsed = Number(body.elapsed);
+  if (Number.isFinite(elapsed) && elapsed < MIN_FILL_MS) {
+    console.warn("[contact] submitted too quickly:", elapsed, "ms");
+    return NextResponse.json(
+      { error: "That was quick! Please wait a moment and press send again." },
+      { status: 400 },
+    );
+  }
 
   const name = clean(body.name, LIMITS.name);
   const email = clean(body.email, LIMITS.email);
