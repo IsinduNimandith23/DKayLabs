@@ -9,9 +9,13 @@ import { SITE } from "@/lib/constants";
 import { getDesigns } from "@/lib/designs";
 import { pageMetadata } from "@/lib/seo";
 
-// No `title` - the homepage carries the brand + tagline, not a page name.
+// Brand first (it's what people search for today), then the service and the
+// place - Search Console shows zero impressions for any non-brand query, and
+// "web design / development" + "Sri Lanka" is what buyers here actually type.
 export const metadata: Metadata = pageMetadata({
-  description: SITE.description,
+  absoluteTitle: `${SITE.name} - Web Design & Development Company in Sri Lanka`,
+  description:
+    "DKayLABS is a Colombo, Sri Lanka studio designing and building fast websites, e-commerce stores, mobile apps and SaaS platforms for clients worldwide.",
   path: "/",
 });
 

@@ -3,7 +3,7 @@ import About from "@/components/sections/About";
 import ClosingCta from "@/components/sections/ClosingCta";
 import JsonLd from "@/components/seo/JsonLd";
 import { FOUNDERS } from "@/lib/constants";
-import { personSchema } from "@/lib/schema";
+import { breadcrumbSchema } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 
 const founderNames = FOUNDERS.map((founder) => founder.name).join(" & ");
@@ -17,9 +17,8 @@ export const metadata: Metadata = pageMetadata({
 export default function AboutPage() {
   return (
     <main className="pt-nav">
-      {FOUNDERS.map((founder) => (
-        <JsonLd key={founder.slug} data={personSchema(founder)} />
-      ))}
+      {/* Founder Person nodes are declared sitewide in app/layout.tsx. */}
+      <JsonLd data={breadcrumbSchema([{ name: "About", path: "/about" }])} />
       <About />
       <ClosingCta />
     </main>

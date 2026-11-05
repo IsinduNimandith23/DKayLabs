@@ -1,7 +1,8 @@
+import Image from "next/image";
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import WordReveal from "@/components/ui/WordReveal";
-import { FOUNDERS, SITE } from "@/lib/constants";
+import { FOUNDERS, PROJECTS, SERVICES, SITE } from "@/lib/constants";
 
 /** "Isindu Nimandith" -> "IN". Stands in for a photo until there is one. */
 const initials = (name: string) =>
@@ -11,10 +12,33 @@ const initials = (name: string) =>
     .join("")
     .toUpperCase();
 
+/** "https://www.linkedin.com/in/x" -> "LinkedIn", "https://github.com/x" -> "GitHub". */
+function profileLabel(href: string) {
+  const host = new URL(href).hostname.replace(/^www\./, "");
+  const known: Record<string, string> = {
+    "linkedin.com": "LinkedIn",
+    "github.com": "GitHub",
+    "x.com": "X",
+    "twitter.com": "X",
+    "behance.net": "Behance",
+    "dribbble.com": "Dribbble",
+  };
+  return known[host] ?? host;
+}
+
+/** Client work that is live on its own domain (in-house products excluded). */
+const liveClientSites = PROJECTS.filter((p) => p.url?.startsWith("http")).length;
+
+/*
+ * Numbers a visitor can check against the rest of the site, all derived from
+ * lib/constants.ts so they can't go stale. These replaced "100% Client-first",
+ * "24/7 Always shipping" and "∞ Ambition" - slogans dressed as stats, which
+ * read as filler to a careful buyer and gave answer engines nothing to quote.
+ */
 const STATS = [
-  { value: "100%", label: "Client-first" },
-  { value: "24/7", label: "Always shipping" },
-  { value: "∞", label: "Ambition" },
+  { value: String(liveClientSites), label: "Client sites live" },
+  { value: String(SERVICES.length), label: "Services in-house" },
+  { value: SITE.foundingYear, label: `Founded in ${SITE.location.split(",")[0]}` },
 ];
 
 /**
@@ -90,13 +114,23 @@ export default function About() {
               <li key={founder.slug} id={founder.slug} className="scroll-mt-24">
                 <Reveal delay={i * 0.12} className="h-full">
                   <article className="h-full rounded-3xl bg-sunken p-8 dark:bg-[#1e1e1e] sm:p-10">
-                    {/* Photo slot - initials until there is a headshot. */}
-                    <span
-                      aria-hidden
-                      className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 font-machina text-xl font-black text-primary dark:bg-[#262626]"
-                    >
-                      {initials(founder.name)}
-                    </span>
+                    {/* Headshot when there is one; initials until then. */}
+                    {founder.photo ? (
+                      <Image
+                        src={founder.photo}
+                        alt={`${founder.name}, ${founder.role} of ${SITE.name}`}
+                        width={128}
+                        height={128}
+                        className="h-16 w-16 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 font-machina text-xl font-black text-primary dark:bg-[#262626]"
+                      >
+                        {initials(founder.name)}
+                      </span>
+                    )}
                     <h3 className="mt-8 font-machina text-[length:clamp(1.5rem,3.2vw,2.25rem)] font-black leading-[1.1] tracking-[-0.02em] text-ink">
                       {founder.name}
                     </h3>
@@ -106,6 +140,29 @@ export default function About() {
                     <p className="mt-5 text-[0.95rem] leading-relaxed text-muted">
                       {founder.bio}
                     </p>
+                    {founder.longBio?.map((paragraph) => (
+                      <p key={paragraph.slice(0, 32)} className="mt-4 text-[0.95rem] leading-relaxed text-muted">
+                        {paragraph}
+                      </p>
+                    ))}
+                    {/* The same profiles feed the Person node's sameAs - a
+                        visible link and the structured data agree. */}
+                    {founder.sameAs.length > 0 && (
+                      <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+                        {founder.sameAs.map((href) => (
+                          <li key={href}>
+                            <a
+                              href={href}
+                              target="_blank"
+                              rel="noopener noreferrer me"
+                              className="inline-flex min-h-[44px] items-center font-machina text-sm text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:text-primary hover:decoration-primary"
+                            >
+                              {profileLabel(href)}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </article>
                 </Reveal>
               </li>

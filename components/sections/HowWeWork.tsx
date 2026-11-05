@@ -1,5 +1,5 @@
 import Reveal from "@/components/ui/Reveal";
-import WordReveal from "@/components/ui/WordReveal";
+import WordReveal, { WordGap } from "@/components/ui/WordReveal";
 import { PRICING_NOTE } from "@/lib/constants";
 
 const STEPS = [
@@ -28,7 +28,9 @@ export default function HowWeWork() {
       <div className="relative mx-auto max-w-5xl px-6">
         <h2 className="mb-14 font-machina text-[length:clamp(2.5rem,7vw,4.5rem)] leading-none tracking-[-0.02em] sm:mb-20">
           <WordReveal text="How" className="font-extralight text-ink" />
+          <WordGap />
           <WordReveal text="We" className="font-medium text-ink" delay={0.1} />
+          <WordGap />
           <WordReveal text="Work" className="font-black text-primary" delay={0.2} />
         </h2>
 

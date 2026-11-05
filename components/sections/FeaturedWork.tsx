@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import Reveal from "@/components/ui/Reveal";
-import WordReveal from "@/components/ui/WordReveal";
+import WordReveal, { WordGap } from "@/components/ui/WordReveal";
 import ServiceIcon from "@/components/ui/ServiceIcon";
 import RollText from "@/components/ui/RollText";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
@@ -133,7 +133,21 @@ function SheetFace({ sheet }: { sheet: Sheet }) {
   if (sheet.image) {
     return (
       <span className="absolute inset-0 overflow-hidden rounded-[inherit] bg-neutral-900">
-        <Image src={sheet.image} alt="" fill sizes="(max-width: 640px) 240px, 300px" className="object-cover object-top" />
+        {/* Described, not decorative: these are the actual project
+            screenshots, and image search / answer engines index them. The
+            round Chip thumbnails below repeat the same images, so those stay
+            alt="" rather than announcing everything twice. */}
+        <Image
+          src={sheet.image}
+          alt={
+            sheet.title === "Design"
+              ? `${sheet.label} sample by DKayLABS`
+              : `${sheet.title} - ${sheet.label} by DKayLABS`
+          }
+          fill
+          sizes="(max-width: 640px) 240px, 300px"
+          className="object-cover object-top"
+        />
       </span>
     );
   }
@@ -342,7 +356,9 @@ export default function FeaturedWork({ designs }: { designs: string[] }) {
       <div className="relative">
         <h2 className="px-6 text-center font-machina text-[length:clamp(2rem,8.5vw,5.5rem)] leading-none tracking-[-0.02em]">
           <WordReveal text="Proof" className="font-extralight text-ink" />
+          <WordGap />
           <WordReveal text="Of" className="font-medium text-ink" delay={0.1} />
+          <WordGap />
           <WordReveal text="Concept" className="font-black text-primary" delay={0.2} />
         </h2>
 

@@ -1,6 +1,13 @@
 import type { MetadataRoute } from "next";
-import { PRODUCTS } from "@/lib/constants";
+import { PRODUCTS, SERVICES } from "@/lib/constants";
 import { absoluteUrl } from "@/lib/seo";
+import {
+  CASE_STUDY_PROJECTS,
+  isCaseStudyPublished,
+  isServicePagePublished,
+  projectSlug,
+  serviceSlug,
+} from "@/lib/services";
 
 /**
  * Served at /sitemap.xml.
@@ -35,12 +42,15 @@ const STATIC_ROUTES: {
   priority: number;
   lastModified: string;
 }[] = [
-  { path: "/", priority: 1.0, lastModified: "2026-08-28" },
-  { path: "/services", priority: 0.9, lastModified: "2026-08-24" },
-  { path: "/portfolio", priority: 0.9, lastModified: "2026-08-24" },
-  { path: "/products", priority: 0.8, lastModified: "2026-08-24" },
-  { path: "/about", priority: 0.7, lastModified: "2026-10-04" },
-  { path: "/contact", priority: 0.7, lastModified: "2026-08-25" },
+  // 2026-11-05: SEO audit pass - new titles/descriptions on all six, the
+  // service copy now in the HTML on / and /services, homepage value line,
+  // /about stats, AI Solutions live, reply-time copy.
+  { path: "/", priority: 1.0, lastModified: "2026-11-05" },
+  { path: "/services", priority: 0.9, lastModified: "2026-11-05" },
+  { path: "/portfolio", priority: 0.9, lastModified: "2026-11-05" },
+  { path: "/products", priority: 0.8, lastModified: "2026-11-05" },
+  { path: "/about", priority: 0.7, lastModified: "2026-11-05" },
+  { path: "/contact", priority: 0.7, lastModified: "2026-11-05" },
   // Legal pages: linked from the footer sitewide, so they get crawled either
   // way. Low priority - they exist to be findable, not to rank.
   { path: "/privacy", priority: 0.3, lastModified: "2026-09-07" },
@@ -53,6 +63,16 @@ const PRODUCT_LAST_MODIFIED: Record<string, string> = {
 };
 
 const PRODUCT_FALLBACK_LAST_MODIFIED = "2026-08-24";
+
+/**
+ * Service pages and case studies are listed ONLY once published (their
+ * long-form content exists) - the same checks that flip their pages from
+ * noindex to index. Add a slug's date here when you publish it, and bump it
+ * when its copy changes.
+ */
+const SERVICE_PAGE_LAST_MODIFIED: Record<string, string> = {};
+const CASE_STUDY_LAST_MODIFIED: Record<string, string> = {};
+const CONTENT_FALLBACK_LAST_MODIFIED = "2026-11-05";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -73,5 +93,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
+    ...SERVICES.filter(isServicePagePublished).map((service) => {
+      const slug = serviceSlug(service.title);
+      return {
+        url: absoluteUrl(`/services/${slug}`),
+        lastModified: SERVICE_PAGE_LAST_MODIFIED[slug] ?? CONTENT_FALLBACK_LAST_MODIFIED,
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+      };
+    }),
+    ...CASE_STUDY_PROJECTS.filter(isCaseStudyPublished).map((project) => {
+      const slug = projectSlug(project);
+      return {
+        url: absoluteUrl(`/portfolio/${slug}`),
+        lastModified: CASE_STUDY_LAST_MODIFIED[slug] ?? CONTENT_FALLBACK_LAST_MODIFIED,
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      };
+    }),
   ];
 }

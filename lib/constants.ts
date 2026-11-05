@@ -27,7 +27,13 @@ export const SITE = {
   /** Pre-typed into the chat when the floating WhatsApp button is tapped. */
   whatsappMessage: "Hi DKayLABS, I'd like to talk about a project.",
   location: "Colombo, Sri Lanka",
-  hours: "Available 24/7",
+  /** Year only - shown on /about and used as the Organization's foundingDate. */
+  foundingYear: "2026",
+  /*
+   * Was "Available 24/7", which contradicted the contact page's "we usually
+   * reply within one business day". One promise, the one we keep.
+   */
+  hours: "Replies within 1 business day",
 } as const;
 
 /* ============================================================
@@ -49,6 +55,18 @@ export type Founder = {
    * link is a worse signal than none.
    */
   sameAs: string[];
+  /**
+   * Square headshot in /public (e.g. "/team/isindu-nimandith.jpg"), at least
+   * 256x256. Replaces the initials on the /about card once set.
+   */
+  photo?: string;
+  /**
+   * Extra paragraphs under `bio` on /about: background, what they've built,
+   * what they own day to day. Real, checkable facts - this is the E-E-A-T
+   * signal a buyer (and Google) looks for behind a young agency. 100-200
+   * words across the paragraphs is the target.
+   */
+  longBio?: string[];
 };
 
 export const FOUNDERS: Founder[] = [
@@ -57,14 +75,20 @@ export const FOUNDERS: Founder[] = [
     role: "Co-founder",
     slug: "isindu-nimandith",
     bio: "Isindu Nimandith co-founded DKayLABS in Colombo, Sri Lanka, and leads the studio's websites, SaaS platforms and AI products from first sketch to launch.",
+    // TODO(founder): add the personal LinkedIn / GitHub URLs.
     sameAs: [],
+    // TODO(founder): add a headshot to public/team/ and set `photo`.
+    // TODO(founder): add `longBio` - 2-3 short paragraphs of real background.
   },
   {
     name: "Roshika Perera",
     role: "Co-founder",
     slug: "roshika-perera",
     bio: "Roshika Perera co-founded DKayLABS in Colombo, Sri Lanka, and works alongside every client to turn their goals into digital products that perform.",
+    // TODO(founder): add the personal LinkedIn / GitHub URLs.
     sameAs: [],
+    // TODO(founder): add a headshot to public/team/ and set `photo`.
+    // TODO(founder): add `longBio` - 2-3 short paragraphs of real background.
   },
 ];
 
@@ -95,6 +119,11 @@ export type Product = {
   tagline: string;
   /** Card body copy on /products. */
   description: string;
+  /**
+   * <meta name="description"> for /products/<slug>, when `description` is
+   * too long for a search snippet (~155 characters is where Google cuts).
+   */
+  metaDescription?: string;
   icon: IconKey;
   status: "in-development" | "beta" | "live";
   /** Short bullets listed under the description on the product card. */
@@ -156,6 +185,9 @@ export const PRODUCTS: Product[] = [
     // TODO: replace with final product copy.
     description:
       "A management system for driving schools - student records, instructor and vehicle scheduling, lesson bookings, and payments in one place, so the office stops running on spreadsheets and phone calls. Currently in active development.",
+    // The description runs ~230 characters; search results cut at ~155.
+    metaDescription:
+      "Driving school management software: student records, instructor and vehicle scheduling, lesson bookings and payments in one place. In development.",
     icon: "car",
     status: "in-development",
     // TODO: replace with the final feature list.
@@ -230,6 +262,29 @@ export type Service = {
     /** Rough delivery window - always framed as an estimate. */
     timeline: string;
   };
+  /**
+   * The service's own page at /services/<slug>. The route always exists, but
+   * it stays `noindex` and out of the sitemap until this is filled in: on
+   * `detail` alone the page would be ~120 words, and a set of thin
+   * near-identical service pages is worse for the site than none.
+   * Aim for 600-900 words across these fields. See ServicePage below.
+   */
+  page?: ServicePage;
+};
+
+/** Long-form content for a service's own page. Real facts only. */
+export type ServicePage = {
+  /** 2-4 paragraphs: who it's for, the problem, how you approach it. */
+  intro: string[];
+  /** How a project runs, step by step. */
+  process?: { title: string; detail: string }[];
+  /** Typical starting price, e.g. "From LKR 150,000" - only if you publish one. */
+  startingPrice?: string;
+  /**
+   * Real questions clients ask, answered in the first sentence. Rendered as
+   * visible Q&A (not FAQPage schema - Google retired FAQ rich results).
+   */
+  faqs?: { question: string; answer: string }[];
 };
 
 /**
@@ -421,10 +476,10 @@ export const SERVICES: Service[] = [
     description:
       "Intelligent automation, custom models, and AI-native experiences that put your business a level above the rest.",
     icon: "spark",
-    status: "coming-soon",
+    status: "available",
     detail: {
       overview:
-        "We're putting the finishing touches on our AI practice: chatbots that actually understand your business, workflow automation that removes the busywork, and custom models trained on your own data. Early-access slots open soon.",
+        "Chatbots that actually understand your business, workflow automation that removes the busywork, and custom models trained on your own data - built into the tools and products your team already uses.",
       deliverables: [
         "Custom chatbots and AI assistants",
         "Document and knowledge-base search (RAG)",
@@ -432,7 +487,9 @@ export const SERVICES: Service[] = [
         "Model fine-tuning on your own data",
         "AI features embedded in your existing product",
       ],
-      timeline: "Launching soon - join the early-access list",
+      // TODO(ai): replace with a real typical range once a few projects ship,
+      // matching the "N - M weeks, depending on scope" shape of the others.
+      timeline: "Scoped per project - we'll estimate it in your quote",
     },
   },
 ];
@@ -486,6 +543,29 @@ export type Project = {
   /** "poster" for portrait design pieces - shown whole, not cropped to the
    *  19:9 screenshot frame. Defaults to "screenshot". */
   format?: "screenshot" | "poster";
+  /**
+   * The write-up behind /portfolio/<slug>. Every client project with a live
+   * site gets that page, but it stays `noindex` and out of the sitemap until
+   * this is filled in - a page that is only the card's one-liner and a
+   * screenshot is thin. Measured results are what make it worth reading:
+   * enquiries, conversion, load time, revenue - whatever you can actually
+   * show. See CaseStudy below.
+   */
+  caseStudy?: CaseStudy;
+};
+
+/** A project's case study. Real, checkable facts only. */
+export type CaseStudy = {
+  /** What the client needed and why - 1-2 paragraphs. */
+  challenge: string[];
+  /** What you built and the decisions that mattered - 1-3 paragraphs. */
+  approach: string[];
+  /** Measured outcomes, one per line: "Enquiries up 40% in the first 3 months". */
+  results: string[];
+  /** Platforms and tools, e.g. ["Next.js", "Shopify", "Stripe"]. */
+  stack?: string[];
+  /** How long the build took, e.g. "6 weeks from kickoff to launch". */
+  timeline?: string;
 };
 
 /** Real shipped work - first three are featured on the homepage. */

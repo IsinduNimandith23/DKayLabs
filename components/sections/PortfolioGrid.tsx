@@ -13,7 +13,7 @@ import {
   type Design,
   type Project,
 } from "@/lib/constants";
-import { serviceSlug } from "@/lib/services";
+import { isCaseStudyPublished, projectSlug, serviceSlug } from "@/lib/services";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -153,7 +153,7 @@ export default function PortfolioGrid({ designs }: { designs: Design[] }) {
       ) : visible.length > 0 ? (
         <motion.ul layout className="mt-12 grid gap-x-8 gap-y-14 sm:mt-16 sm:grid-cols-2 sm:gap-y-20">
           <AnimatePresence mode="popLayout" initial={false}>
-            {visible.map((project) => (
+            {visible.map((project, index) => (
               <motion.li
                 layout
                 key={project.title}
@@ -162,7 +162,9 @@ export default function PortfolioGrid({ designs }: { designs: Design[] }) {
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.6, ease: EASE }}
               >
-                <ProjectTile project={project} number={PROJECTS.indexOf(project) + 1} />
+                {/* The first row is above the fold - it holds the page's LCP
+                    image, which lazy-loading was holding back ~1.3s. */}
+                <ProjectTile project={project} number={PROJECTS.indexOf(project) + 1} priority={index < 2} />
               </motion.li>
             ))}
           </AnimatePresence>
@@ -263,15 +265,33 @@ function DesignTile({ design }: { design: Design }) {
   );
 }
 
-function ProjectTile({ project, number }: { project: Project; number: number }) {
+function ProjectTile({
+  project,
+  number,
+  priority = false,
+}: {
+  project: Project;
+  number: number;
+  priority?: boolean;
+}) {
   const poster = project.format === "poster";
+  // A published case study becomes the tile's destination - the write-up
+  // keeps the visitor (and the link equity) on this site; the live site is
+  // one click further, linked from the case study itself.
+  const caseStudy = isCaseStudyPublished(project);
+  const href = caseStudy ? `/portfolio/${projectSlug(project)}` : project.url ?? project.image;
   return (
     <a
-      href={project.url ?? project.image}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={project.url ? `${project.title} - visit live site` : `${project.title} - view full design`}
-      data-cursor={project.url ? "Visit" : "View"}
+      href={href}
+      {...(!caseStudy && { target: "_blank", rel: "noopener noreferrer" })}
+      aria-label={
+        caseStudy
+          ? `${project.title} - read the case study`
+          : project.url
+            ? `${project.title} - visit live site`
+            : `${project.title} - view full design`
+      }
+      data-cursor={caseStudy ? "Read" : project.url ? "Visit" : "View"}
       className="group block outline-none"
     >
       {/* Held at the screenshots' native ~19:9 so nothing is cropped or
@@ -284,7 +304,10 @@ function ProjectTile({ project, number }: { project: Project; number: number }) 
             alt={poster ? `${project.title} design` : `${project.title} website screenshot`}
             fill
             sizes={poster ? "(max-width: 640px) 45vw, 240px" : "(max-width: 640px) 90vw, 480px"}
-            quality={90}
+            priority={priority}
+            // 75 (Next's default) is visually identical at card size;
+            // 90 cost ~237 KiB across the grid.
+            quality={75}
             className={`transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
               poster
                 ? "object-contain py-4 drop-shadow-[0_10px_24px_rgba(0,0,0,0.18)] group-hover:scale-[1.06]"

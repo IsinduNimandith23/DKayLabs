@@ -30,7 +30,9 @@ export default function NavMenuButton({
       type="button"
       onClick={onClick}
       aria-expanded={open}
-      aria-controls="site-menu"
+      // The menu is portalled in only while open, so pointing at it while
+      // closed would reference an element that doesn't exist.
+      aria-controls={open ? "site-menu" : undefined}
       className="nav-btn shrink-0 cursor-pointer px-4"
     >
       <span className="relative block overflow-hidden text-xs font-semibold uppercase tracking-wider">

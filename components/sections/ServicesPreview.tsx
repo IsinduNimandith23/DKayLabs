@@ -1,4 +1,4 @@
-import WordReveal from "@/components/ui/WordReveal";
+import WordReveal, { WordGap } from "@/components/ui/WordReveal";
 import ServicesList, { type ServiceRow } from "@/components/ui/ServicesList";
 import { DESIGN_SERVICE, SERVICES } from "@/lib/constants";
 import { getDesigns } from "@/lib/designs";
@@ -34,7 +34,9 @@ export default function ServicesPreview() {
       <div className="relative mx-auto max-w-5xl px-6">
         <h2 className="mb-14 font-machina text-[length:clamp(2.5rem,7vw,4.5rem)] leading-none tracking-[-0.02em] sm:mb-20">
           <WordReveal text="Our" className="font-extralight text-ink" />
+          <WordGap />
           <WordReveal text="Core" className="font-medium text-ink" delay={0.1} />
+          <WordGap />
           <WordReveal text="Services" className="font-black text-primary" delay={0.2} />
         </h2>
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { SITE } from "@/lib/constants";
 
 const TZ = "Asia/Colombo";
 const CODE = "CMB";
@@ -10,11 +9,13 @@ const CODE = "CMB";
 const HOLD_MS = 5000;
 
 /**
- * SITE.hours reads "Available 24/7", which is far too wide to sit beside a
- * centred wordmark in a 648px capsule - it collides with the logo. Only the
- * tail goes in the bar; the full phrasing is shown in the menu and footer.
+ * SITE.hours ("Replies within 1 business day") is far too wide to sit beside
+ * a centred wordmark in a 648px capsule - it collides with the logo. The bar
+ * gets a short form that fits the same fixed-width slot as "CMB 12:34"; the
+ * full phrasing is shown in the menu, the footer and on /contact.
+ * Keep this in step with SITE.hours if the promise ever changes.
  */
-const HOURS_SHORT = SITE.hours.replace(/^available\s+/i, "");
+const REPLY_ROW = { code: "REPLY", value: "1D" };
 
 function formatTime() {
   return new Intl.DateTimeFormat("en-GB", {
@@ -72,7 +73,7 @@ export default function NavClock() {
   // fixed-size block that can never grow into the centred logo.
   const rows = [
     { code: CODE, value: time },
-    { code: "OPEN", value: HOURS_SHORT },
+    REPLY_ROW,
   ];
   // Reduced motion gets the time only - nothing to rotate between.
   const active = reduced ? 0 : index;

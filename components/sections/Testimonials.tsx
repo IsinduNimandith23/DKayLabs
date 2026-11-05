@@ -1,5 +1,5 @@
 import Reveal from "@/components/ui/Reveal";
-import WordReveal from "@/components/ui/WordReveal";
+import WordReveal, { WordGap } from "@/components/ui/WordReveal";
 import ReviewsCarousel from "@/components/ui/ReviewsCarousel";
 import { TESTIMONIALS } from "@/lib/constants";
 
@@ -15,7 +15,9 @@ export default function Testimonials() {
             wrap - the 9vw floor keeps it inside a 320px phone. */}
         <h2 className="mb-14 font-machina text-[length:clamp(1.75rem,9vw,4.5rem)] leading-none tracking-[-0.02em] sm:mb-20">
           <WordReveal text="Our" className="font-extralight text-ink" />
+          <WordGap />
           <WordReveal text="Client" className="font-medium text-ink" delay={0.1} />
+          <WordGap />
           <WordReveal text="Reviews" className="font-black text-primary" delay={0.2} />
         </h2>
 

@@ -5,10 +5,10 @@ import SmoothScroll from "@/components/providers/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
-import Cursor from "@/components/ui/Cursor";
+import Cursor from "@/components/ui/LazyCursor";
 import PageDotField from "@/components/ui/PageDotField";
 import JsonLd from "@/components/seo/JsonLd";
-import { organizationSchema, websiteSchema } from "@/lib/schema";
+import { organizationSchema, personSchema, websiteSchema } from "@/lib/schema";
 import { FOUNDERS, SITE } from "@/lib/constants";
 import { absoluteUrl } from "@/lib/seo";
 
@@ -84,8 +84,12 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
-      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
-      { url: "/favicon-16.png", type: "image/png", sizes: "16x16" },
+      /*
+       * favicon-16.png / favicon-32.png used to be listed here, but neither
+       * file exists in public/ - both links 404'd on every page. The 96px
+       * PNG is the raster fallback until the 16/32 silhouettes described
+       * above are exported and added back.
+       */
       { url: "/favicon-96.png", type: "image/png", sizes: "96x96" },
     ],
     apple: { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
@@ -157,6 +161,12 @@ export default function RootLayout({
             than redeclaring the organisation. */}
         <JsonLd data={organizationSchema()} />
         <JsonLd data={websiteSchema()} />
+        {/* The founders live here too, not just on /about: the Organization
+            node references them by @id on every page, and a reference to a
+            node the document doesn't contain is a dangling link. */}
+        {FOUNDERS.map((founder) => (
+          <JsonLd key={founder.slug} data={personSchema(founder)} />
+        ))}
       </head>
       <body>
         {/* The hero's dot field, fixed behind every route. Lives here rather

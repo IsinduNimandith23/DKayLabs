@@ -6,11 +6,13 @@
    NEUE MACHINA - display face for the hero
    ============================================================
    Drop the font files into public/fonts/ using the names below.
-   The release ships a mix of .otf and .ttf, so each weight lists both
-   and the browser takes whichever one is actually present - no build
-   step cares, and a missing file just falls back to the stack rather
-   than failing (which is why this is plain @font-face and not
-   next/font/local: the latter throws at build time on a missing file).
+   The release ships a mix of .otf and .ttf. Each weight points at the
+   ONE file that exists: listing both and letting the browser fall
+   through looked harmless, but every miss is a real 404 request on
+   every page load (Lighthouse flagged 3-4 per page). If a weight's
+   file is ever swapped for the other format, update its src here.
+   (Plain @font-face rather than next/font/local, which throws at build
+   time on a missing file.)
 
    Weights map to the brand spec:
      300 Light     -> white headline words
@@ -21,63 +23,49 @@
    ============================================================ */
 @font-face {
   font-family: "Neue Machina";
-  src:
-    url("/fonts/NeueMachina-Ultralight.otf") format("opentype"),
-    url("/fonts/NeueMachina-Ultralight.ttf") format("truetype");
+  src: url("/fonts/NeueMachina-Ultralight.ttf") format("truetype");
   font-weight: 200;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Neue Machina";
-  src:
-    url("/fonts/NeueMachina-Light.otf") format("opentype"),
-    url("/fonts/NeueMachina-Light.ttf") format("truetype");
+  src: url("/fonts/NeueMachina-Light.otf") format("opentype");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Neue Machina";
-  src:
-    url("/fonts/NeueMachina-Regular.otf") format("opentype"),
-    url("/fonts/NeueMachina-Regular.ttf") format("truetype");
+  src: url("/fonts/NeueMachina-Regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Neue Machina";
-  src:
-    url("/fonts/NeueMachina-Medium.otf") format("opentype"),
-    url("/fonts/NeueMachina-Medium.ttf") format("truetype");
+  src: url("/fonts/NeueMachina-Medium.ttf") format("truetype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Neue Machina";
-  src:
-    url("/fonts/NeueMachina-Bold.otf") format("opentype"),
-    url("/fonts/NeueMachina-Bold.ttf") format("truetype");
+  src: url("/fonts/NeueMachina-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Neue Machina";
-  src:
-    url("/fonts/NeueMachina-Ultrabold.otf") format("opentype"),
-    url("/fonts/NeueMachina-Ultrabold.ttf") format("truetype");
+  src: url("/fonts/NeueMachina-Ultrabold.otf") format("opentype");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Neue Machina";
-  src:
-    url("/fonts/NeueMachina-Black.otf") format("opentype"),
-    url("/fonts/NeueMachina-Black.ttf") format("truetype");
+  src: url("/fonts/NeueMachina-Black.ttf") format("truetype");
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -450,6 +438,63 @@ html.lenis body {
     }
   }
 
+  /* Route entrance - see app/template.tsx. Same reasoning as .nav-enter:
+     `translate` + `backwards`, so nothing is left behind once it ends. */
+  .page-enter {
+    animation: page-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      translate: 0 20px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* Homepage hero (components/sections/Hero.tsx). These used to be framer
+     variants, which server-rendered every headline line pushed below its
+     mask and the CTA at opacity 0 - invisible until React hydrated. As CSS
+     they run from first paint. Each element sets its own animation-delay
+     for the stagger; `backwards` holds the hidden state through the delay
+     and leaves no transform behind after. */
+  .hero-line {
+    animation: hero-line 1.05s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  @keyframes hero-line {
+    from {
+      translate: 0 102%;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+  .hero-cta {
+    animation: hero-cta 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  @keyframes hero-cta {
+    from {
+      opacity: 0;
+      translate: 0 22px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* Set for one frame while the theme flips (ThemeToggle.tsx). Without it,
+     every element with a colour transition animates at once, which made the
+     toggle's click-to-paint (INP) 400-500ms on a mid-range phone. */
+  .theme-switching,
+  .theme-switching *:not(.theme-icon),
+  .theme-switching *::before,
+  .theme-switching *::after {
+    transition: none !important;
+  }
+
   /* Tint and blur live on ONE element, deliberately.
      The reference stacks them as two layers, blur above tint - but a
      backdrop-filter samples everything painted behind it, which includes
@@ -527,6 +572,16 @@ html.lenis body {
   }
   .nav-btn:hover {
     color: rgb(var(--c-primary));
+  }
+  /* Touch target. The pill is 36-40px tall by design (--nav-btn-h); this
+     invisible layer stretches the HIT area to at least 44px each way (the
+     iOS / WCAG 2.5.5 size) without changing what's drawn. min() goes
+     negative only when the button is smaller than 44px. */
+  .nav-btn::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc((var(--nav-btn-h) - 2.75rem) / 2));
+    border-radius: inherit;
   }
   .nav-btn > * {
     position: relative;

@@ -136,7 +136,9 @@ export default function ReviewsCarousel({ items }: { items: Testimonial[] }) {
       onPointerLeave={(e) => e.pointerType === "mouse" && setPaused(false)}
       className={`relative ${vars}`}
     >
-      <div aria-hidden className="invisible grid" style={{ width: CARD_WIDTH }}>
+      {/* data-nosnippet: this sizer repeats every quote a second time in the
+          HTML. Google mustn't build a search snippet from the hidden copy. */}
+      <div aria-hidden data-nosnippet className="invisible grid" style={{ width: CARD_WIDTH }}>
         {items.map((t) => (
           <div key={t.name} className="col-start-1 row-start-1">
             <ReviewCard t={t} />
