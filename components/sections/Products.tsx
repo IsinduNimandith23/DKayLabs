@@ -3,7 +3,7 @@ import Image from "next/image";
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import RollText from "@/components/ui/RollText";
-import { PRODUCTS, PRODUCT_STATUS } from "@/lib/constants";
+import { PRODUCTS, PRODUCT_STATUS, productPath } from "@/lib/constants";
 
 /**
  * /products: in-house software - what DKayLABS is building for itself, as
@@ -11,7 +11,8 @@ import { PRODUCTS, PRODUCT_STATUS } from "@/lib/constants";
  *
  * Same hairline-row language as the services index, but every row stands
  * open: there are only a couple of products, and each gets its full pitch.
- * The name and the pill both lead through to /products/<slug>.
+ * The name and the pill both lead through to the product's own page, which
+ * sits at the site root: /shopwrights, /trainingwheels.
  */
 export default function Products() {
   return (
@@ -21,11 +22,11 @@ export default function Products() {
       <PageHero
         label="Our own products"
         lines={["Our", "Own", "Products"]}
-        intro="Alongside client work we build our own software. These are in active development - get in early and help shape where they go."
+        intro="Alongside client work we build our own software. Shopwrights is live; TrainingWheels is in active development - get in early and help shape where it goes."
       >
         <ul className="border-b border-ink/20">
           {PRODUCTS.map((product, i) => {
-            const href = `/products/${product.slug}`;
+            const href = productPath(product);
             // A product with its own site is another app, which <Link> can't
             // navigate into - a plain anchor does a full page load instead.
             const Anchor = product.ownSite ? "a" : Link;

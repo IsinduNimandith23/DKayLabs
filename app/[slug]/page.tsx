@@ -4,17 +4,26 @@ import ProductDetail from "@/components/sections/ProductDetail";
 import ClosingCta from "@/components/sections/ClosingCta";
 import JsonLd from "@/components/seo/JsonLd";
 import { productBreadcrumbSchema, productSchema } from "@/lib/schema";
-import { PRODUCTS, SITE } from "@/lib/constants";
+import { PRODUCTS, SITE, productPath } from "@/lib/constants";
 import { pageMetadata } from "@/lib/seo";
 
 /**
- * Products that have outgrown the generic ProductDetail layout and get a page
- * written for them instead. Anything not listed here falls through to the
- * shared component, which stays the default - a bespoke page is earned, not
- * the starting point.
+ * A product's own page, at the site root: www.dkaylabs.com/trainingwheels.
+ *
+ * Each product is a brand of its own, so it gets a top-level address rather
+ * than /products/<slug> (those old URLs redirect here - see next.config.mjs).
+ * This is the only dynamic segment at the root, and every real page beside
+ * it (/about, /services, ...) is a static route, which Next always matches
+ * first - so it can't shadow them.
+ *
+ * Products that have outgrown the generic ProductDetail layout get a page
+ * written for them instead. Anything not listed in RICH_PAGES falls through
+ * to the shared component, which stays the default - a bespoke page is
+ * earned, not the starting point.
  *
  * A product that has outgrown even that gets a site of its own (`ownSite`),
  * which next.config.mjs rewrites in - it never reaches this route at all.
+ * (Rewrites in next.config run before dynamic routes are matched.)
  */
 const RICH_PAGES: Record<string, () => JSX.Element> = {};
 
@@ -29,11 +38,12 @@ export function generateStaticParams() {
 }
 
 /*
- * ...and refuse anything else outright. Without this an unknown slug is
- * rendered on demand, and the notFound() below then streams the 404 as
- * client-side flight data - the visitor gets an empty page until hydration.
- * Turning dynamic params off routes unknown slugs to the prerendered 404
- * instead, which arrives as real HTML.
+ * ...and refuse anything else outright. At the root this matters twice over:
+ * every mistyped URL on the site lands on this segment. Without this an
+ * unknown slug is rendered on demand, and the notFound() below then streams
+ * the 404 as client-side flight data - the visitor gets an empty page until
+ * hydration. Turning dynamic params off routes unknown slugs to the
+ * prerendered 404 instead, which arrives as real HTML.
  */
 export const dynamicParams = false;
 
@@ -47,13 +57,15 @@ export function generateMetadata({
   // Unknown slug renders the 404 below. Keep it out of the index rather than
   // letting a crawler bank a real URL for a page that doesn't exist.
   if (!product) {
-    return { title: `Product - ${SITE.name}`, robots: { index: false, follow: false } };
+    return { title: `Page not found - ${SITE.name}`, robots: { index: false, follow: false } };
   }
 
   return pageMetadata({
-    title: product.name,
+    // "TrainingWheels - Driving School Management System": the brand alone
+    // tells a searcher nothing yet, so the title carries what it is.
+    title: `${product.name} - ${product.tagline}`,
     description: product.metaDescription ?? product.description,
-    path: `/products/${product.slug}`,
+    path: productPath(product),
   });
 }
 

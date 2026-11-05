@@ -23,7 +23,7 @@ export function generateStaticParams() {
   return SERVICES.map((service) => ({ slug: serviceSlug(service.title) }));
 }
 
-// Unknown slugs go to the prerendered 404 - see app/products/[slug]/page.tsx.
+// Unknown slugs go to the prerendered 404 - see app/[slug]/page.tsx.
 export const dynamicParams = false;
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {

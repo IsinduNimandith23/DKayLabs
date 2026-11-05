@@ -2,7 +2,7 @@ import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 import Reveal from "@/components/ui/Reveal";
 import BackToTop from "@/components/ui/BackToTop";
-import { NAV_LINKS, PRODUCTS, SOCIALS, SERVICES, SITE } from "@/lib/constants";
+import { NAV_LINKS, PRODUCTS, SOCIALS, SERVICES, SITE, productPath } from "@/lib/constants";
 import { isServicePagePublished, serviceSlug } from "@/lib/services";
 import SocialIcon from "@/components/ui/SocialIcon";
 
@@ -61,13 +61,13 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
-              {/* The MRP platform is its own app, so it needs a plain <a>. It
-                  had no crawlable link outside /products - Search Console
-                  lists it "Discovered - currently not indexed". */}
+              {/* Shopwrights is its own app, so it needs a plain <a>. It had
+                  no crawlable link outside /products - Search Console listed
+                  it "Discovered - currently not indexed". */}
               {PRODUCTS.map((p) => (
                 <li key={p.slug}>
                   <a
-                    href={`/products/${p.slug}`}
+                    href={productPath(p)}
                     className="group inline-flex cursor-pointer items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
                   >
                     <span className="h-px w-0 bg-primary transition-all duration-300 group-hover:w-4" />

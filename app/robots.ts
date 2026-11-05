@@ -1,14 +1,12 @@
 import type { MetadataRoute } from "next";
-import { PRODUCTS, SITE } from "@/lib/constants";
+import { PRODUCTS, SITE, productPath } from "@/lib/constants";
 
 /*
- * Products with their own site are served under /products/<slug> by a
- * separate app (see next.config.mjs). Crawlers only read the robots.txt at
- * the host root - this one - so their sitemap and /api/ rule live here too.
+ * Products with their own site are served at /<slug> by a separate app (see
+ * next.config.mjs). Crawlers only read the robots.txt at the host root -
+ * this one - so their sitemap and /api/ rule live here too.
  */
-const OWN_SITES = PRODUCTS.filter((product) => product.ownSite).map(
-  (product) => `/products/${product.slug}`,
-);
+const OWN_SITES = PRODUCTS.filter((product) => product.ownSite).map(productPath);
 
 /** Served at /robots.txt. */
 export default function robots(): MetadataRoute.Robots {

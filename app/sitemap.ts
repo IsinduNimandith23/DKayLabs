@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { PRODUCTS, SERVICES } from "@/lib/constants";
+import { PRODUCTS, SERVICES, productPath } from "@/lib/constants";
 import { absoluteUrl } from "@/lib/seo";
 import {
   CASE_STUDY_PROJECTS,
@@ -48,7 +48,8 @@ const STATIC_ROUTES: {
   { path: "/", priority: 1.0, lastModified: "2026-11-05" },
   { path: "/services", priority: 0.9, lastModified: "2026-11-05" },
   { path: "/portfolio", priority: 0.9, lastModified: "2026-11-05" },
-  { path: "/products", priority: 0.8, lastModified: "2026-11-05" },
+  // 2026-11-06: product renames (Shopwrights, TrainingWheels).
+  { path: "/products", priority: 0.8, lastModified: "2026-11-06" },
   { path: "/about", priority: 0.7, lastModified: "2026-11-05" },
   { path: "/contact", priority: 0.7, lastModified: "2026-11-05" },
   // Legal pages: linked from the footer sitewide, so they get crawled either
@@ -59,7 +60,9 @@ const STATIC_ROUTES: {
 
 /** Keyed by slug so a new product can't silently inherit a stale date. */
 const PRODUCT_LAST_MODIFIED: Record<string, string> = {
-  "driving-school": "2026-08-24",
+  // 2026-11-06: renamed from "Driving School Manager" and moved from
+  // /products/driving-school to the site root.
+  trainingwheels: "2026-11-06",
 };
 
 const PRODUCT_FALLBACK_LAST_MODIFIED = "2026-08-24";
@@ -83,11 +86,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority,
     })),
     // Derived from the same PRODUCTS array that generateStaticParams uses in
-    // app/products/[slug]/page.tsx, so the sitemap cannot list a route that
-    // doesn't exist - or miss one that does. A product with its own site
-    // publishes its own sitemap, which robots.ts points crawlers at.
+    // app/[slug]/page.tsx, so the sitemap cannot list a route that doesn't
+    // exist - or miss one that does. A product with its own site publishes
+    // its own sitemap, which robots.ts points crawlers at.
     ...PRODUCTS.filter((product) => !product.ownSite).map((product) => ({
-      url: absoluteUrl(`/products/${product.slug}`),
+      url: absoluteUrl(productPath(product)),
       lastModified:
         PRODUCT_LAST_MODIFIED[product.slug] ?? PRODUCT_FALLBACK_LAST_MODIFIED,
       changeFrequency: "monthly" as const,

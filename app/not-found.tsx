@@ -5,8 +5,7 @@ import WordReveal from "@/components/ui/WordReveal";
 import RollText from "@/components/ui/RollText";
 
 /*
- * Catches both a bad URL and the notFound() call in
- * app/products/[slug]/page.tsx.
+ * Catches both a bad URL and the notFound() call in app/[slug]/page.tsx.
  *
  * not-found.tsx cannot export `metadata` in the App Router, so the tab title
  * falls back to the root one. That is fine - the 404 status code is what a

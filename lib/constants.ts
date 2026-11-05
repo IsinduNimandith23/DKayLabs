@@ -112,7 +112,11 @@ export type IconKey =
    ============================================================ */
 
 export type Product = {
-  /** Anchor id on /products, also used in the navbar deep-link. */
+  /**
+   * The product's URL at the site root - /<slug>, see productPath() - and its
+   * anchor id on /products. Old /products/<slug> URLs redirect here; the map
+   * is in next.config.mjs, so add a line there if a slug ever changes.
+   */
   slug: string;
   name: string;
   /** One-liner shown under the name in the navbar dropdown. */
@@ -120,7 +124,7 @@ export type Product = {
   /** Card body copy on /products. */
   description: string;
   /**
-   * <meta name="description"> for /products/<slug>, when `description` is
+   * <meta name="description"> for the product page, when `description` is
    * too long for a search snippet (~155 characters is where Google cuts).
    */
   metaDescription?: string;
@@ -131,13 +135,13 @@ export type Product = {
   /** App screenshot in /public, shown on the product card. */
   image?: string;
   /**
-   * /products/<slug> is served by the product's own site - a separate app
-   * that next.config.mjs rewrites in - rather than by app/products/[slug].
-   * Links to it must be plain <a>, not <Link>: a client-side navigation
-   * can't cross into another app.
+   * /<slug> is served by the product's own site - a separate app that
+   * next.config.mjs rewrites in - rather than by app/[slug]. Links to it
+   * must be plain <a>, not <Link>: a client-side navigation can't cross into
+   * another app.
    */
   ownSite?: boolean;
-  /** Long-form copy for the product's own page at /products/<slug>. */
+  /** Long-form copy for the product's own page at /<slug>. */
   detail: {
     /** A paragraph or two expanding on `description`. */
     overview: string;
@@ -155,39 +159,40 @@ export const PRODUCT_STATUS: Record<Product["status"], string> = {
 
 export const PRODUCTS: Product[] = [
   {
-    slug: "mrp",
-    name: "MRP Platform",
+    slug: "shopwrights",
+    name: "Shopwrights",
     tagline: "Manufacturing & Inventory Platform",
     description:
-      "Software for small manufacturers who have outgrown the stock spreadsheet. The inventory module runs today - live stock by warehouse, shelf and batch, with a permanent record behind every number. Manufacturing, sales and accounting follow, one module at a time.",
+      "Software for small manufacturers who have outgrown the stock spreadsheet. Inventory, purchasing, sales, manufacturing and costing share one set of numbers - live stock by warehouse, shelf and batch, with a permanent record behind every movement.",
     icon: "factory",
-    status: "in-development",
-    // The DKayMRP site, a separate app - see MRP_SITE_URL in next.config.mjs.
+    status: "live",
+    // The Shopwrights site, a separate app - see MRP_SITE_URL in next.config.mjs.
     ownSite: true,
     highlights: [
-      "Live stock by warehouse, shelf location and batch",
-      "Serial-number tracking on high-value items",
-      "A permanent record of every stock movement",
-      "Manufacturing, sales and accounting modules to follow",
+      // One per module, worded as on the Shopwrights site's own nav.
+      "Live stock by warehouse, shelf, batch and serial number",
+      "Per-order bills of materials, work orders and job costing",
+      "Quotes to orders, purchase orders to three-way invoice match",
+      "Costing and billing, with export to Xero or QuickBooks",
     ],
-    image: "/portfolio/saas-development/DKayMRP.png",
+    image: "/portfolio/saas-development/Shopwrights.png",
     detail: {
       overview:
-        "Most small manufacturers run their stock in a spreadsheet that only one person really understands - and the number in it is whatever someone last typed. The MRP Platform replaces it with a system where every quantity on screen traces back to a movement somebody actually recorded.\n\nIt is built to be adopted a piece at a time rather than all at once. Inventory is live today; manufacturing, sales and purchasing, and accounting are designed and follow behind it.",
+        "Most small manufacturers run their stock in a spreadsheet that only one person really understands - and the number in it is whatever someone last typed. Shopwrights replaces it with a system where every quantity on screen traces back to a movement somebody actually recorded.\n\nIt is built to be adopted a piece at a time rather than all at once: run inventory on its own, or add purchasing, sales, manufacturing and costing when the timing is right.",
       timeline:
-        "In active development. The inventory module is running today, and we're onboarding a small group of manufacturers for feedback before general release.",
+        "Built. Every module - inventory, manufacturing, sales and purchasing, costing and billing - is complete, and manufacturers can join through the Shopwrights site.",
     },
   },
   {
-    slug: "driving-school",
-    name: "Driving School Manager",
+    slug: "trainingwheels",
+    name: "TrainingWheels",
     tagline: "Driving School Management System",
     // TODO: replace with final product copy.
     description:
       "A management system for driving schools - student records, instructor and vehicle scheduling, lesson bookings, and payments in one place, so the office stops running on spreadsheets and phone calls. Currently in active development.",
     // The description runs ~230 characters; search results cut at ~155.
     metaDescription:
-      "Driving school management software: student records, instructor and vehicle scheduling, lesson bookings and payments in one place. In development.",
+      "TrainingWheels: driving school management software for student records, instructor and vehicle scheduling, lesson bookings and payments. In development.",
     icon: "car",
     status: "in-development",
     // TODO: replace with the final feature list.
@@ -206,6 +211,15 @@ export const PRODUCTS: Product[] = [
     },
   },
 ];
+
+/**
+ * A product's URL: the site root, not /products/<slug> - each product is a
+ * brand of its own, so it gets a top-level address (www.dkaylabs.com/shopwrights).
+ * Every link, canonical, sitemap entry and schema URL goes through here.
+ */
+export function productPath(product: Pick<Product, "slug">) {
+  return `/${product.slug}`;
+}
 
 export type NavChild = {
   label: string;
@@ -229,7 +243,7 @@ export const NAV_LINKS: NavLink[] = [
     href: "/products",
     children: PRODUCTS.map((p) => ({
       label: p.name,
-      href: `/products/${p.slug}`,
+      href: productPath(p),
       description: p.tagline,
       status: PRODUCT_STATUS[p.status],
     })),
@@ -377,7 +391,7 @@ export const SERVICES: Service[] = [
       "End-to-end product engineering: auth, billing, dashboards, and scalable cloud infrastructure that grows with you.",
     icon: "layers",
     status: "available",
-    featuredProject: "MRP Platform",
+    featuredProject: "Shopwrights",
     detail: {
       overview:
         "From idea to paying users. We handle the unglamorous parts of a SaaS - auth, roles, subscriptions, webhooks, admin tooling - so you can focus on the product itself. Built multi-tenant from day one so scaling later isn't a rewrite.",
@@ -626,15 +640,15 @@ export const PROJECTS: Project[] = [
     image: "/portfolio/website-development/NewSagarikaDrivingSchool.png",
   },
   {
-    title: "MRP Platform",
+    title: "Shopwrights",
     category: "Manufacturing SaaS",
     service: "SaaS Development",
     description:
       "Our own inventory and manufacturing platform for small manufacturers - live stock by warehouse, shelf and batch, with a permanent record behind every number.",
     tags: ["SaaS", "Inventory", "In-House"],
-    url: "/products/mrp",
-    monogram: "MR",
-    image: "/portfolio/saas-development/DKayMRP.png",
+    url: "/shopwrights",
+    monogram: "SW",
+    image: "/portfolio/saas-development/Shopwrights.png",
   },
   {
     title: "New Sagarika Driving School Launch Post",

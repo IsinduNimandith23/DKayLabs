@@ -5,9 +5,10 @@ import { breadcrumbSchema } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "SaaS Products: MRP & Driving School Software",
+  // Brand names AND what they are: nobody searches "Shopwrights" yet.
+  title: "Shopwrights MRP & TrainingWheels Driving School Software",
   description:
-    "In-house software from DKayLABS: an MRP platform for manufacturers and a management system for driving schools, both in active development.",
+    "In-house software from DKayLABS: Shopwrights, a live MRP platform for manufacturers, and TrainingWheels, a driving school management system in development.",
   path: "/products",
 });
 

@@ -1,12 +1,28 @@
 /*
- * /products/mrp is not a page in this app. It's the DKayMRP site - a separate
- * Next.js app, deployed as its own project with basePath "/products/mrp" -
- * and these rewrites serve it under this domain (Next.js multi-zones). The
- * visitor's address bar never leaves www.dkaylabs.com.
+ * /shopwrights is not a page in this app. It's the Shopwrights site - a
+ * separate Next.js app (the "MRP Product Website" repo), deployed as its own
+ * project with basePath "/shopwrights" - and these rewrites serve it under
+ * this domain (Next.js multi-zones). The visitor's address bar never leaves
+ * www.dkaylabs.com. The two basePaths must match: change one, change both.
  *
  * MRP_SITE_URL is that project's own origin, e.g. its *.vercel.app address.
- * Locally it falls back to the MRP dev server's port.
+ * Locally it falls back to the MRP dev server's port. (The variable keeps its
+ * old name so the Vercel environment doesn't have to change with the brand.)
  */
+const SHOPWRIGHTS_BASE = "/shopwrights";
+
+/*
+ * Products moved from /products/<slug> to the site root when they got names
+ * of their own. Permanent (308) so search engines move the old URLs' standing
+ * across, and anything already shared or bookmarked keeps working.
+ */
+const PRODUCT_MOVES = [
+  { from: "/products/mrp", to: SHOPWRIGHTS_BASE },
+  { from: "/products/driving-school", to: "/trainingwheels" },
+  // Someone guessing the new names under the old prefix.
+  { from: "/products/shopwrights", to: SHOPWRIGHTS_BASE },
+  { from: "/products/trainingwheels", to: "/trainingwheels" },
+];
 const MRP_SITE_URL = (
   process.env.MRP_SITE_URL ??
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3800")
@@ -67,11 +83,19 @@ const nextConfig = {
     ];
   },
 
+  async redirects() {
+    return PRODUCT_MOVES.flatMap(({ from, to }) => [
+      { source: from, destination: to, permanent: true },
+      // Deep links: /products/mrp/pricing -> /shopwrights/pricing.
+      { source: `${from}/:path+`, destination: `${to}/:path+`, permanent: true },
+    ]);
+  },
+
   async rewrites() {
     /*
      * Failing the build is deliberate: a Vercel deploy that fails leaves the
      * previous one live, whereas one without these rewrites would ship a
-     * 404 at /products/mrp.
+     * 404 at /shopwrights.
      */
     if (!MRP_SITE_URL) {
       throw new Error(
@@ -80,10 +104,10 @@ const nextConfig = {
     }
 
     return [
-      { source: "/products/mrp", destination: `${MRP_SITE_URL}/products/mrp` },
+      { source: SHOPWRIGHTS_BASE, destination: `${MRP_SITE_URL}${SHOPWRIGHTS_BASE}` },
       {
-        source: "/products/mrp/:path*",
-        destination: `${MRP_SITE_URL}/products/mrp/:path*`,
+        source: `${SHOPWRIGHTS_BASE}/:path*`,
+        destination: `${MRP_SITE_URL}${SHOPWRIGHTS_BASE}/:path*`,
       },
     ];
   },
