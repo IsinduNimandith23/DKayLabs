@@ -6,7 +6,7 @@ import ServiceIcon from "@/components/ui/ServiceIcon";
 import RollText from "@/components/ui/RollText";
 import { PRODUCT_STATUS, type Product } from "@/lib/constants";
 
-/** Full write-up for a single product, rendered at /products/<slug>. */
+/** Full write-up for a single product, rendered at /<slug> (app/[slug]). */
 export default function ProductDetail({ product }: { product: Product }) {
   const inProgress = product.status !== "live";
 

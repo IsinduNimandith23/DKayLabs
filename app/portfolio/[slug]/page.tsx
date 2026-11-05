@@ -21,7 +21,7 @@ export function generateStaticParams() {
   return CASE_STUDY_PROJECTS.map((project) => ({ slug: projectSlug(project) }));
 }
 
-// Unknown slugs go to the prerendered 404 - see app/products/[slug]/page.tsx.
+// Unknown slugs go to the prerendered 404 - see app/[slug]/page.tsx.
 export const dynamicParams = false;
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {

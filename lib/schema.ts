@@ -21,6 +21,7 @@ import {
   SERVICES,
   SITE,
   SOCIALS,
+  productPath,
   type Founder,
   type Product,
   type Project,
@@ -236,7 +237,7 @@ export function productSchema(product: Product) {
     name: product.name,
     alternateName: product.tagline,
     description: product.description,
-    url: absoluteUrl(`/products/${product.slug}`),
+    url: absoluteUrl(productPath(product)),
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web browser",
     featureList: product.highlights,
@@ -270,6 +271,6 @@ export function breadcrumbSchema(trailBelowHome: Crumb[]) {
 export function productBreadcrumbSchema(product: Product) {
   return breadcrumbSchema([
     { name: "Products", path: "/products" },
-    { name: product.name, path: `/products/${product.slug}` },
+    { name: product.name, path: productPath(product) },
   ]);
 }

@@ -8,7 +8,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import ServiceIcon from "@/components/ui/ServiceIcon";
 import { useScrollLock } from "@/lib/hooks/useScrollLock";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
-import { NAV_LINKS, PRODUCTS, PRODUCT_STATUS } from "@/lib/constants";
+import { NAV_LINKS, PRODUCTS, PRODUCT_STATUS, productPath } from "@/lib/constants";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -182,7 +182,7 @@ export default function NavOverlay({
                             <li key={product.slug} className="overflow-hidden">
                               <motion.div variants={row}>
                                 <Anchor
-                                  href={`/products/${product.slug}`}
+                                  href={productPath(product)}
                                   onClick={onClose}
                                   className="group/item flex items-start gap-3 rounded-xl p-2 transition-colors duration-200 hover:bg-primary/10"
                                 >

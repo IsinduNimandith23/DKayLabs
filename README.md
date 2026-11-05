@@ -101,12 +101,22 @@ public/
 - The 3D scene is lazy-loaded (client-only), DPR-capped, and scales down on
   mobile / coarse-pointer devices.
 
-## The MRP site
+## Product URLs
 
-`/products/mrp` is not a page in this app. It's the DKayMRP site, a separate
-Next.js project (`MRP Product Website`) with `basePath: "/products/mrp"`, and
-`next.config.mjs` rewrites `/products/mrp/*` to its deployment (Next.js
-multi-zones). The address bar stays on www.dkaylabs.com.
+Each product has its own name and sits at the site root:
+`/shopwrights` (the MRP platform) and `/trainingwheels` (driving school
+management). `productPath()` in `lib/constants.ts` builds every link to them.
+The old `/products/mrp` and `/products/driving-school` URLs 308-redirect to
+the new ones (`PRODUCT_MOVES` in `next.config.mjs`). `/products` is still the
+listing page.
+
+## The Shopwrights site
+
+`/shopwrights` is not a page in this app. It's the Shopwrights site, a
+separate Next.js project (`MRP Product Website`) with
+`basePath: "/shopwrights"`, and `next.config.mjs` rewrites `/shopwrights/*` to
+its deployment (Next.js multi-zones). The address bar stays on
+www.dkaylabs.com. The two basePaths must match.
 
 - **`MRP_SITE_URL`** is that deployment's origin (e.g.
   `https://dkaymrp.vercel.app`). Production builds fail without it on
@@ -114,7 +124,7 @@ multi-zones). The address bar stays on www.dkaylabs.com.
   missing rewrite would ship a 404. Locally it defaults to the MRP dev
   server on `http://localhost:3800`, so run both to see the page.
 - The product is flagged `ownSite: true` in `PRODUCTS`. That keeps it out of
-  `app/products/[slug]` and this sitemap, adds its sitemap and `/api/` rule
+  `app/[slug]` and this sitemap, adds its sitemap and `/api/` rule
   to `robots.txt`, and makes the links to it plain `<a>`. `<Link>` would
   try a client-side navigation into another app.
 
